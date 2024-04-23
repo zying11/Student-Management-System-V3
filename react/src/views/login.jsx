@@ -2,7 +2,7 @@ import axios from "axios";
 import { useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axiosClient from "../axiosClient";
-import { useStateContext } from "../contexts/contextprovider";
+import { useStateContext } from "../contexts/ContextProvider";
 
 export default function login(){
 

@@ -1,4 +1,4 @@
-import { useStateContext } from "../contexts/contextprovider";
+import { useStateContext } from "../contexts/ContextProvider";
 import { Navigate, Outlet } from "react-router-dom";
 
 export default function GuestLayout(){

@@ -1,8 +1,8 @@
 import {createBrowserRouter} from 'react-router-dom';
-import Login from './views/login.jsx';
-import DefaultLayout from './Components/DefaultLayout.jsx';
-import GuestLayout from './Components/GuestLayout.jsx';
-import Users from './views/users.jsx';
+import Login from './views/Login.jsx';
+import DefaultLayout from './components/DefaultLayout.jsx';
+import GuestLayout from './components/GuestLayout.jsx';
+import Users from './views/Users.jsx';
 import UserForm from './views/UserForm.jsx';
 
 const router = createBrowserRouter ([
