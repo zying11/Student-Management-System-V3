@@ -15,6 +15,7 @@ export default function UserForm(){
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState(null);
 
+    // If id is present, fetch the user data by making a GET request to the API
     if(id)
     {
         useEffect(() => {
@@ -65,7 +66,7 @@ export default function UserForm(){
             {loading && (
               <div className="card-body text-center">
                 <div className="spinner-border" role="status">
-                  <span className="sr-only">Loading...</span>
+                  {/* <span className="sr-only">Loading...</span> */}
                 </div>
               </div>
             )}
@@ -76,6 +77,7 @@ export default function UserForm(){
                 ))}
               </div>
             )}
+            
             {!loading && (
               <form onSubmit={onSubmit}>
                 <div className="card-body">
