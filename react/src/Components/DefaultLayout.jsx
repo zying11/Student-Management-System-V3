@@ -5,6 +5,7 @@ import { Navigate, Outlet } from "react-router-dom";
 import axiosClient from "../axiosClient";
 import { useStateContext } from "../contexts/ContextProvider";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import "../css/DefaultLayout.css";
 
 import "bootstrap-icons/font/bootstrap-icons.css";
@@ -36,6 +37,14 @@ export default function DefaultLayout() {
 
     const toggleSidebar = () => {
         setIsCollapsed(!isCollapsed);
+    };
+
+    const navToTimetable = () => {
+        navigate("/timetable");
+    };
+
+    const navToSubject = () => {
+        navigate("/subject");
     };
 
     return (
@@ -124,7 +133,11 @@ export default function DefaultLayout() {
                                     data-bs-parent="#sidebar"
                                 >
                                     <li className="sidebar-item">
-                                        <a href="#" className="sidebar-link">
+                                        <a
+                                            href="#"
+                                            className="sidebar-link"
+                                            onClick={navToSubject}
+                                        >
                                             Manage Subject
                                         </a>
                                     </li>
@@ -139,7 +152,11 @@ export default function DefaultLayout() {
                                         </a>
                                     </li>
                                     <li className="sidebar-item">
-                                        <a href="#" className="sidebar-link">
+                                        <a
+                                            href="#"
+                                            className="sidebar-link"
+                                            onClick={navToTimetable}
+                                        >
                                             Schedule Timetable
                                         </a>
                                     </li>
