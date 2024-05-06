@@ -31,6 +31,7 @@ class LessonController extends Controller
         $lesson = new Lesson();
         $lesson->subject_name = $request->input('subjectName');
         $lesson->level_id = $request->input('studyLevel');
+        $lesson->capacity = $request->input('capacity');
         $lesson->duration = $request->input('duration');
         $lesson->save();
         // $subject->day = $validatedData['day'];
