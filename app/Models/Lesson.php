@@ -12,6 +12,7 @@ class Lesson extends Model
     protected $fillable = [
         'subjectName',
         'studyLevel',
+        'capacity',
         'duration',
     ];
 }

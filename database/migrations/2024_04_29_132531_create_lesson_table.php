@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->string('subject_name');
             $table->string('duration');
             $table->string('day')->nullable();
+            $table->integer('capacity')->nullable();
             $table->time('start_time')->nullable();
             $table->time('end_time')->nullable();
             $table->timestamps();

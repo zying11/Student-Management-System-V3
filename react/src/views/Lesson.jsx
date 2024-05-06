@@ -7,6 +7,7 @@ export default function Lesson() {
     const [lessonData, setLessonData] = useState({
         subjectName: "",
         studyLevel: "",
+        capacity: "",
         duration: "",
     });
     // For fetch data
@@ -33,6 +34,7 @@ export default function Lesson() {
         if (
             !lessonData.subjectName ||
             !lessonData.studyLevel ||
+            !lessonData.capacity ||
             !lessonData.duration
         ) {
             setError("Please fill in all fields");
@@ -53,6 +55,7 @@ export default function Lesson() {
         setLessonData({
             subjectName: "",
             studyLevel: "",
+            capacity: "",
             duration: "",
         });
         setError("");
@@ -90,6 +93,7 @@ export default function Lesson() {
                 <td>{item.id}</td>
                 <td>{item.level_id}</td>
                 <td>{item.subject_name}</td>
+                <td>{item.capacity}</td>
                 <td>{item.duration}</td>
                 <td>{item.day}</td>
                 <td>{item.start_time}</td>
@@ -114,6 +118,7 @@ export default function Lesson() {
                             <th>ID</th>
                             <th>Level ID</th>
                             <th>Subject Name</th>
+                            <th>Capacity</th>
                             <th>Duration</th>
                             <th>Day</th>
                             <th>Start Time</th>
@@ -172,6 +177,19 @@ export default function Lesson() {
                                     </option>
                                     <option value="2">Upper Primary</option>
                                 </select>
+                            </div>
+
+                            {/* Capacity */}
+                            <div className="mb-3">
+                                <label className="form-label">Capacity</label>
+                                <input
+                                    type="number"
+                                    name="capacity"
+                                    onChange={handleInput}
+                                    value={lessonData.capacity}
+                                    className="form-control"
+                                    required
+                                />
                             </div>
 
                             {/* Duration */}
