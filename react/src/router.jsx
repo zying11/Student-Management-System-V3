@@ -9,6 +9,8 @@ import Lesson from "./views/Lesson.jsx";
 import Invoice from './views/Invoice.jsx';
 import InvoiceForm from './views/InvoiceForm.jsx';
 import InvoiceTemplate from "./views/InvoiceTemplate.jsx";
+import Students from "./views/Students.jsx";
+import StudentForm from "./views/StudentForm.jsx";
 
 const exampleInvoice = {
     id: '1234',
@@ -63,7 +65,19 @@ const router = createBrowserRouter([
             {
                 path: '/invoiceTemplate',
                 element: <InvoiceTemplate invoice={exampleInvoice} />
-            }
+            },
+            {
+                path: "/students",
+                element: <Students />,
+            },
+            {
+                path: "/students/new",
+                element: <StudentForm key="studentCreate" />,
+            },
+            {
+                path: "/students/:id",
+                element: <StudentForm key="studentUpdate" />,
+            },
         ],
 },
 
