@@ -13,8 +13,8 @@ class Invoice extends Model
 
     protected $fillable = [
         'name',
-        'subject1_fee',
-        'subject2_fee',
+        'subject1Fee',
+        'subject2Fee',
         'total_payable',
         'total_paid',
         'balance',
