@@ -219,12 +219,26 @@ export default function Invoice() {
             .get("/invoices")
             .then(({ data }) => {
                 setLoading(false);
-                setInvoices(data.data);
+                // Calculate total payable and balance for each invoice
+                const updatedInvoices = data.data.map(invoice => {
+                    const totalPayable = parseFloat(invoice.subject1Fee) + parseFloat(invoice.subject2Fee);
+                    const totalPaid = 0; // Set total paid to 0
+                    const balance = totalPayable - totalPaid;
+    
+                    return {
+                        ...invoice,
+                        totalPayable,
+                        totalPaid,
+                        balance
+                    };
+                });
+                setInvoices(updatedInvoices);
             })
             .catch(() => {
                 setLoading(false);
             });
     };
+    
 
     return (
         <>

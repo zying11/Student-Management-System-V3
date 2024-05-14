@@ -16,8 +16,8 @@ class CreateInvoicesTable extends Migration
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->decimal('subject1_fee', 8, 2);
-            $table->decimal('subject2_fee', 8, 2);
+            $table->decimal('subject1Fee', 8, 2);
+            $table->decimal('subject2Fee', 8, 2);
             $table->decimal('total_payable', 8, 2);
             $table->decimal('total_paid', 8, 2);
             $table->decimal('balance', 8, 2);
