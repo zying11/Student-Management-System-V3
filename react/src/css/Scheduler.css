@@ -7,3 +7,7 @@
 .unassigned p {
     margin-bottom: 0;
 }
+
+.btn-save {
+    max-width: 350px;
+}

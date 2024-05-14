@@ -34,5 +34,6 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [AuthController::class, 'register']);
 
-Route::post('/add-lesson', [LessonController::class, 'store']);
+Route::post('/add-lesson', [LessonController::class, 'addNewLesson']);
+Route::post('/update-lesson', [LessonController::class, 'updateLesson']);
 Route::get('lessons', [LessonController::class, 'index']);
