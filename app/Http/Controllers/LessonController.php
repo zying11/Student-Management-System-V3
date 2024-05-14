@@ -15,7 +15,7 @@ class LessonController extends Controller
             'lessons' => $lessons
         ]);
     }
-    public function store(Request $request)
+    public function addNewLesson(Request $request)
     {
         // Validate incoming request data
         // $validatedData = $request->validate([
@@ -43,4 +43,31 @@ class LessonController extends Controller
             'message' => 'Lesson added successfully'
         ]);
     }
+    public function updateLesson(Request $request)
+    {
+        // Find the lesson by its ID 
+        $lesson = Lesson::find($request->input('id'));
+
+        if (!$lesson) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Lesson not found',
+            ], 404);
+        }
+
+        // Update lesson attributes with request data
+        $lesson->day = $request->input('day');
+        $lesson->start_time = $request->input('startTime');
+        $lesson->end_time = $request->input('endTime');
+
+        $lesson->save();
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Date and time updated for lesson successfully',
+            'lesson' => $lesson, // Optionally return the updated lesson data
+        ]);
+    }
+
 }
+
