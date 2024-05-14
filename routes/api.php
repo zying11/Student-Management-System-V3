@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CenterProfileController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\SubjectController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -40,3 +42,9 @@ Route::post('register', [AuthController::class, 'register']);
 Route::post('/add-lesson', [LessonController::class, 'addNewLesson']);
 Route::post('/update-lesson', [LessonController::class, 'updateLesson']);
 Route::get('lessons', [LessonController::class, 'index']);
+
+Route::get('center-profile', [CenterProfileController::class, 'index']);
+Route::post('/update-center-profile', [CenterProfileController::class, 'update']);
+
+Route::get('subjects', [SubjectController::class, 'index']);
+Route::post('add-subject', [SubjectController::class, 'addSubject']);

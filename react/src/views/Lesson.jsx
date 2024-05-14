@@ -69,6 +69,8 @@ export default function Lesson() {
                     "http://127.0.0.1:8000/api/lessons"
                 );
 
+                console.log(res.data.lessons);
+
                 setDisplayData({
                     lessons: res.data.lessons,
                     loading: false,
@@ -108,7 +110,7 @@ export default function Lesson() {
                 <button
                     className="btn btn-primary btn-create"
                     data-bs-toggle="modal"
-                    data-bs-target="#createSubjectModal"
+                    data-bs-target="#createLessonModal"
                 >
                     Create Subject
                 </button>
@@ -129,7 +131,7 @@ export default function Lesson() {
                 </table>
             </div>
             <div
-                id="createSubjectModal"
+                id="createLessonModal"
                 className="modal fade"
                 tabindex="-1"
                 data-bs-backdrop="static"
