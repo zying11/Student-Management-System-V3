@@ -73,7 +73,7 @@
 // import axiosClient from "../axiosClient";
 
 // export default function Invoice() {
-   
+
 
 //     return (
 //         <>
@@ -191,7 +191,6 @@
 //         </>
 //     );
 // }
-
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axiosClient from "../axiosClient";
@@ -224,7 +223,7 @@ export default function Invoice() {
                     const totalPayable = parseFloat(invoice.subject1Fee) + parseFloat(invoice.subject2Fee);
                     const totalPaid = 0; // Set total paid to 0
                     const balance = totalPayable - totalPaid;
-    
+
                     return {
                         ...invoice,
                         totalPayable,
@@ -238,7 +237,7 @@ export default function Invoice() {
                 setLoading(false);
             });
     };
-    
+
 
     return (
         <>
@@ -254,7 +253,7 @@ export default function Invoice() {
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Name</th>
+                                <th>Student Name</th> {/* Change this heading to Student Name */}
                                 <th>Subject 1 Fee</th>
                                 <th>Subject 2 Fee</th>
                                 <th>Total Payable</th>
@@ -274,7 +273,7 @@ export default function Invoice() {
                                 invoices.map((invoice) => (
                                     <tr key={invoice.id}>
                                         <td>{invoice.id}</td>
-                                        <td>{invoice.name}</td>
+                                        <td>{invoice.name}</td> {/* Display student's name */}
                                         <td>{invoice.subject1Fee}</td>
                                         <td>{invoice.subject2Fee}</td>
                                         <td>{invoice.totalPayable}</td>
@@ -293,6 +292,12 @@ export default function Invoice() {
                                             >
                                                 Delete
                                             </button>
+                                            <Link
+                                                className="btn btn-light ms-2"
+                                                to={`/invoiceTemplate/${invoice.id}`} 
+                                            >
+                                                <i class="bi bi-eye"></i> View
+                                            </Link>
                                         </td>
                                     </tr>
                                 ))

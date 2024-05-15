@@ -30,9 +30,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('/users', UserController::class);
 
-    Route::apiResource('/invoices', InvoiceController::class); // Add this line for invoice routes
-
-    Route::apiResource('/students', StudentController::class);
 });
 
 
@@ -48,3 +45,7 @@ Route::post('/update-center-profile', [CenterProfileController::class, 'update']
 
 Route::get('subjects', [SubjectController::class, 'index']);
 Route::post('add-subject', [SubjectController::class, 'addSubject']);
+
+Route::apiResource('/users', UserController::class);
+Route::apiResource('/students', StudentController::class);
+Route::apiResource('/invoices', InvoiceController::class); 

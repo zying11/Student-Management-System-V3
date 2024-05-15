@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axiosClient from "../axiosClient";
 import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css'; 
+import 'react-datepicker/dist/react-datepicker.css';
 
 export default function StudentForm() {
   const { id } = useParams();
@@ -13,28 +13,68 @@ export default function StudentForm() {
     name: '',
     gender: '',
     birth_date: new Date(),
-    age: '',
+    age: 0,
     nationality: '',
     address: '',
-    postal_code: ''
+    postal_code: '',
+    study_level: '',
+    subject: '',
+    registration_date: ''
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState(null);
+  
+  // Function to calculate age from birth date
+  const calculateAge = (birthDate) => {
+    const birth = new Date(birthDate);
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+
+    return age;
+  };
 
   // If id is present, fetch the user data by making a GET request to the API
-  if (id) {
-    useEffect(() => {
+  useEffect(() => {
+    if (id) {
       setLoading(true)
       axiosClient.get(`/students/${id}`)
         .then(({ data }) => {
           setLoading(false)
-          setStudents(data)
+          const { name, gender, birth_date, nationality, address, postal_code, study_level, subject, registration_date } = data;
+          setStudents(prevStudents => ({
+            ...prevStudents,
+            id,
+            name,
+            gender,
+            birth_date: new Date(birth_date),
+            age: calculateAge(birth_date),
+            nationality,
+            address,
+            postal_code,
+            study_level,
+            subject,
+            registration_date: new Date(registration_date)
+          }));
         })
         .catch(() => {
           setLoading(false)
         })
-    }, [])
-  }
+    }
+  }, [id]);
+
+  // Handle date change
+  const handleDateChange = (date) => {
+    setStudents(prevStudents => ({
+      ...prevStudents,
+      birth_date: date,
+      age: calculateAge(date)
+    }));
+  };
 
   const onSubmit = ev => {
     ev.preventDefault()
@@ -93,7 +133,7 @@ export default function StudentForm() {
                   className="form-control"
                   id="nameInput"
                   value={students.name}
-                  onChange={ev => setStudents({ ...students, name: ev.target.value })}
+                  onChange={ev => setStudents(prevStudents => ({ ...prevStudents, name: ev.target.value }))}
                   placeholder="Enter student name"
                 />
               </div>
@@ -102,7 +142,7 @@ export default function StudentForm() {
                   <label className="form-label">Date of Birth</label>
                   <DatePicker
                     selected={students.birth_date}
-                    onChange={date => setStudents({ ...students, birth_date: date })}
+                    onChange={handleDateChange}
                     placeholderText="Select date of birth"
                     dateFormat="yyyy-MM-dd"
                     className="form-control"
@@ -119,7 +159,7 @@ export default function StudentForm() {
                         id="femaleGender"
                         value="female"
                         checked={students.gender === "female"}
-                        onChange={ev => setStudents({ ...students, gender: ev.target.value })}
+                        onChange={ev => setStudents(prevStudents => ({ ...prevStudents, gender: ev.target.value }))}
                       />
                       <label className="form-check-label" htmlFor="femaleGender">Female</label>
                     </div>
@@ -131,7 +171,7 @@ export default function StudentForm() {
                         id="maleGender"
                         value="male"
                         checked={students.gender === "male"}
-                        onChange={ev => setStudents({ ...students, gender: ev.target.value })}
+                        onChange={ev => setStudents(prevStudents => ({ ...prevStudents, gender: ev.target.value }))}
                       />
                       <label className="form-check-label" htmlFor="maleGender">Male</label>
                     </div>
@@ -146,8 +186,7 @@ export default function StudentForm() {
                     className="form-control"
                     id="ageInput"
                     value={students.age}
-                    onChange={ev => setStudents({ ...students, age: ev.target.value })}
-                    placeholder="Enter age"
+                    readOnly
                   />
                 </div>
                 <div className="col-md-6 mb-4 pb-2">
@@ -157,7 +196,7 @@ export default function StudentForm() {
                     className="form-control"
                     id="nationalityInput"
                     value={students.nationality}
-                    onChange={ev => setStudents({ ...students, nationality: ev.target.value })}
+                    onChange={ev => setStudents(prevStudents => ({ ...prevStudents, nationality: ev.target.value }))}
                     placeholder="Enter nationality"
                   />
                 </div>
@@ -169,7 +208,7 @@ export default function StudentForm() {
                   className="form-control"
                   id="addressInput"
                   value={students.address}
-                  onChange={ev => setStudents({ ...students, address: ev.target.value })}
+                  onChange={ev => setStudents(prevStudents => ({ ...prevStudents, address: ev.target.value }))}
                   placeholder="Enter address"
                 />
               </div>
@@ -180,10 +219,57 @@ export default function StudentForm() {
                   className="form-control"
                   id="postalCodeInput"
                   value={students.postal_code}
-                  onChange={ev => setStudents({ ...students, postal_code: ev.target.value })}
+                  onChange={ev => setStudents(prevStudents => ({ ...prevStudents, postal_code: ev.target.value }))}
                   placeholder="Enter postal code"
                 />
               </div>
+              <div className="form-group mb-3">
+              <label htmlFor="studyLevel" className="form-label">
+                  Study level
+                </label>
+                <select
+                  id="studyLevel"
+                  className="form-select"
+                  value={students.study_level}
+                  onChange={ev => setStudents(prevStudents => ({ ...prevStudents, study_level: ev.target.value }))}
+                >
+                  <option value="">Select study level</option>
+                  <option value="Pre & Lower Primary">Pre & Lower Primary</option>
+                  <option value="Upper Primary">Upper Primary</option>
+                </select>
+              </div>
+              
+              <div className="form-group mb-3">
+                <label htmlFor="subject" className="form-label">
+                  Subject
+                </label>
+                <select
+                  id="subject"
+                  className="form-select"
+                  value={students.subject}
+                  onChange={ev => setStudents(prevStudents => ({ ...prevStudents, subject: ev.target.value }))}
+
+                >
+                  <option value="">
+                    Select subject
+                  </option>
+                  <option value="Math">
+                    Math
+                  </option>
+                  <option value="English">English</option>
+                </select>
+              </div>
+              <div className="col-md-6 mb-4 pb-2">
+                <label className="form-label">Registration Date</label>
+                <DatePicker
+                  selected={students.registration_date}
+                  onChange={date => setStudents(prevStudents => ({ ...prevStudents, registration_date: date }))}
+                  placeholderText="Select date of registration"
+                  dateFormat="yyyy-MM-dd"
+                  className="form-control"
+                />
+              </div>
+            
               <button type="submit" className="btn btn-primary btn-block">Save</button>
             </div>
           </form>

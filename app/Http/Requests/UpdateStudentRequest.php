@@ -31,6 +31,9 @@ class UpdateStudentRequest extends FormRequest
             'nationality' => 'sometimes|string|max:255',
             'address' => 'sometimes|string|max:255',
             'postal_code' => 'sometimes|numeric',
+            'study_level' => 'sometimes|string|max:255', 
+            'subject' => 'sometimes|string|max:255',
+            'registration_date' => 'sometimes|date',
         ];
     }
 }

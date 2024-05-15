@@ -24,7 +24,7 @@ class UpdateInvoiceRequest extends FormRequest
     public function rules():array
     {
         return [
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|exists:students,name', // Validate that the selected name exists in the 'name' column of the 'students' table
             'subject1Fee' => 'required|numeric',
             'subject2Fee' => 'required|numeric',
             // Add any other validation rules as needed
