@@ -29,6 +29,9 @@ class StudentFactory extends Factory
             'nationality' => 'Malaysia',
             'address' => $this->faker->address,
             'postal_code' => $this->faker->postcode,
+            'study_level' => $this->faker->randomElement(['Pre & Lower Primary', 'Upper Primary']),
+            'subject' => $this->faker->randomElement(['Math', 'English']),
+            'registration_date' => $this->faker->date,
         ];
     }
 }

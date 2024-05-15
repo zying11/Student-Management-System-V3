@@ -17,11 +17,12 @@ class InvoiceResource extends JsonResource
         'name' => $this->name,
         'subject1Fee' => $this->subject1Fee,
         'subject2Fee' => $this->subject2Fee,
-        'totalPayable' => $this->total_payable,
-        'totalPaid' => $this->total_paid,
+        'totalPayable' => $this->totalPayable,
+        'totalPaid' => $this->totalPaid,
         'balance' => $this->balance,
         'created_at' => $this->created_at,
         'updated_at' => $this->updated_at,
+        'student' => new StudentResource($this->whenLoaded('student')), 
     ];
     }
 }

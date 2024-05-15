@@ -21,6 +21,9 @@ class StudentResource extends JsonResource
         'nationality' => $this->nationality,
         'address' => $this->address,
         'postal_code' => $this->postal_code,
+        'study_level' => $this->study_level,
+        'subject' => $this->subject,
+        'registration_date' => $this->registration_date
   
     ];
     }

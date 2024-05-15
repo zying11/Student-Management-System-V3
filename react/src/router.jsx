@@ -13,19 +13,21 @@ import Students from "./views/Students.jsx";
 import StudentForm from "./views/StudentForm.jsx";
 import AdminDashboard from "./views/AdminDashboard.jsx";
 import AdminProfile from "./views/AdminProfile.jsx";
+import StudentProfile from "./views/StudentProfile.jsx";
 
-const exampleInvoice = {
-    id: "1234",
-    date: "2024-05-02",
-    customerName: "John Doe",
-    address: "123 Main St, Anytown, USA",
-    email: "john@example.com",
-    items: [
-        { name: "Subject Math", quantity: 2, price: 100 },
-        { name: "Subject English", quantity: 1, price: 300 },
-    ],
-    total: 95, // Calculated based on the items
-};
+
+// const exampleInvoice = {
+//     id: "1234",
+//     date: "2024-05-02",
+//     customerName: "John Doe",
+//     address: "123 Main St, Anytown, USA",
+//     email: "john@example.com",
+//     items: [
+//         { name: "Subject Math", quantity: 2, price: 100 },
+//         { name: "Subject English", quantity: 1, price: 300 },
+//     ],
+//     total: 95, // Calculated based on the items
+// };
 
 const router = createBrowserRouter([
     {
@@ -72,9 +74,13 @@ const router = createBrowserRouter([
                 path: "/invoices/:id",
                 element: <InvoiceForm key="invoiceUpdate" />,
             },
-            {
-                path: "/invoiceTemplate",
-                element: <InvoiceTemplate invoice={exampleInvoice} />,
+            // {
+            //     path: "/invoiceTemplate",
+            //     element: <InvoiceTemplate invoice={exampleInvoice} />,
+            // },
+                {
+                path: "/invoiceTemplate/:id",
+                element: <InvoiceTemplate key="invoiceTemplate" />,
             },
             {
                 path: "/students",
@@ -87,6 +93,10 @@ const router = createBrowserRouter([
             {
                 path: "/students/:id",
                 element: <StudentForm key="studentUpdate" />,
+            },
+            {
+                path: "/students/:id/profile",
+                element: <StudentProfile key="studentProfile" />,
             },
         ],
     },
