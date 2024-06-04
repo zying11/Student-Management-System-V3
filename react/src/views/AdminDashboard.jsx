@@ -9,11 +9,11 @@ export default function AdminDashboard() {
 
     const [subjects, setSubjects] = useState([]);
     const [newSubject, setNewSubject] = useState({
-        subjectCode: "",
+        studyLevel: "",
         subjectName: "",
     });
 
-    // fetch data for no of physical rooms
+    // Fetch data for no of physical rooms
     useEffect(() => {
         async function fetchProfile() {
             try {
@@ -34,15 +34,13 @@ export default function AdminDashboard() {
         fetchProfile();
     }, []);
 
-    // fetch subject data
+    // Fetch subject data
     useEffect(() => {
         async function fetchProfile() {
             try {
                 const res = await axios.get(
                     "http://127.0.0.1:8000/api/subjects"
                 );
-
-                console.log(res.data);
                 setSubjects(res.data.subjects);
             } catch (error) {
                 console.error("Error fetching profile:", error);
@@ -76,7 +74,7 @@ export default function AdminDashboard() {
 
         // Clear the form and error message
         setNewSubject({
-            subjectCode: "",
+            studyLevel: "",
             subjectName: "",
         });
     };
@@ -137,14 +135,14 @@ export default function AdminDashboard() {
                         <table className="table mt-3">
                             <thead>
                                 <tr>
-                                    <th scope="col">Subject Code</th>
+                                    <th scope="col">Study Year</th>
                                     <th scope="col">Subject Name</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {subjects.map((subject, index) => (
                                     <tr key={index}>
-                                        <td>{subject.subject_code}</td>
+                                        <td>{subject.study_level}</td>
                                         <td>{subject.subject_name}</td>
                                     </tr>
                                 ))}
@@ -176,17 +174,17 @@ export default function AdminDashboard() {
                             <form method="post" onSubmit={insertSubject}>
                                 <div className="mb-3">
                                     <label
-                                        htmlFor="subjectCode"
+                                        htmlFor="studyLevel"
                                         className="form-label"
                                     >
-                                        Subject Code
+                                        Study Year
                                     </label>
                                     <input
                                         type="text"
                                         className="form-control"
-                                        id="subjectCode"
-                                        name="subjectCode"
-                                        value={newSubject.subjectCode}
+                                        id="studyLevel"
+                                        name="studyLevel"
+                                        value={newSubject.studyLevel}
                                         onChange={handleInputChange}
                                         required
                                     />

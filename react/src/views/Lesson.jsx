@@ -3,18 +3,21 @@ import axios from "axios";
 import "../css/Lesson.css";
 
 export default function Lesson() {
-    // For post data
+    // Variable for post data
     const [lessonData, setLessonData] = useState({
-        subjectName: "",
-        studyLevel: "",
+        subjectId: "",
         capacity: "",
         duration: "",
     });
-    // For fetch data
+    // Variable for fetch lesson data
     const [displayData, setDisplayData] = useState({
         lessons: [],
         loading: true,
     });
+
+    // Variable for fetch subject data
+    const [subjects, setSubject] = useState([]);
+
     // For error handling
     const [error, setError] = useState("");
 
@@ -26,7 +29,7 @@ export default function Lesson() {
         });
     };
 
-    // Post data function
+    // Post lessons data
     const saveLesson = async (e) => {
         e.preventDefault();
 
@@ -61,7 +64,7 @@ export default function Lesson() {
         setError("");
     };
 
-    // Fetch data function
+    // Fetch lessons data
     useEffect(() => {
         async function fetchLessons() {
             try {
@@ -81,6 +84,25 @@ export default function Lesson() {
         }
 
         fetchLessons();
+    }, []);
+
+    // Fetch subject data
+    useEffect(() => {
+        async function fetchSubjects() {
+            try {
+                const res = await axios.get(
+                    "http://127.0.0.1:8000/api/subjects"
+                );
+
+                console.log(res.data.subjects);
+
+                setSubject(res.data.subjects);
+            } catch (error) {
+                console.error("Error fetching lessons:", error);
+            }
+        }
+
+        fetchSubjects();
     }, []);
 
     const lesson_HTMLTABLE = displayData.loading ? (
@@ -112,13 +134,13 @@ export default function Lesson() {
                     data-bs-toggle="modal"
                     data-bs-target="#createLessonModal"
                 >
-                    Create Subject
+                    Create Lesson
                 </button>
                 <table className="table table-bordered table-striped">
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Level ID</th>
+                            <th>Study Level</th>
                             <th>Subject Name</th>
                             <th>Capacity</th>
                             <th>Duration</th>
@@ -144,40 +166,28 @@ export default function Lesson() {
                             <div className="alert alert-danger">{error}</div>
                         )}
                         <form method="post" onSubmit={saveLesson}>
-                            {/* Subject name input */}
+                            {/* Subject input */}
                             <div className="mb-3">
                                 <label className="form-label">
                                     Subject Name
                                 </label>
-                                <input
-                                    type="text"
-                                    name="subjectName"
+                                <select
+                                    id="subject"
+                                    // value={subject}
                                     onChange={handleInput}
-                                    value={lessonData.subjectName}
                                     className="form-control"
                                     required
-                                />
-                            </div>
-
-                            {/* Study Level */}
-                            <div className="mb-3">
-                                <label className="form-label">
-                                    Study Level
-                                </label>
-                                <select
-                                    className="form-select"
-                                    aria-label="Default select example"
-                                    name="studyLevel"
-                                    onChange={handleInput}
-                                    required
                                 >
-                                    <option value="">
-                                        --Please choose an option--
-                                    </option>
-                                    <option value="1">
-                                        Pre & Lower Primary
-                                    </option>
-                                    <option value="2">Upper Primary</option>
+                                    <option value="">Select a subject</option>
+                                    {subjects.map((subject) => (
+                                        <option
+                                            key={subject.id}
+                                            value={subject.id}
+                                        >
+                                            {subject.study_level} ,{" "}
+                                            {subject.subject_name}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
 

@@ -17,16 +17,6 @@ class LessonController extends Controller
     }
     public function addNewLesson(Request $request)
     {
-        // Validate incoming request data
-        // $validatedData = $request->validate([
-        //     'subject_name' => 'required|string',
-        //     'level_id' => 'required|integer',
-        //     'duration' => 'required|numeric',
-        //     'day' => 'required|string',
-        //     'start_time' => 'required|string',
-        //     'end_time' => 'required|string',
-        // ]);
-
         // Create a new Lesson instance and save to the database
         $lesson = new Lesson();
         $lesson->subject_name = $request->input('subjectName');
@@ -34,9 +24,6 @@ class LessonController extends Controller
         $lesson->capacity = $request->input('capacity');
         $lesson->duration = $request->input('duration');
         $lesson->save();
-        // $subject->day = $validatedData['day'];
-        // $subject->start_time = $validatedData['start_time'];
-        // $subject->end_time = $validatedData['end_time'];
 
         return response()->json([
             'status' => 200,
@@ -65,7 +52,7 @@ class LessonController extends Controller
         return response()->json([
             'status' => 200,
             'message' => 'Date and time updated for lesson successfully',
-            'lesson' => $lesson, // Optionally return the updated lesson data
+            'lesson' => $lesson,
         ]);
     }
 

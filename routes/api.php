@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CenterProfileController;
 use App\Http\Controllers\LessonController;
@@ -47,8 +48,10 @@ Route::post('/update-center-profile', [CenterProfileController::class, 'update']
 Route::get('subjects', [SubjectController::class, 'index']);
 Route::post('add-subject', [SubjectController::class, 'addSubject']);
 
+Route::get('students', [AttendanceController::class, 'getStudentsList']);
+Route::post('/mark-attendance', [AttendanceController::class, 'markAttendance']);
+
 Route::apiResource('/users', UserController::class);
 Route::apiResource('/students', StudentController::class);
-Route::apiResource('/invoices', InvoiceController::class); 
-Route::apiResource('/students/{student}/enrollments', EnrollmentController::class); 
-
+Route::apiResource('/invoices', InvoiceController::class);
+Route::apiResource('/students/{student}/enrollments', EnrollmentController::class);
