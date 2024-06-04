@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             StudentDataSeeder::class,
             CenterProfileSeeder::class,
+            // LessonSeeder::class,
         ]);
     }
 }

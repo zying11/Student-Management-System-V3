@@ -14,7 +14,7 @@ import StudentForm from "./views/StudentForm.jsx";
 import AdminDashboard from "./views/AdminDashboard.jsx";
 import AdminProfile from "./views/AdminProfile.jsx";
 import StudentProfile from "./views/StudentProfile.jsx";
-
+import Attendance from "./views/Attendance.jsx";
 
 // const exampleInvoice = {
 //     id: "1234",
@@ -63,6 +63,10 @@ const router = createBrowserRouter([
                 element: <Lesson />,
             },
             {
+                path: "/attendance",
+                element: <Attendance />,
+            },
+            {
                 path: "/invoices",
                 element: <Invoice />,
             },
@@ -78,7 +82,7 @@ const router = createBrowserRouter([
             //     path: "/invoiceTemplate",
             //     element: <InvoiceTemplate invoice={exampleInvoice} />,
             // },
-                {
+            {
                 path: "/invoiceTemplate/:id",
                 element: <InvoiceTemplate key="invoiceTemplate" />,
             },

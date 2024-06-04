@@ -19,7 +19,7 @@ class SubjectController extends Controller
     public function addSubject(Request $request)
     {
         $subject = new Subject();
-        $subject->subject_code = $request->input('subjectCode');
+        $subject->study_level = $request->input('studyLevel');
         $subject->subject_name = $request->input('subjectName');
         $subject->save();
 

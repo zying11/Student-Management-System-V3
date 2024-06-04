@@ -44,7 +44,7 @@ export default function CenterProfile() {
         return <div className="p-3">Loading...</div>;
     }
 
-    // to make form inputs editable
+    // To make form inputs editable
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setCenterProfile((prevProfile) => ({
