@@ -17,9 +17,9 @@ export default function StudentForm() {
     nationality: '',
     address: '',
     postal_code: '',
-    study_level: '',
-    subject: '',
-    registration_date: ''
+    // study_level: '',
+    // subject: '',
+    registration_date: new Date(),
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState(null);
@@ -56,8 +56,8 @@ export default function StudentForm() {
             nationality,
             address,
             postal_code,
-            study_level,
-            subject,
+            // study_level,
+            // subject,
             registration_date: new Date(registration_date)
           }));
         })
@@ -223,7 +223,7 @@ export default function StudentForm() {
                   placeholder="Enter postal code"
                 />
               </div>
-              <div className="form-group mb-3">
+              {/* <div className="form-group mb-3">
               <label htmlFor="studyLevel" className="form-label">
                   Study level
                 </label>
@@ -237,9 +237,9 @@ export default function StudentForm() {
                   <option value="Pre & Lower Primary">Pre & Lower Primary</option>
                   <option value="Upper Primary">Upper Primary</option>
                 </select>
-              </div>
+              </div> */}
               
-              <div className="form-group mb-3">
+              {/* <div className="form-group mb-3">
                 <label htmlFor="subject" className="form-label">
                   Subject
                 </label>
@@ -258,7 +258,8 @@ export default function StudentForm() {
                   </option>
                   <option value="English">English</option>
                 </select>
-              </div>
+              </div> */}
+
               <div className="col-md-6 mb-4 pb-2">
                 <label className="form-label">Registration Date</label>
                 <DatePicker

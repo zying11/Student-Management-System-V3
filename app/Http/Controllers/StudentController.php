@@ -28,13 +28,18 @@ class StudentController extends Controller
         return response()->json($student, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Student $student)
-    {
-        return new StudentResource($student);
-    }
+    // /**
+    //  * Display the specified resource.
+    //  */
+    // public function show(Student $student)
+    // {
+    //     return new StudentResource($student);
+    // }
+    public function show($id)
+{
+    $student = Student::with('enrollments')->findOrFail($id);
+    return response()->json($student);
+}
 
     /**
      * Update the specified resource in storage.

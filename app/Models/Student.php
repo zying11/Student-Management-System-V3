@@ -12,4 +12,10 @@ class Student extends Model
     
     protected $table = 'students';
     protected $fillable = ['name', 'gender', 'birth_date', 'age', 'nationality', 'address', 'postal_code','study_level','subject','registration_date'];
+    
+     // Define the relationship with Enrollment
+     public function enrollments()
+     {
+         return $this->hasMany(Enrollment::class);
+     }
 }
