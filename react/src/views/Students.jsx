@@ -180,8 +180,10 @@ export default function Students() {
                                     <tr key={s.id}>
                                         <td>{s.id}</td>
                                         <td>{s.name}</td>
-                                        <td>{s.study_level}</td>
-                                        <td>{s.subject}</td>
+                                        {/* <td>{s.study_level}</td>
+                                        <td>{s.subject}</td> */}
+                                        <td>{s?.study_level ? s.study_level : 'Not Yet Enrolled'}</td>
+                                        <td>{s?.subject ? s.subject : 'Not Yet Enrolled'}</td>
                                         <td>{s.registration_date}</td>
                                         <td>
                                             <Link
