@@ -7,6 +7,7 @@ export default function Attendance() {
     const [lessons, setLessons] = useState([]);
     const [students, setStudents] = useState([]);
     const [attendance, setAttendance] = useState({});
+    const [subjects, setSubjects] = useState([]);
 
     // Fetch student list
     useEffect(() => {
@@ -38,6 +39,23 @@ export default function Attendance() {
         }
 
         fetchLessons();
+    }, []);
+
+    const fetchSubjects = async () => {
+        try {
+            const response = await axios.get(
+                "http://127.0.0.1:8000/api/subjects"
+            );
+            setSubjects(response.data.subjects);
+            console.log(response.data);
+        } catch (error) {
+            console.error("Error fetching subjects:", error);
+        }
+    };
+
+    useEffect(() => {
+        // Fetch subjects data
+        fetchSubjects();
     }, []);
 
     const dayMapping = {
@@ -118,14 +136,34 @@ export default function Attendance() {
                         required
                     >
                         <option value="">Select a lesson</option>
-                        {lessons.map((lesson) => (
-                            <option key={lesson.id} value={lesson.id}>
-                                {lesson.subject_name},{" "}
-                                {studyLevelMapping[lesson.level_id]},{" "}
-                                {dayMapping[lesson.day]}, {lesson.start_time} to{" "}
-                                {lesson.end_time}
-                            </option>
-                        ))}
+                        {lessons
+                            // Filter lessons where day, start_time, and end_time are not null
+                            .filter(
+                                (lesson) =>
+                                    lesson.day !== null &&
+                                    lesson.start_time !== null &&
+                                    lesson.end_time !== null
+                            )
+                            .map((lesson) => (
+                                <option key={lesson.id} value={lesson.id}>
+                                    {/* Display subject name and study level based on subject ID */}
+                                    {
+                                        subjects.find(
+                                            (subject) =>
+                                                subject.id === lesson.subject_id
+                                        )?.subject_name
+                                    }
+                                    ,{" "}
+                                    {
+                                        subjects.find(
+                                            (subject) =>
+                                                subject.id === lesson.subject_id
+                                        )?.study_level
+                                    }
+                                    , {dayMapping[lesson.day]},{" "}
+                                    {lesson.start_time} to {lesson.end_time}
+                                </option>
+                            ))}
                     </select>
                 </div>
                 <table className="table table-striped">

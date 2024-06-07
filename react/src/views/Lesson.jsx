@@ -3,30 +3,37 @@ import axios from "axios";
 import "../css/Lesson.css";
 
 export default function Lesson() {
-    // Variable for post data
+    // Variable for posting lessons data
     const [lessonData, setLessonData] = useState({
         subjectId: "",
         capacity: "",
         duration: "",
     });
-    // Variable for fetch lesson data
+    // Variable for fetching lesson data
     const [displayData, setDisplayData] = useState({
         lessons: [],
         loading: true,
     });
 
-    // Variable for fetch subject data
+    // Variable for fetching subject data
     const [subjects, setSubject] = useState([]);
 
-    // For error handling
+    // Error handling
     const [error, setError] = useState("");
 
+    // Handling input changes
     const handleInput = (e) => {
+        // Destructure name and value from the event target (the input element that triggered the change)
         const { name, value } = e.target;
-        setLessonData({
-            ...lessonData,
+
+        // Update the lessonData state
+        setLessonData((prevLessonData) => ({
+            // Spread the previous state to retain all existing values
+            ...prevLessonData,
+
+            // Update the property that matches the input's name attribute
             [name]: value,
-        });
+        }));
     };
 
     // Post lessons data
@@ -35,8 +42,7 @@ export default function Lesson() {
 
         // Simple validation for required fields
         if (
-            !lessonData.subjectName ||
-            !lessonData.studyLevel ||
+            !lessonData.subjectId ||
             !lessonData.capacity ||
             !lessonData.duration
         ) {
@@ -56,35 +62,12 @@ export default function Lesson() {
 
         // Clear the form and error message
         setLessonData({
-            subjectName: "",
-            studyLevel: "",
+            subjectId: "",
             capacity: "",
             duration: "",
         });
         setError("");
     };
-
-    // Fetch lessons data
-    useEffect(() => {
-        async function fetchLessons() {
-            try {
-                const res = await axios.get(
-                    "http://127.0.0.1:8000/api/lessons"
-                );
-
-                console.log(res.data.lessons);
-
-                setDisplayData({
-                    lessons: res.data.lessons,
-                    loading: false,
-                });
-            } catch (error) {
-                console.error("Error fetching lessons:", error);
-            }
-        }
-
-        fetchLessons();
-    }, []);
 
     // Fetch subject data
     useEffect(() => {
@@ -105,9 +88,31 @@ export default function Lesson() {
         fetchSubjects();
     }, []);
 
+    // Fetch lessons data
+    useEffect(() => {
+        async function fetchLessons() {
+            try {
+                const res = await axios.get(
+                    "http://127.0.0.1:8000/api/lessons"
+                );
+                console.log(res.data.lessons);
+
+                setDisplayData({
+                    lessons: res.data.lessons,
+                    loading: false,
+                });
+                
+            } catch (error) {
+                console.error("Error fetching lessons:", error);
+            }
+        }
+
+        fetchLessons();
+    }, []);
+
     const lesson_HTMLTABLE = displayData.loading ? (
         <tr>
-            <td colSpan="7">
+            <td colSpan="8">
                 <h4>Loading...</h4>
             </td>
         </tr>
@@ -115,8 +120,9 @@ export default function Lesson() {
         displayData.lessons.map((item) => (
             <tr key={item.id}>
                 <td>{item.id}</td>
-                <td>{item.level_id}</td>
-                <td>{item.subject_name}</td>
+                <td>{item.subject.study_level}</td> {/* Display study level */}
+                <td>{item.subject.subject_name}</td>{" "}
+                {/* Display subject name */}
                 <td>{item.capacity}</td>
                 <td>{item.duration}</td>
                 <td>{item.day}</td>
@@ -172,9 +178,9 @@ export default function Lesson() {
                                     Subject Name
                                 </label>
                                 <select
-                                    id="subject"
-                                    // value={subject}
+                                    name="subjectId" // Use 'name' attribute to match state key
                                     onChange={handleInput}
+                                    value={lessonData.subjectId} // Bind value to state
                                     className="form-control"
                                     required
                                 >
@@ -184,7 +190,7 @@ export default function Lesson() {
                                             key={subject.id}
                                             value={subject.id}
                                         >
-                                            {subject.study_level} ,{" "}
+                                            {subject.study_level},{" "}
                                             {subject.subject_name}
                                         </option>
                                     ))}
