@@ -9,9 +9,8 @@ class Subject extends Model
 {
     use HasFactory;
 
-    protected $table = "subjects";
     protected $fillable = [
-        'studyLevel',
-        'subjectName',
+        'study_level',
+        'subject_name',
     ];
 }

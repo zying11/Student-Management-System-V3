@@ -19,8 +19,7 @@ class LessonController extends Controller
     {
         // Create a new Lesson instance and save to the database
         $lesson = new Lesson();
-        $lesson->subject_name = $request->input('subjectName');
-        $lesson->level_id = $request->input('studyLevel');
+        $lesson->subject_id = $request->input('subjectId');
         $lesson->capacity = $request->input('capacity');
         $lesson->duration = $request->input('duration');
         $lesson->save();
@@ -30,6 +29,18 @@ class LessonController extends Controller
             'message' => 'Lesson added successfully'
         ]);
     }
+
+    public function getLessons()
+    {
+        $lessons = Lesson::with('subject')->get();
+    
+        return response()->json([
+            'status' => 200,
+            'lessons' => $lessons
+        ]);
+    }
+    
+
     public function updateLesson(Request $request)
     {
         // Find the lesson by its ID 

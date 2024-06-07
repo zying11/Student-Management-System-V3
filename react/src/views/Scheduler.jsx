@@ -12,14 +12,21 @@ export default function Scheduler() {
     // Store the Draggable instance
     let draggableInstance = null;
 
+    // To store subjects data
+    const [subjects, setSubjects] = useState([]);
+
     useEffect(() => {
+        // Fetch unassigned lessons and subjects data
         fetchUnassignedLessons();
+        fetchSubjects();
     }, []);
 
     const fetchUnassignedLessons = async () => {
         try {
-            const response = await fetch("http://127.0.0.1:8000/api/lessons");
-            const data = await response.json();
+            const response = await axios.get(
+                "http://127.0.0.1:8000/api/lessons"
+            );
+            const data = response.data;
             if (Array.isArray(data.lessons)) {
                 // Filter out lessons where day, start_time, or end_time is null
                 const filteredLessons = data.lessons.filter(
@@ -33,11 +40,21 @@ export default function Scheduler() {
             } else {
                 console.error("Fetched data is not an array:", data);
             }
-            // console.log(data.lessons);
         } catch (error) {
             console.error("Error fetching unassigned lessons:", error);
         }
     };
+
+    const fetchSubjects = async () => {
+        try {
+            const response = await axios.get("http://127.0.0.1:8000/api/subjects");
+            setSubjects(response.data.subjects);
+            console.log(response.data)
+        } catch (error) {
+            console.error("Error fetching subjects:", error);
+        }
+    };
+    
 
     useEffect(() => {
         const containerEl = document.querySelector("#unassigned-container");
@@ -54,8 +71,8 @@ export default function Scheduler() {
                         ? {
                               // Check if lesson exists
                               id: lesson.id.toString(),
-                              title: lesson.subject_name,
-                              duration: lesson.duration,
+                            //   title: lesson.subject_name,
+                            //   duration: lesson.duration,
                           }
                         : null; // Return null for invalid lesson IDs
                 },
@@ -78,7 +95,14 @@ export default function Scheduler() {
                 className="unassigned p-2 mb-2"
                 data-lesson-id={lesson.id}
             >
-                <p>{lesson.subject_name}</p>
+                {/* Display subject name based on subject ID */}
+                <p>
+                    {
+                        subjects.find(
+                            (subject) => subject.id === lesson.subject_id
+                        )?.subject_name
+                    }
+                </p>
                 <p>Duration: {lesson.duration}</p>
                 <p>Capacity: {lesson.capacity}</p>
             </div>
@@ -91,42 +115,68 @@ export default function Scheduler() {
     const handleEventDrop = (eventInfo) => {
         // Get lesson ID from data attribute
         const lessonId = eventInfo.draggedEl.dataset.lessonId;
-        console.log(lessonId);
-        // Find correspond lesson in unassigned lesson
-        const lesson = unassignedLessons.find(
-            (l) => l.id.toString() === lessonId
-        );
+    
+        // Find corresponding lesson in unassigned lessons
+        const lesson = unassignedLessons.find(l => l.id.toString() === lessonId);
+    
         if (!lesson) {
             console.error("Lesson not found for dropped event.");
             return;
         }
-
-        console.log(eventInfo);
-        console.log(eventInfo.date);
+    
+        // Validate eventInfo and dateStr
         if (!eventInfo || !eventInfo.dateStr) {
             console.error("Invalid eventInfo or dateStr.");
             return;
         }
-        const dateObj = new Date(eventInfo.dateStr);
+    
+        // Parse duration (assuming duration is in hours)
+        const duration = parseFloat(lesson.duration);
+    
+        // Calculate end time based on duration
+        const startTime = new Date(eventInfo.dateStr);
+        const endTime = new Date(startTime.getTime() + duration * 60 * 60 * 1000); // Add duration in milliseconds
+    
         // Extract day of week (0-6, where 0 is Sunday)
-        const dayOfWeek = dateObj.getDay();
-        // Extract HH:mm format for start time
-        const startTime = dateObj.toTimeString().slice(0, 5);
-
-        // Adding 1 hour to get end time -> need to change to extract duration field from data
-        dateObj.setHours(dateObj.getHours() + 1);
-        // Extract HH:mm format for end time
-        const endTime = dateObj.toTimeString().slice(0, 5);
+        const dayOfWeek = startTime.getDay();
+    
+        // Extract HH:mm format for start and end time
+        const startTimeString = startTime.toTimeString().slice(0, 5);
+        const endTimeString = endTime.toTimeString().slice(0, 5);
+    
+        // Construct transformed event object
         const transformedEvent = {
-            // Get lesson id in the db table instead of id of the event in FullCalendar
-            id: lessonId,
+            id: lessonId, // Get lesson id in the db table instead of id of the event in FullCalendar
             day: dayOfWeek,
-            startTime: startTime,
-            endTime: endTime,
+            startTime: startTimeString,
+            endTime: endTimeString,
         };
+    
         setSelectedEvent(transformedEvent);
-    };
 
+        // const dateObj = new Date(eventInfo.dateStr);
+        // // Extract day of week (0-6, where 0 is Sunday)
+        // const dayOfWeek = dateObj.getDay();
+        // // Extract HH:mm format for start time
+        // const startTime = dateObj.toTimeString().slice(0, 5);
+
+        // // Adding 1 hour to get end time -> need to change to extract duration field from data
+        // dateObj.setHours(dateObj.getHours() + 1);
+        // // Extract HH:mm format for end time
+        // const endTime = dateObj.toTimeString().slice(0, 5);
+        // console.log(endTime);
+        // const transformedEvent = {
+        //     // Get lesson id in the db table instead of id of the event in FullCalendar
+        //     id: lessonId,
+        //     day: dayOfWeek,
+        //     startTime: startTime,
+        //     endTime: endTime,
+        // };
+        // setSelectedEvent(transformedEvent);
+    
+    };
+    
+    
     // When 'save timetable' button is clicked
     const handleSaveTimetable = async () => {
         try {
