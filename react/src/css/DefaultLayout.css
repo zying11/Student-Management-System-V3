@@ -35,7 +35,7 @@ li {
 #sidebar {
     max-width: 264px;
     min-width: 264px;
-    background: #3298d0;
+    background: #a9a0e1;
     transition: all 0.35s ease-in-out;
 }
 
@@ -52,6 +52,7 @@ li {
 /* Sidebar Elements style */
 .sidebar-logo {
     padding: 1.15rem;
+    background-color: #f5aa39;
 }
 
 .sidebar-nav {
@@ -67,7 +68,7 @@ li {
 a.sidebar-link {
     display: block;
     position: relative;
-    padding: 0.625rem 1.625rem;
+    padding: 0.8rem 1.625rem;
     font-size: 0.875rem;
     color: white;
 }

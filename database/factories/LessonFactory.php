@@ -15,8 +15,6 @@ class LessonFactory extends Factory
 
     public function definition()
     {
-        $studyLevel = [0, 1];
-        $subjects = ['Maths', 'English'];
         $durations = [1, 1.5];
         $days = [0, 1, 2, 3, 4, 5, 6];
 
@@ -27,8 +25,6 @@ class LessonFactory extends Factory
             ->format('H:i:s');
 
         return [
-            'level_id' => $this->faker->randomElement($studyLevel),
-            'subject_name' => $this->faker->randomElement($subjects),
             'duration' => $duration,
             'day' => $this->faker->randomElement($days),
             'capacity' => $this->faker->numberBetween(1, 10),

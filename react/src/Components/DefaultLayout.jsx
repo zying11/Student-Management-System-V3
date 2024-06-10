@@ -40,11 +40,11 @@ export default function DefaultLayout() {
     };
 
     const navToTimetable = () => {
-        navigate("/timetable");
+        Navigate("/timetable");
     };
 
     const navToSubject = () => {
-        navigate("/subject");
+        Navigate("/subject");
     };
 
     return (
@@ -52,7 +52,7 @@ export default function DefaultLayout() {
             <div className="wrapper">
                 <aside id="sidebar" className={isCollapsed ? "collapsed" : ""}>
                     <div className="h-100">
-                        <div className="sidebar-logo">Hi, {user.name}</div>
+                        <div className="sidebar-logo mb-2">LOGO</div>
                         <ul className="sidebar-nav mb-0 ps-0 ms-0">
                             <li className="sidebar-item">
                                 <a href="#" className="sidebar-link">

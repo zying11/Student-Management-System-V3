@@ -47,14 +47,15 @@ export default function Scheduler() {
 
     const fetchSubjects = async () => {
         try {
-            const response = await axios.get("http://127.0.0.1:8000/api/subjects");
+            const response = await axios.get(
+                "http://127.0.0.1:8000/api/subjects"
+            );
             setSubjects(response.data.subjects);
-            console.log(response.data)
+            console.log(response.data);
         } catch (error) {
             console.error("Error fetching subjects:", error);
         }
     };
-    
 
     useEffect(() => {
         const containerEl = document.querySelector("#unassigned-container");
@@ -67,14 +68,23 @@ export default function Scheduler() {
                     const lesson = unassignedLessons.find(
                         (l) => l.id.toString() === lessonId
                     );
-                    return lesson
-                        ? {
-                              // Check if lesson exists
-                              id: lesson.id.toString(),
-                            //   title: lesson.subject_name,
-                            //   duration: lesson.duration,
-                          }
-                        : null; // Return null for invalid lesson IDs
+                    if (lesson) {
+                        // Find the subject name from the subjects table
+                        const subject = subjects.find(
+                            (subject) => subject.id === lesson.subject_id
+                        );
+                        console.log(lesson.duration);
+                        return {
+                            id: lesson.id.toString(),
+                            title: subject
+                                ? subject.subject_name
+                                : "Unknown Subject",
+                            // duration: 3,
+                        };
+                    } else {
+                        // Return null for invalid lesson IDs
+                        return null;
+                    }
                 },
             });
         }
@@ -115,35 +125,39 @@ export default function Scheduler() {
     const handleEventDrop = (eventInfo) => {
         // Get lesson ID from data attribute
         const lessonId = eventInfo.draggedEl.dataset.lessonId;
-    
+
         // Find corresponding lesson in unassigned lessons
-        const lesson = unassignedLessons.find(l => l.id.toString() === lessonId);
-    
+        const lesson = unassignedLessons.find(
+            (l) => l.id.toString() === lessonId
+        );
+
         if (!lesson) {
             console.error("Lesson not found for dropped event.");
             return;
         }
-    
+
         // Validate eventInfo and dateStr
         if (!eventInfo || !eventInfo.dateStr) {
             console.error("Invalid eventInfo or dateStr.");
             return;
         }
-    
+
         // Parse duration (assuming duration is in hours)
         const duration = parseFloat(lesson.duration);
-    
+
         // Calculate end time based on duration
         const startTime = new Date(eventInfo.dateStr);
-        const endTime = new Date(startTime.getTime() + duration * 60 * 60 * 1000); // Add duration in milliseconds
-    
+        const endTime = new Date(
+            startTime.getTime() + duration * 60 * 60 * 1000
+        ); // Add duration in milliseconds
+
         // Extract day of week (0-6, where 0 is Sunday)
         const dayOfWeek = startTime.getDay();
-    
+
         // Extract HH:mm format for start and end time
         const startTimeString = startTime.toTimeString().slice(0, 5);
         const endTimeString = endTime.toTimeString().slice(0, 5);
-    
+
         // Construct transformed event object
         const transformedEvent = {
             id: lessonId, // Get lesson id in the db table instead of id of the event in FullCalendar
@@ -151,7 +165,7 @@ export default function Scheduler() {
             startTime: startTimeString,
             endTime: endTimeString,
         };
-    
+
         setSelectedEvent(transformedEvent);
 
         // const dateObj = new Date(eventInfo.dateStr);
@@ -173,10 +187,8 @@ export default function Scheduler() {
         //     endTime: endTime,
         // };
         // setSelectedEvent(transformedEvent);
-    
     };
-    
-    
+
     // When 'save timetable' button is clicked
     const handleSaveTimetable = async () => {
         try {
@@ -203,10 +215,8 @@ export default function Scheduler() {
                 (event) => event.day && event.start_time && event.end_time
             );
 
-            console.log(filteredEvents);
             const parsedEvents = parseEventData(filteredEvents);
             setSelectedEvent(parsedEvents);
-            console.log(parsedEvents);
         } catch (error) {
             console.error("Error fetching events:", error);
         }
