@@ -101,7 +101,6 @@ export default function Lesson() {
                     lessons: res.data.lessons,
                     loading: false,
                 });
-                
             } catch (error) {
                 console.error("Error fetching lessons:", error);
             }
@@ -199,7 +198,9 @@ export default function Lesson() {
 
                             {/* Capacity */}
                             <div className="mb-3">
-                                <label className="form-label">Capacity</label>
+                                <label className="form-label">
+                                    Max Capacity
+                                </label>
                                 <input
                                     type="number"
                                     name="capacity"

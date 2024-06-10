@@ -73,9 +73,9 @@ export default function CenterProfile() {
             formData.append("centerAddress", centerProfile.centerAddress);
             formData.append("postcode", centerProfile.postcode);
             formData.append("numRooms", centerProfile.numRooms);
-            if (centerLogoFile) {
-                formData.append("centerLogo", centerLogoFile);
-            }
+            // if (centerLogoFile) {
+            //     formData.append("centerLogo", centerLogoFile);
+            // }
 
             const response = await axios.post(
                 "http://127.0.0.1:8000/api/update-center-profile",
@@ -106,7 +106,7 @@ export default function CenterProfile() {
                                 required
                             />
                         </div>
-                        <div className="form-group mb-3">
+                        {/* <div className="form-group mb-3">
                             <label className="me-2">Center Logo:</label>
                             <input
                                 type="file"
@@ -124,7 +124,7 @@ export default function CenterProfile() {
                                     width="100"
                                 />
                             )}
-                        </div>
+                        </div> */}
                         <div className="form-group mb-3">
                             <label>Center Address:</label>
                             <input
@@ -175,7 +175,7 @@ export default function CenterProfile() {
                     <div className="mb-3">
                         <strong>Center Name:</strong> {centerProfile.centerName}
                     </div>
-                    <div className="mb-3">
+                    {/* <div className="mb-3">
                         <strong>Center Logo:</strong>
                         <br />
                         {centerProfile.centerLogo && (
@@ -186,7 +186,7 @@ export default function CenterProfile() {
                                 width="100"
                             />
                         )}
-                    </div>
+                    </div> */}
                     <div className="mb-3">
                         <strong>Center Address:</strong>{" "}
                         {centerProfile.centerAddress}
