@@ -29,7 +29,8 @@ class StoreUserRequest extends FormRequest
                 'required',
                 Password::min(8)
                 ->letters()
-            ]
+            ],
+            'role_id' => 'required|exists:roles,id',
 
         ];
     }

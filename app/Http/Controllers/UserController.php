@@ -15,7 +15,7 @@ class UserController extends Controller
     public function index()
     {
         return UserResource::collection(
-            User::query()->orderBy('id','desc')->get()
+            User::query()->orderBy('id', 'desc')->get()
         );
     }
 
@@ -27,7 +27,14 @@ class UserController extends Controller
         $data = $request->validated();
         $data['password'] = bcrypt($data['password']);
         $user = User::create($data);
-        return response(new UserResource($user),201);
+
+        // Assign role to user
+        if (isset($data['role_id'])) {
+            $user->role_id = $data['role_id'];
+            $user->save();
+        }
+
+        return response(new UserResource($user), 201);
     }
 
     /**
@@ -44,10 +51,17 @@ class UserController extends Controller
     public function update(UpdateUserRequest $request, User $user)
     {
         $data = $request->validated();
-        if(isset($data['password'])){
+        if (isset($data['password'])) {
             $data['password'] = bcrypt($data['password']);
         }
         $user->update($data);
+
+        // Update role if provided
+        if (isset($data['role_id'])) {
+            $user->role_id = $data['role_id'];
+            $user->save();
+        }
+
         return new UserResource($user);
     }
 
@@ -58,6 +72,6 @@ class UserController extends Controller
     {
         $user->delete();
 
-        return response('',204);
+        return response('', 204);
     }
 }
