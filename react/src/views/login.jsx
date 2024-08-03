@@ -1,18 +1,20 @@
-import { useRef, useState } from "react";
+import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosClient from "../axiosClient";
 import { useStateContext } from "../contexts/ContextProvider";
+import { Form, Button, Alert, InputGroup } from "react-bootstrap";
 
 export default function Login() {
-
   // Define state variables
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState('');
   const [errors, setErrors] = useState('');
 
   // Create references for input elements
   const emailRef = useRef();
   const passwordRef = useRef();
+  const roleBasedRef = useRef();
 
   // Destructure setUser and setToken from the state context
   const { setUser, setToken } = useStateContext();
@@ -33,6 +35,7 @@ export default function Login() {
       const payload = {
         email: emailRef.current.value,
         password: passwordRef.current.value,
+        role: roleBasedRef.current.value,
       };
 
       // Send login request to server
@@ -68,11 +71,19 @@ export default function Login() {
     if (!password) {
       error.password = "Password is required";
     } else if (password.length < 8) {
-      error.password = "Password length is 8";
+      error.password = "Password length must be at least 8 characters";
+    }
+
+    // Validate role
+    if (!role) {
+      error.role = "Role is required";
     }
 
     return error;
   };
+
+  // Function to handle forgot password
+  const handlePassword = () => { };
 
   return (
     <div className="container mt-5">
@@ -81,40 +92,67 @@ export default function Login() {
           <div className="card">
             <div className="card-body">
               <h3 className="card-title text-center mb-4">Sign In</h3>
-              <form onSubmit={Submit}>
-                {errors.server && <div className="alert alert-danger">{errors.server}</div>}
-                <div className="mb-3">
-                  <label className="form-label">Email address</label>
-                  <input
+
+              <Form onSubmit={Submit}>
+                {errors.server && <Alert variant="danger">{errors.server}</Alert>}
+
+                <Form.Group className="mb-3" controlId="formEmail">
+                  <Form.Label>Email address</Form.Label>
+                  <Form.Control
                     ref={emailRef}
                     type="email"
-                    className="form-control"
-                    placeholder="Enter email"
+                    placeholder="Enter your email"
                     onChange={(e) => setEmail(e.target.value)}
                   />
-                  {errors.email && <div className="alert alert-danger">{errors.email}</div>}
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">Password</label>
-                  <input
+                  {errors.email && <Alert variant="danger">{errors.email}</Alert>}
+                </Form.Group>
+
+                <Form.Group className="mb-3" controlId="formPassword">
+                  <Form.Label>Password</Form.Label>
+                  <Form.Control
                     ref={passwordRef}
                     type="password"
-                    className="form-control"
-                    placeholder="Enter password"
+                    placeholder="Enter your password"
                     onChange={(e) => setPassword(e.target.value)}
                   />
-                  {errors.password && <div className="alert alert-danger">{errors.password}</div>}
-                </div>
+                  {errors.password && <Alert variant="danger">{errors.password}</Alert>}
+                </Form.Group>
+
+                <Form.Group className="mb-3" controlId="formRole">
+                  <Form.Label>Role</Form.Label>
+                  <Form.Select
+                    ref={roleBasedRef}
+                    aria-label="Select your role"
+                    onChange={(e) => setRole(e.target.value)}
+                  >
+                    <option value="">Select your role</option>
+                    <option value="admin">Admin</option>
+                    <option value="teacher">Teacher</option>
+                  </Form.Select>
+                  {errors.role && <Alert variant="danger">{errors.role}</Alert>}
+                </Form.Group>
+
                 <div className="d-grid">
-                  <button type="submit" className="btn btn-primary">
+                  <Button type="signin" variant="primary">
                     Sign In
-                  </button>
+                  </Button>
                 </div>
-              </form>
+
+                <div className="d-grid justify-content-end">
+                  <Button
+                    className="text-muted px-0"
+                    variant="link"
+                    onClick={handlePassword}
+                  >
+                    Forgot password?
+                  </Button>
+                </div>
+
+              </Form>
             </div>
           </div>
         </div>
       </div>
     </div>
   );
-};
+}

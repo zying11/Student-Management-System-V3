@@ -24,7 +24,8 @@ class UpdateUserRequest extends FormRequest
             'password' => [
                 Password::min(8)
                 ->letters()
-            ]
+            ],
+            'role_id' => 'sometimes|exists:roles,id', 
         ];
     }
 }
