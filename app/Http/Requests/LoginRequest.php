@@ -26,7 +26,8 @@ class LoginRequest extends FormRequest
             'email' => 'required|email',
             'password' => [
                 'required'
-            ]
+            ],
+            'role' => 'required|string|in:admin,teacher',
         ];
     }
 }
