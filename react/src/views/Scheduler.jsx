@@ -142,51 +142,51 @@ export default function Scheduler() {
             return;
         }
 
-        // Parse duration (assuming duration is in hours)
-        const duration = parseFloat(lesson.duration);
+        // // Parse duration (assuming duration is in hours)
+        // const duration = parseFloat(lesson.duration);
 
-        // Calculate end time based on duration
-        const startTime = new Date(eventInfo.dateStr);
-        const endTime = new Date(
-            startTime.getTime() + duration * 60 * 60 * 1000
-        ); // Add duration in milliseconds
+        // // Calculate end time based on duration
+        // const startTime = new Date(eventInfo.dateStr);
+        // const endTime = new Date(
+        //     startTime.getTime() + duration * 60 * 60 * 1000
+        // ); // Add duration in milliseconds
 
-        // Extract day of week (0-6, where 0 is Sunday)
-        const dayOfWeek = startTime.getDay();
-
-        // Extract HH:mm format for start and end time
-        const startTimeString = startTime.toTimeString().slice(0, 5);
-        const endTimeString = endTime.toTimeString().slice(0, 5);
-
-        // Construct transformed event object
-        const transformedEvent = {
-            id: lessonId, // Get lesson id in the db table instead of id of the event in FullCalendar
-            day: dayOfWeek,
-            startTime: startTimeString,
-            endTime: endTimeString,
-        };
-
-        setSelectedEvent(transformedEvent);
-
-        // const dateObj = new Date(eventInfo.dateStr);
         // // Extract day of week (0-6, where 0 is Sunday)
-        // const dayOfWeek = dateObj.getDay();
-        // // Extract HH:mm format for start time
-        // const startTime = dateObj.toTimeString().slice(0, 5);
+        // const dayOfWeek = startTime.getDay();
 
-        // // Adding 1 hour to get end time -> need to change to extract duration field from data
-        // dateObj.setHours(dateObj.getHours() + 1);
-        // // Extract HH:mm format for end time
-        // const endTime = dateObj.toTimeString().slice(0, 5);
-        // console.log(endTime);
+        // // Extract HH:mm format for start and end time
+        // const startTimeString = startTime.toTimeString().slice(0, 5);
+        // const endTimeString = endTime.toTimeString().slice(0, 5);
+
+        // // Construct transformed event object
         // const transformedEvent = {
-        //     // Get lesson id in the db table instead of id of the event in FullCalendar
-        //     id: lessonId,
+        //     id: lessonId, // Get lesson id in the db table instead of id of the event in FullCalendar
         //     day: dayOfWeek,
-        //     startTime: startTime,
-        //     endTime: endTime,
+        //     startTime: startTimeString,
+        //     endTime: endTimeString,
         // };
+
         // setSelectedEvent(transformedEvent);
+
+        const dateObj = new Date(eventInfo.dateStr);
+        // Extract day of week (0-6, where 0 is Sunday)
+        const dayOfWeek = dateObj.getDay();
+        // Extract HH:mm format for start time
+        const startTime = dateObj.toTimeString().slice(0, 5);
+
+        // Adding 1 hour to get end time -> need to change to extract duration field from data
+        dateObj.setHours(dateObj.getHours() + 1);
+        // Extract HH:mm format for end time
+        const endTime = dateObj.toTimeString().slice(0, 5);
+        console.log(endTime);
+        const transformedEvent = {
+            // Get lesson id in the db table instead of id of the event in FullCalendar
+            id: lessonId,
+            day: dayOfWeek,
+            startTime: startTime,
+            endTime: endTime,
+        };
+        setSelectedEvent(transformedEvent);
     };
 
     // When 'save timetable' button is clicked
