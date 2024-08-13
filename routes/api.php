@@ -9,6 +9,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\EnrollmentController;
+use App\Http\Controllers\PasswordResetController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -37,6 +38,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [AuthController::class, 'register']);
+// Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 
 Route::post('/add-lesson', [LessonController::class, 'addNewLesson']);
 Route::post('/update-lesson', [LessonController::class, 'updateLesson']);
@@ -55,3 +57,15 @@ Route::apiResource('/users', UserController::class);
 Route::apiResource('/students', StudentController::class);
 Route::apiResource('/invoices', InvoiceController::class);
 Route::apiResource('/students/{student}/enrollments', EnrollmentController::class);
+
+// // Password Reset Routes
+// Route::get('password/reset/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
+// Route::post('password/reset', [PasswordResetController::class, 'reset'])->name('password.update');
+// Route::post('password/email', [PasswordResetController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLinkEmail']);
+Route::post('/reset-password', [PasswordResetController::class, 'reset']);
+
+// // Add this route for the reset form if you plan to use a web route to handle the reset password form
+Route::get('/reset-password/{token}', function ($token) {
+    return redirect()->to('http://localhost:3000/reset-password/' . $token);
+})->name('password.reset');

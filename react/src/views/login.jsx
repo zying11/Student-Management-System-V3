@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axiosClient from "../axiosClient";
 import { useStateContext } from "../contexts/ContextProvider";
 import { Form, Button, Alert, InputGroup } from "react-bootstrap";
+import { Link } from 'react-router-dom';
 
 export default function Login() {
   // Define state variables
@@ -139,11 +140,7 @@ export default function Login() {
                 </div>
 
                 <div className="d-grid justify-content-end">
-                  <Button
-                    className="text-muted px-0"
-                    variant="link"
-                    onClick={handlePassword}
-                  >
+                <Button className="text-muted px-0" variant="link" as={Link} to="/forgot-password">
                     Forgot password?
                   </Button>
                 </div>
