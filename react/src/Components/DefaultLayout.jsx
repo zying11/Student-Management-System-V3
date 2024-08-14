@@ -1,11 +1,9 @@
-import axios from "axios";
 import { useEffect } from "react";
-import { useContext } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import axiosClient from "../axiosClient";
 import { useStateContext } from "../contexts/ContextProvider";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import Sidebar from "./Sidebar";
 import "../css/DefaultLayout.css";
 
 import "bootstrap-icons/font/bootstrap-icons.css";
@@ -33,175 +31,37 @@ export default function DefaultLayout() {
         });
     }, []);
 
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    // const [isCollapsed, setIsCollapsed] = useState(false);
 
     const toggleSidebar = () => {
         setIsCollapsed(!isCollapsed);
     };
 
-    const navToTimetable = () => {
-        Navigate("/timetable");
-    };
+    const [isCollapsed, setIsCollapsed] = useState(window.innerWidth < 769);
 
-    const navToSubject = () => {
-        Navigate("/subject");
-    };
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth < 769) {
+                setIsCollapsed(true);
+            } else {
+                setIsCollapsed(false);
+            }
+        };
+
+        // Add event listener for window resize
+        window.addEventListener("resize", handleResize);
+
+        // Clean up the event listener on component unmount
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
     return (
         <div id="defaultLayout">
             <div className="wrapper">
                 <aside id="sidebar" className={isCollapsed ? "collapsed" : ""}>
                     <div className="h-100">
-                        <div className="sidebar-logo mb-2">LOGO</div>
-                        <ul className="sidebar-nav mb-0 ps-0 ms-0">
-                            <li className="sidebar-item">
-                                <a href="#" className="sidebar-link">
-                                    <i className="bi bi-list-ul"></i>
-                                    Dashboard
-                                </a>
-                            </li>
-                            <li className="sidebar-item">
-                                <a
-                                    href="#"
-                                    className="sidebar-link collapsed"
-                                    data-bs-target="#students"
-                                    data-bs-toggle="collapse"
-                                    aria-expanded="false"
-                                >
-                                    <i class="bi bi-people-fill"></i>
-                                    Students
-                                </a>
-                                <ul
-                                    id="students"
-                                    className="sidebar-dropdown list-unstyled collapse"
-                                    data-bs-parent="#sidebar"
-                                >
-                                    <li className="sidebar-item">
-                                        <a href="#" className="sidebar-link">
-                                            Students List
-                                        </a>
-                                    </li>
-                                    <li className="sidebar-item">
-                                        <a href="#" className="sidebar-link">
-                                            Add Students
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li className="sidebar-item">
-                                <a
-                                    href="#"
-                                    className="sidebar-link collapsed"
-                                    data-bs-target="#teachers"
-                                    data-bs-toggle="collapse"
-                                    aria-expanded="false"
-                                >
-                                    <i class="bi bi-people-fill"></i>
-                                    Teachers
-                                </a>
-                                <ul
-                                    id="teachers"
-                                    className="sidebar-dropdown list-unstyled collapse"
-                                    data-bs-parent="#sidebar"
-                                >
-                                    <li className="sidebar-item">
-                                        <a href="#" className="sidebar-link">
-                                            Teachers List
-                                        </a>
-                                    </li>
-                                    <li className="sidebar-item">
-                                        <a href="#" className="sidebar-link">
-                                            Add Teacher
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li className="sidebar-item">
-                                <a
-                                    href="#"
-                                    className="sidebar-link collapsed"
-                                    data-bs-target="#timetable"
-                                    data-bs-toggle="collapse"
-                                    aria-expanded="false"
-                                >
-                                    <i class="bi bi-calendar"></i>
-                                    Timetable
-                                </a>
-                                <ul
-                                    id="timetable"
-                                    className="sidebar-dropdown list-unstyled collapse"
-                                    data-bs-parent="#sidebar"
-                                >
-                                    <li className="sidebar-item">
-                                        <a
-                                            href="#"
-                                            className="sidebar-link"
-                                            onClick={navToSubject}
-                                        >
-                                            Manage Subject
-                                        </a>
-                                    </li>
-                                    <li className="sidebar-item">
-                                        <a href="#" className="sidebar-link">
-                                            Manage Room
-                                        </a>
-                                    </li>
-                                    <li className="sidebar-item">
-                                        <a href="#" className="sidebar-link">
-                                            Manage Teacher
-                                        </a>
-                                    </li>
-                                    <li className="sidebar-item">
-                                        <a
-                                            href="#"
-                                            className="sidebar-link"
-                                            onClick={navToTimetable}
-                                        >
-                                            Schedule Timetable
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li className="sidebar-item">
-                                <a
-                                    href="#"
-                                    className="sidebar-link collapsed"
-                                    data-bs-target="#payment"
-                                    data-bs-toggle="collapse"
-                                    aria-expanded="false"
-                                >
-                                    <i class="bi bi-credit-card"></i>
-                                    Payment
-                                </a>
-                                <ul
-                                    id="payment"
-                                    className="sidebar-dropdown list-unstyled collapse"
-                                    data-bs-parent="#sidebar"
-                                >
-                                    <li className="sidebar-item">
-                                        <a href="#" className="sidebar-link">
-                                            Record Payment
-                                        </a>
-                                    </li>
-                                    <li className="sidebar-item">
-                                        <a href="#" className="sidebar-link">
-                                            Generate Invoice
-                                        </a>
-                                    </li>
-                                    <li className="sidebar-item">
-                                        <a href="#" className="sidebar-link">
-                                            Payment Status
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li className="sidebar-item">
-                                <a href="#" className="sidebar-link">
-                                    <i class="bi bi-gear"></i>
-                                    Settings
-                                </a>
-                            </li>
-                        </ul>
+                        <div className="sidebar-logo">LOGO</div>
+                        <Sidebar />
                         <div className="logout">
                             <a
                                 href="#"
