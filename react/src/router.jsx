@@ -15,6 +15,8 @@ import AdminDashboard from "./views/AdminDashboard.jsx";
 import AdminProfile from "./views/AdminProfile.jsx";
 import StudentProfile from "./views/StudentProfile.jsx";
 import Attendance from "./views/Attendance.jsx";
+import ForgotPassword from "./views/ForgotPassword.jsx"; 
+import ResetPassword from "./views/ResetPassword.jsx";
 
 // const exampleInvoice = {
 //     id: "1234",
@@ -110,8 +112,16 @@ const router = createBrowserRouter([
         element: <GuestLayout />,
         children: [
             {
-                path: "/login",
+                path: "login",
                 element: <Login />,
+            },
+            {
+                path: "forgot-password",
+                element: <ForgotPassword />,
+            },
+            {
+                path: "reset-password/:token",
+                element: <ResetPassword />,
             },
         ],
     },
