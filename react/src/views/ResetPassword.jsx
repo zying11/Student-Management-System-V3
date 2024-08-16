@@ -1,117 +1,44 @@
-// import React, { useState } from 'react';
-// import axiosClient from '../axiosClient';
-// import { Form, Button, Alert } from 'react-bootstrap';
-// import { useParams } from 'react-router-dom';
-
-// export default function ResetPassword() {
-//     const { token } = useParams();
-//     const [email, setEmail] = useState('');
-//     const [password, setPassword] = useState('');
-//     const [passwordConfirmation, setPasswordConfirmation] = useState('');
-//     const [message, setMessage] = useState('');
-//     const [errors, setErrors] = useState('');
-
-//     const handleSubmit = (e) => {
-//         e.preventDefault();
-//         axiosClient.post('/reset-password', {
-//             token,
-//             email,
-//             password,
-//             password_confirmation: passwordConfirmation
-//         })
-//             .then(response => {
-//                 setMessage(response.data.message);
-//                 setErrors('');
-//             })
-//             .catch(error => {
-//                 if (error.response && error.response.data) {
-//                     setErrors(error.response.data);
-//                 }
-//             });
-//     };
-
-//     return (
-//         <div className="container mt-5">
-//             <div className="row justify-content-center">
-//                 <div className="col-md-6">
-//                     <div className="card">
-//                         <div className="card-body">
-//                             <h3 className="card-title text-center mb-4">Reset Password</h3>
-//                             <Form onSubmit={handleSubmit}>
-//                                 {message && <Alert variant="success">{message}</Alert>}
-//                                 {errors && <Alert variant="danger">{Object.values(errors).join(', ')}</Alert>}
-//                                 <Form.Group className="mb-3" controlId="formEmail">
-//                                     <Form.Label>Email address</Form.Label>
-//                                     <Form.Control
-//                                         type="email"
-//                                         placeholder="Enter your email"
-//                                         value={email}
-//                                         onChange={(e) => setEmail(e.target.value)}
-//                                     />
-//                                 </Form.Group>
-//                                 <Form.Group className="mb-3" controlId="formPassword">
-//                                     <Form.Label>New Password</Form.Label>
-//                                     <Form.Control
-//                                         type="password"
-//                                         placeholder="Enter your new password"
-//                                         value={password}
-//                                         onChange={(e) => setPassword(e.target.value)}
-//                                     />
-//                                 </Form.Group>
-//                                 <Form.Group className="mb-3" controlId="formPasswordConfirmation">
-//                                     <Form.Label>Confirm New Password</Form.Label>
-//                                     <Form.Control
-//                                         type="password"
-//                                         placeholder="Confirm your new password"
-//                                         value={passwordConfirmation}
-//                                         onChange={(e) => setPasswordConfirmation(e.target.value)}
-//                                     />
-//                                 </Form.Group>
-//                                 <div className="d-grid">
-//                                     <Button type="submit" variant="primary">
-//                                         Reset Password
-//                                     </Button>
-//                                 </div>
-//                             </Form>
-//                         </div>
-//                     </div>
-//                 </div>
-//             </div>
-//         </div>
-//     );
-// }
-
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
 import axiosClient from '../axiosClient';
 import { Form, Button, Alert } from 'react-bootstrap';
+import { useParams, useNavigate } from 'react-router-dom';
+import "../css/ForgotResetPassword.css";
 
 export default function ResetPassword() {
-    const { token } = useParams();  // Get token from URL
-    const [email, setEmail] = useState('');
+    const { token } = useParams();
+    const [email, setEmail] = useState(''); 
     const [password, setPassword] = useState('');
     const [passwordConfirmation, setPasswordConfirmation] = useState('');
     const [message, setMessage] = useState('');
-    const [errors, setErrors] = useState('');
+    const [errors, setErrors] = useState({});
     const navigate = useNavigate();
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        // Clear previous messages
+        setMessage('');
+        setErrors({});
+
+        // Send the reset password request to the backend
         axiosClient.post('/reset-password', {
             token,
-            email,
+            email, // Include email in the request
             password,
-            password_confirmation: passwordConfirmation
+            password_confirmation: passwordConfirmation,
         })
         .then(response => {
-            setMessage(response.data.message);
-            setErrors('');
-            // Optionally, navigate to login page or another page after success
-            navigate('/login');
+            // If successful, show a success message and redirect to login
+            setMessage('Password has been reset successfully. You can now log in.');
+            setTimeout(() => navigate('/login'), 2000); // Redirect after 2 seconds
         })
         .catch(error => {
-            if (error.response && error.response.data) {
-                setErrors(error.response.data);
+            // Handle validation errors
+            if (error.response && error.response.data.errors) {
+                setErrors(error.response.data.errors);
+            } else {
+                // Handle general errors
+                setErrors({ general: 'An error occurred. Please try again.' });
             }
         });
     };
@@ -119,44 +46,63 @@ export default function ResetPassword() {
     return (
         <div className="container mt-5">
             <div className="row justify-content-center">
-                <div className="col-md-6">
+                <div className="col">
                     <div className="card">
                         <div className="card-body">
                             <h3 className="card-title text-center mb-4">Reset Password</h3>
+                            
+                            {/* Success message */}
+                            {message && <Alert variant="success">{message}</Alert>}
+                            
+                            {/* General error message */}
+                            {errors.general && <Alert variant="danger">{errors.general}</Alert>}
+                            
                             <Form onSubmit={handleSubmit}>
-                                {message && <Alert variant="success">{message}</Alert>}
-                                {errors && <Alert variant="danger">{Object.values(errors).join(', ')}</Alert>}
+                                {/* Email Input */}
                                 <Form.Group className="mb-3" controlId="formEmail">
-                                    <Form.Label>Email address</Form.Label>
+                                    <Form.Label>Email</Form.Label>
                                     <Form.Control
                                         type="email"
                                         placeholder="Enter your email"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                     />
+                                    {/* Email validation error */}
+                                    {errors.email && errors.email.map((error, index) => (
+                                        <Alert key={index} variant="danger">{error}</Alert>
+                                    ))}
                                 </Form.Group>
+
                                 <Form.Group className="mb-3" controlId="formPassword">
                                     <Form.Label>New Password</Form.Label>
                                     <Form.Control
                                         type="password"
-                                        placeholder="Enter your new password"
+                                        placeholder="Enter new password"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                     />
+                                    {/* Password validation error */}
+                                    {errors.password && errors.password.map((error, index) => (
+                                        <Alert key={index} variant="danger">{error}</Alert>
+                                    ))}
                                 </Form.Group>
+
                                 <Form.Group className="mb-3" controlId="formPasswordConfirmation">
                                     <Form.Label>Confirm New Password</Form.Label>
                                     <Form.Control
                                         type="password"
-                                        placeholder="Confirm your new password"
+                                        placeholder="Confirm new password"
                                         value={passwordConfirmation}
                                         onChange={(e) => setPasswordConfirmation(e.target.value)}
                                     />
+                                    {/* Password confirmation validation error */}
+                                    {errors.password_confirmation && errors.password_confirmation.map((error, index) => (
+                                        <Alert key={index} variant="danger">{error}</Alert>
+                                    ))}
                                 </Form.Group>
+                                
                                 <div className="d-grid">
-                                    <Button type="submit" variant="primary">
-                                        Reset Password
-                                    </Button>
+                                    <Button type="submit" variant="primary">Reset Password</Button>
                                 </div>
                             </Form>
                         </div>
