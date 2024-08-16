@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axiosClient from '../axiosClient';
 import { Form, Button, Alert } from 'react-bootstrap';
+import "../css/ForgotResetPassword.css";
 
 export default function ForgotPassword() {
     const [email, setEmail] = useState('');
@@ -34,7 +35,7 @@ export default function ForgotPassword() {
     return (
         <div className="container mt-5">
             <div className="row justify-content-center">
-                <div className="col-md-6">
+                <div className="col">
                     <div className="card">
                         <div className="card-body">
                             <h3 className="card-title text-center mb-4">Forgot Password</h3>

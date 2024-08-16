@@ -4,6 +4,8 @@ import axiosClient from "../axiosClient";
 import { useStateContext } from "../contexts/ContextProvider";
 import { Form, Button, Alert, InputGroup } from "react-bootstrap";
 import { Link } from 'react-router-dom';
+import "../css/Login.css";
+import "../css/PrimaryButton.css";
 
 export default function Login() {
   // Define state variables
@@ -87,67 +89,65 @@ export default function Login() {
   const handlePassword = () => { };
 
   return (
-    <div className="container mt-5">
-      <div className="row justify-content-center">
-        <div className="col-md-6">
-          <div className="card">
-            <div className="card-body">
-              <h3 className="card-title text-center mb-4">Sign In</h3>
+    <div className="login-form-wrapper">
+      <div className="login-form-content">
+        <div className="login-form-image-text">
+          <img src="/images/login-form-element.png" alt="Logo" className="login-form-image" />
+          <p className="login-form-text">Student Management System</p>
+        </div>
+        <div className="login-form">
+          <h3 className="login-form-title text-center">Sign In</h3>
+          <Form onSubmit={Submit}>
+            {errors.server && <Alert variant="danger">{errors.server}</Alert>}
 
-              <Form onSubmit={Submit}>
-                {errors.server && <Alert variant="danger">{errors.server}</Alert>}
+            <Form.Group className="mb-3" controlId="formEmail">
+              <Form.Label>Email address</Form.Label>
+              <Form.Control
+                ref={emailRef}
+                type="email"
+                placeholder="Enter your email"
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              {errors.email && <Alert variant="danger">{errors.email}</Alert>}
+            </Form.Group>
 
-                <Form.Group className="mb-3" controlId="formEmail">
-                  <Form.Label>Email address</Form.Label>
-                  <Form.Control
-                    ref={emailRef}
-                    type="email"
-                    placeholder="Enter your email"
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                  {errors.email && <Alert variant="danger">{errors.email}</Alert>}
-                </Form.Group>
+            <Form.Group className="mb-3" controlId="formPassword">
+              <Form.Label>Password</Form.Label>
+              <Form.Control
+                ref={passwordRef}
+                type="password"
+                placeholder="Enter your password"
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              {errors.password && <Alert variant="danger">{errors.password}</Alert>}
+            </Form.Group>
 
-                <Form.Group className="mb-3" controlId="formPassword">
-                  <Form.Label>Password</Form.Label>
-                  <Form.Control
-                    ref={passwordRef}
-                    type="password"
-                    placeholder="Enter your password"
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                  {errors.password && <Alert variant="danger">{errors.password}</Alert>}
-                </Form.Group>
+            <Form.Group className="mb-3" controlId="formRole">
+              <Form.Label>Role</Form.Label>
+              <Form.Select
+                ref={roleBasedRef}
+                aria-label="Select your role"
+                onChange={(e) => setRole(e.target.value)}
+              >
+                <option value="">Select your role</option>
+                <option value="admin">Admin</option>
+                <option value="teacher">Teacher</option>
+              </Form.Select>
+              {errors.role && <Alert variant="danger">{errors.role}</Alert>}
+            </Form.Group>
 
-                <Form.Group className="mb-3" controlId="formRole">
-                  <Form.Label>Role</Form.Label>
-                  <Form.Select
-                    ref={roleBasedRef}
-                    aria-label="Select your role"
-                    onChange={(e) => setRole(e.target.value)}
-                  >
-                    <option value="">Select your role</option>
-                    <option value="admin">Admin</option>
-                    <option value="teacher">Teacher</option>
-                  </Form.Select>
-                  {errors.role && <Alert variant="danger">{errors.role}</Alert>}
-                </Form.Group>
-
-                <div className="d-grid">
-                  <Button type="signin" variant="primary">
-                    Sign In
-                  </Button>
-                </div>
-
-                <div className="d-grid justify-content-end">
-                <Button className="text-muted px-0" variant="link" as={Link} to="/forgot-password">
-                    Forgot password?
-                  </Button>
-                </div>
-
-              </Form>
+            <div className="d-grid">
+              <Button type="signin" variant="primary">
+                Sign In
+              </Button>
             </div>
-          </div>
+
+            <div className="d-grid justify-content-end">
+              <Button className="text-muted px-0" variant="link" as={Link} to="/forgot-password">
+                Forgot password?
+              </Button>
+            </div>
+          </Form>
         </div>
       </div>
     </div>
