@@ -1,0 +1,28 @@
+.btn-create {
+    background-color: #a9a0e1;
+    color: white;
+    padding: 8px 30px;
+    border: none;
+    border-radius: 5px;
+}
+
+.btn-create:hover {
+    background-color: #8c85d4;
+    color: white;
+}
+
+.btn-create-purple {
+    background-color: #a9a0e1;
+}
+
+.btn-create-purple:hover {
+    background-color: #8c85d4;
+}
+
+.btn-create-yellow {
+    background-color: #f5aa39;
+}
+
+.btn-create-yellow:hover {
+    background-color: #f59607;
+}
