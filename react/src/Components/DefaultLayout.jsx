@@ -74,8 +74,8 @@ export default function DefaultLayout() {
                     </div>
                 </aside>
 
-                <div className="main">
-                    <nav className="navbar navbar-expand px-3">
+                <div className="main mx-3">
+                    <nav className="navbar navbar-expand">
                         <button
                             className="btn"
                             id="sidebar-toggle"

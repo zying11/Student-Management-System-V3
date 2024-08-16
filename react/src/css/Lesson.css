@@ -1,3 +1,54 @@
-.btn-create {
-    max-width: 200px;
+.page-title {
+    font-weight: 700;
+    width: max-content;
+}
+
+.page-title:after {
+    content: "";
+    display: block;
+    width: 60%;
+    border-bottom: 3px solid #f5aa39;
+}
+
+.content-container {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.content-title {
+    font-size: 30px;
+    font-weight: 500;
+}
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.table {
+    min-width: 500px;
+    width: 100%;
+    table-layout: auto;
+    border: 1px solid #dddeee;
+}
+
+/* Scrollbar Styles for WebKit Browsers */
+.table-wrapper::-webkit-scrollbar {
+    width: 10px;
+    height: 5px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb {
+    background-color: #f5aa39;
+    border-radius: 5px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb:hover {
+    background-color: #f59607;
+}
+
+.table-wrapper::-webkit-scrollbar-track {
+    background-color: #f1f1f1;
+    border-radius: 5px;
 }

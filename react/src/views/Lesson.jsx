@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Button from "../components/button/Button";
 import "../css/Lesson.css";
 
 export default function Lesson() {
@@ -109,7 +110,7 @@ export default function Lesson() {
         fetchLessons();
     }, []);
 
-    const lesson_HTMLTABLE = displayData.loading ? (
+    const lessonTable = displayData.loading ? (
         <tr>
             <td colSpan="8">
                 <h4>Loading...</h4>
@@ -133,7 +134,67 @@ export default function Lesson() {
 
     return (
         <>
-            <div className="position-relative d-flex flex-column align-items-end p-5">
+            <div className="px-3 mt-xl-5 mt-3">
+                <div className="page-title">Lesson</div>
+                <div className="d-flex justify-content-end">
+                    <Button
+                        data-bs-toggle="modal"
+                        data-bs-target="#createLessonModal"
+                    >
+                        Add Lesson
+                    </Button>
+                </div>
+                <div className="content-container mt-3">
+                    <div className="content-title">Current Active Lessons</div>
+                    <div className="table-wrapper position-relative">
+                        <table className="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Subject</th>
+                                    <th>Study Level</th>
+                                    <th>Teacher</th>
+                                    <th>Day</th>
+                                    <th>Start Time</th>
+                                    <th>End Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {/* {lessonTable} */}
+
+                                <tr>
+                                    <td>1</td>
+                                    <td>Primary</td>
+                                    <td>English</td>
+                                    <td>5</td>
+                                    <td>Friday</td>
+                                    <td>10am</td>
+                                    <td>11am</td>
+                                </tr>
+                                <tr>
+                                    <td>1</td>
+                                    <td>Primary</td>
+                                    <td>English</td>
+                                    <td>5</td>
+                                    <td>Friday</td>
+                                    <td>10am</td>
+                                    <td>11am</td>
+                                </tr>
+                                <tr>
+                                    <td>1</td>
+                                    <td>Primary</td>
+                                    <td>English</td>
+                                    <td>5</td>
+                                    <td>Friday</td>
+                                    <td>10am</td>
+                                    <td>11am</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {/* <div className="position-relative d-flex flex-column align-items-end p-5">
                 <button
                     className="btn btn-primary btn-create"
                     data-bs-toggle="modal"
@@ -154,9 +215,9 @@ export default function Lesson() {
                             <th>End Time</th>
                         </tr>
                     </thead>
-                    <tbody>{lesson_HTMLTABLE}</tbody>
+                    <tbody>{lessonTable}</tbody>
                 </table>
-            </div>
+            </div> */}
             <div
                 id="createLessonModal"
                 className="modal fade"
