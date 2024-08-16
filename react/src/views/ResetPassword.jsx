@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axiosClient from '../axiosClient';
 import { Form, Button, Alert } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
+import "../css/ForgotResetPassword.css";
 
 export default function ResetPassword() {
     const { token } = useParams();
@@ -45,7 +46,7 @@ export default function ResetPassword() {
     return (
         <div className="container mt-5">
             <div className="row justify-content-center">
-                <div className="col-md-6">
+                <div className="col">
                     <div className="card">
                         <div className="card-body">
                             <h3 className="card-title text-center mb-4">Reset Password</h3>
