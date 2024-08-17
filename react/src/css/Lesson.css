@@ -19,7 +19,10 @@
 .content-title {
     font-size: 30px;
     font-weight: 500;
+    overflow-x: auto;
 }
+
+/* table CSS STARTS */
 
 .table-wrapper {
     width: 100%;
@@ -31,6 +34,11 @@
     width: 100%;
     table-layout: auto;
     border: 1px solid #dddeee;
+}
+
+.table th {
+    color: #f59607;
+    font-weight: 500;
 }
 
 /* Scrollbar Styles for WebKit Browsers */
@@ -52,3 +60,10 @@
     background-color: #f1f1f1;
     border-radius: 5px;
 }
+
+.actions {
+    display: block;
+    width: fit-content;
+}
+
+/* table CSS ENDS */

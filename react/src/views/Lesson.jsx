@@ -7,11 +7,11 @@ export default function Lesson() {
     // Variable for posting lessons data
     const [lessonData, setLessonData] = useState({
         subjectId: "",
-        capacity: "",
+        teacher: "",
         duration: "",
     });
     // Variable for fetching lesson data
-    const [displayData, setDisplayData] = useState({
+    const [displayLesson, setDisplayLesson] = useState({
         lessons: [],
         loading: true,
     });
@@ -44,7 +44,7 @@ export default function Lesson() {
         // Simple validation for required fields
         if (
             !lessonData.subjectId ||
-            !lessonData.capacity ||
+            !lessonData.teacher ||
             !lessonData.duration
         ) {
             setError("Please fill in all fields");
@@ -98,7 +98,7 @@ export default function Lesson() {
                 );
                 console.log(res.data.lessons);
 
-                setDisplayData({
+                setDisplayLesson({
                     lessons: res.data.lessons,
                     loading: false,
                 });
@@ -110,24 +110,74 @@ export default function Lesson() {
         fetchLessons();
     }, []);
 
-    const lessonTable = displayData.loading ? (
+    // Delete data
+    const handleDelete = async (id) => {
+        try {
+            const res = await axios.delete(
+                `http://127.0.0.1:8000/api/lessons/${id}`
+            );
+            console.log(res.data); // Check the API response structure
+
+            if (res.data.status === 200) {
+                setDisplayLesson((prevData) => {
+                    if (Array.isArray(prevData.lessons)) {
+                        return {
+                            ...prevData,
+                            lessons: prevData.lessons.filter(
+                                (lesson) => lesson.id !== id
+                            ),
+                        };
+                    }
+                    return prevData; // Return the previous state if it's not an array
+                });
+            } else {
+                console.error(response.data.message || "Failed to delete");
+            }
+        } catch (error) {
+            console.error("Error deleting lesson:", error);
+        }
+    };
+
+    const lessonTable = displayLesson.loading ? (
         <tr>
             <td colSpan="8">
                 <h4>Loading...</h4>
             </td>
         </tr>
     ) : (
-        displayData.lessons.map((item) => (
+        displayLesson.lessons.map((item) => (
             <tr key={item.id}>
                 <td>{item.id}</td>
-                <td>{item.subject.study_level}</td> {/* Display study level */}
-                <td>{item.subject.subject_name}</td>{" "}
-                {/* Display subject name */}
-                <td>{item.capacity}</td>
-                <td>{item.duration}</td>
-                <td>{item.day}</td>
-                <td>{item.start_time}</td>
-                <td>{item.end_time}</td>
+                <td>
+                    {item.subject && item.subject.subject_name
+                        ? item.subject.subject_name
+                        : "-"}
+                </td>
+                <td>{item.level_name ? item.level_name : "-"}</td>
+                <td>{item.teacher_id ? item.teacher_id : "-"}</td>
+                <td>{item.day ? item.day : "-"}</td>
+                <td>{item.start_time ? item.start_time : "-"}</td>
+                <td>{item.end_time ? item.end_time : "-"}</td>
+                <td>
+                    <div className="actions">
+                        <img
+                            className="me-2"
+                            src="http://localhost:8000/icon/edit.png"
+                            alt="Edit"
+                        />
+                        <img
+                            className="me-2"
+                            src="http://localhost:8000/icon/delete.png"
+                            alt="Delete"
+                            onClick={() => handleDelete(item.id)}
+                            style={{ cursor: "pointer" }}
+                        />
+                        <img
+                            src="http://localhost:8000/icon/more.png"
+                            alt="More"
+                        />
+                    </div>
+                </td>
             </tr>
         ))
     );
@@ -157,67 +207,14 @@ export default function Lesson() {
                                     <th>Day</th>
                                     <th>Start Time</th>
                                     <th>End Time</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                {/* {lessonTable} */}
-
-                                <tr>
-                                    <td>1</td>
-                                    <td>Primary</td>
-                                    <td>English</td>
-                                    <td>5</td>
-                                    <td>Friday</td>
-                                    <td>10am</td>
-                                    <td>11am</td>
-                                </tr>
-                                <tr>
-                                    <td>1</td>
-                                    <td>Primary</td>
-                                    <td>English</td>
-                                    <td>5</td>
-                                    <td>Friday</td>
-                                    <td>10am</td>
-                                    <td>11am</td>
-                                </tr>
-                                <tr>
-                                    <td>1</td>
-                                    <td>Primary</td>
-                                    <td>English</td>
-                                    <td>5</td>
-                                    <td>Friday</td>
-                                    <td>10am</td>
-                                    <td>11am</td>
-                                </tr>
-                            </tbody>
+                            <tbody>{lessonTable}</tbody>
                         </table>
                     </div>
                 </div>
             </div>
-            {/* <div className="position-relative d-flex flex-column align-items-end p-5">
-                <button
-                    className="btn btn-primary btn-create"
-                    data-bs-toggle="modal"
-                    data-bs-target="#createLessonModal"
-                >
-                    Create Lesson
-                </button>
-                <table className="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Study Level</th>
-                            <th>Subject Name</th>
-                            <th>Capacity</th>
-                            <th>Duration</th>
-                            <th>Day</th>
-                            <th>Start Time</th>
-                            <th>End Time</th>
-                        </tr>
-                    </thead>
-                    <tbody>{lessonTable}</tbody>
-                </table>
-            </div> */}
             <div
                 id="createLessonModal"
                 className="modal fade"
@@ -234,13 +231,11 @@ export default function Lesson() {
                         <form method="post" onSubmit={saveLesson}>
                             {/* Subject input */}
                             <div className="mb-3">
-                                <label className="form-label">
-                                    Subject Name
-                                </label>
+                                <label className="form-label">Subject</label>
                                 <select
-                                    name="subjectId" // Use 'name' attribute to match state key
+                                    name="subjectId"
                                     onChange={handleInput}
-                                    value={lessonData.subjectId} // Bind value to state
+                                    value={lessonData.subjectId}
                                     className="form-control"
                                     required
                                 >
@@ -250,14 +245,29 @@ export default function Lesson() {
                                             key={subject.id}
                                             value={subject.id}
                                         >
-                                            {subject.study_level},{" "}
+                                            {subject.level_name} -{" "}
                                             {subject.subject_name}
                                         </option>
                                     ))}
                                 </select>
                             </div>
 
-                            {/* Capacity */}
+                            <div className="mb-3">
+                                <label className="form-label">Teacher</label>
+                                <select
+                                    name="teacher"
+                                    onChange={handleInput}
+                                    value={lessonData.teacher}
+                                    className="form-control"
+                                    required
+                                >
+                                    <option value="">Select a teacher</option>
+                                    <option>Teacher Khajidah</option>
+                                    <option>Teacher Siti</option>
+                                </select>
+                            </div>
+
+                            {/* Capacity
                             <div className="mb-3">
                                 <label className="form-label">
                                     Max Capacity
@@ -270,7 +280,7 @@ export default function Lesson() {
                                     className="form-control"
                                     required
                                 />
-                            </div>
+                            </div> */}
 
                             {/* Duration */}
                             <div className="mb-3">

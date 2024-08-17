@@ -9,7 +9,10 @@ class SubjectController extends Controller
 {
     public function index()
     {
-        $subjects = Subject::all();
+        $subjects = Subject::join('study_level', 'subjects.level_id', '=', 'study_level.id')
+            ->select('subjects.id', 'subjects.subject_name', 'subjects.level_id', 'study_level.level_name')
+            ->get();
+
         return response()->json([
             'status' => 200,
             'subjects' => $subjects
