@@ -5,12 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Subject extends Model
+class StudyLevel extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'level_id',
-        'subject_name'
-    ];
+    protected $table = 'study_level';
 }

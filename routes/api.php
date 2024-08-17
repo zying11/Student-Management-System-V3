@@ -42,6 +42,7 @@ Route::post('register', [AuthController::class, 'register']);
 
 Route::post('/add-lesson', [LessonController::class, 'addNewLesson']);
 Route::post('/update-lesson', [LessonController::class, 'updateLesson']);
+Route::delete('/lessons/{id}', [LessonController::class, 'destroy']);
 Route::get('lessons', [LessonController::class, 'getLessons']);
 
 Route::get('center-profile', [CenterProfileController::class, 'index']);

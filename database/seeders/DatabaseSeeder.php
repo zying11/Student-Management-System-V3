@@ -23,6 +23,9 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             StudentDataSeeder::class,
             CenterProfileSeeder::class,
+            StudyLevelSeeder::class,
+            SubjectSeeder::class,
+            RoomSeeder::class,
             // LessonSeeder::class,
         ]);
     }
