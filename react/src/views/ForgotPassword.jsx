@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import axiosClient from '../axiosClient';
-import { Form, Button, Alert } from 'react-bootstrap';
+import { Link } from "react-router-dom";
+import { Form, Alert } from 'react-bootstrap';
+import Button from "../components/button/Button";
 import "../css/ForgotResetPassword.css";
 
 export default function ForgotPassword() {
@@ -33,40 +35,48 @@ export default function ForgotPassword() {
     };
 
     return (
-        <div className="container mt-5">
-            <div className="row justify-content-center">
-                <div className="col">
-                    <div className="card">
-                        <div className="card-body">
-                            <h3 className="card-title text-center mb-4">Forgot Password</h3>
-                            
-                            {/* Success message */}
-                            {message && <Alert variant="success">{message}</Alert>}
-                            
-                            {/* General error message */}
-                            {errors.general && <Alert variant="danger">{errors.general}</Alert>}
-                            
-                            <Form onSubmit={handleSubmit}>
-                                <Form.Group className="mb-3" controlId="formEmail">
-                                    <Form.Label>Email address</Form.Label>
-                                    <Form.Control
-                                        type="email"
-                                        placeholder="Enter your email"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                    />
-                                    {/* Email validation error */}
-                                    {errors.email && errors.email.map((error, index) => (
-                                        <Alert key={index} variant="danger">{error}</Alert>
-                                    ))}
-                                </Form.Group>
-                                
-                                <div className="d-grid">
-                                    <Button type="submit" variant="primary">Send Reset Link</Button>
-                                </div>
-                            </Form>
+        <div className="forgot-password-form-container box-area row p-3">
+
+            <div className="col p-5">
+                <div className="row ">
+                    <img src="/images/padlock-element.png" alt="Forgot password illustration" className="forgot-password-illustration mb-4" />
+
+                    <h2 className="text-center mb-2">Forgot Password?</h2>
+
+                    {/* Success message */}
+                    {message && <Alert variant="success">{message}</Alert>}
+
+                    {/* General error message */}
+                    {errors.general && <Alert variant="danger">{errors.general}</Alert>}
+
+                    <small className="forgot-password-message text-center mb-4">Enter your email and we will send you a link to reset your password</small>
+                    <Form onSubmit={handleSubmit}>
+                        <Form.Group className="mb-4" controlId="formEmail">
+                            <Form.Control
+                                type="email"
+                                placeholder="Enter your email here"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className="email-placeholder"
+                            />
+                            {/* Email validation error */}
+                            {errors.email && errors.email.map((error, index) => (
+                                <Alert key={index} variant="danger">{error}</Alert>
+                            ))}
+                        </Form.Group>
+
+                        <div className="d-grid">
+                            <Button className="btn-create-yellow" type="submit" variant="primary">Email Me</Button>
                         </div>
-                    </div>
+
+                        <div className="d-grid justify-content-center">
+                            <Link to="/login" className="text-decoration-none">
+                                <Button className="link-button" color="">
+                                    Sign in
+                                </Button>
+                            </Link>
+                        </div>
+                    </Form>
                 </div>
             </div>
         </div>

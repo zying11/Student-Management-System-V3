@@ -51,6 +51,7 @@ class PasswordResetController extends Controller
             'token' => 'required',
             'email' => 'required|email|exists:users,email', 
             'password' => 'required|min:8|confirmed',
+            'password_confirmation' => 'required|min:8',
         ]);
 
     $status = Password::reset(
