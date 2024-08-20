@@ -49,7 +49,7 @@ export default function ResetPassword() {
 
             <div className="col p-5">
                 <div className="row">
-                    <img src="/images/reset-password-element.png" alt="Reset password illustration" className="reset-password-illustration mb-4" />
+                    <img src="http://localhost:8000/images/reset-password-element.png" alt="Reset password illustration" className="reset-password-illustration mb-4" />
 
                     <h2 className="text-center mb-2">Reset Password</h2>
 

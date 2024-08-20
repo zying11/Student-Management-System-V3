@@ -90,7 +90,7 @@ export default function Login() {
     return (
         <div className="login-form-container box-area row p-3">
             <div className="left-box col-md-6">
-                <img src="/images/login-form-element.png" alt="Login illustration" className="login-illustration" />
+                <img src="http://localhost:8000/images/login-form-element.png" alt="Login illustration" className="login-illustration" />
                 <small className="login-illustration-text text-center mt-3">Student Management System</small>
             </div>
             <div className="right-box col-md-6">
