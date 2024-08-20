@@ -31,8 +31,6 @@ export default function DefaultLayout() {
         });
     }, []);
 
-    // const [isCollapsed, setIsCollapsed] = useState(false);
-
     const toggleSidebar = () => {
         setIsCollapsed(!isCollapsed);
     };
@@ -85,23 +83,10 @@ export default function DefaultLayout() {
                             <span className="navbar-toggler-icon"></span>
                         </button>
                     </nav>
-                    <Outlet />
-                </div>
-            </div>
-            <div className="container">
-                {/* <header className="d-flex justify-content-between align-items-center py-3">
-                    <div>Header</div>
-                    <div>
-                        {user.name}
-                        <a
-                            href="#"
-                            onClick={onLogout}
-                            className="btn btn-outline-danger ms-2"
-                        >
-                            Logout
-                        </a>
+                    <div className="px-3 mt-xl-5 mt-3">
+                        <Outlet />
                     </div>
-                </header> */}
+                </div>
             </div>
         </div>
     );
