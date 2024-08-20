@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import Button from "../components/button/Button";
+import Button from "../components/Button/Button";
+import { ContentContainer } from "../components/ContentContainer/ContentContainer";
+import { Table } from "../components/Table/Table";
 import "../css/Lesson.css";
 
 export default function Lesson() {
@@ -110,111 +112,88 @@ export default function Lesson() {
         fetchLessons();
     }, []);
 
-    // Delete data
+    // Delete lesson data
     const handleDelete = async (id) => {
         try {
             const res = await axios.delete(
                 `http://127.0.0.1:8000/api/lessons/${id}`
             );
-            console.log(res.data); // Check the API response structure
-
-            if (res.data.status === 200) {
-                setDisplayLesson((prevData) => {
-                    if (Array.isArray(prevData.lessons)) {
-                        return {
-                            ...prevData,
-                            lessons: prevData.lessons.filter(
-                                (lesson) => lesson.id !== id
-                            ),
-                        };
-                    }
-                    return prevData; // Return the previous state if it's not an array
-                });
-            } else {
-                console.error(response.data.message || "Failed to delete");
-            }
+            console.log(res.data);
+            setDisplayLesson((prevData) => {
+                if (Array.isArray(prevData.lessons)) {
+                    return {
+                        ...prevData,
+                        // Creates a new array by including only those lessons for which the condition (lesson.id !== id) is true.
+                        lessons: prevData.lessons.filter(
+                            (lesson) => lesson.id !== id
+                        ),
+                    };
+                }
+                return prevData; // Return the previous state if it's not an array
+            });
         } catch (error) {
             console.error("Error deleting lesson:", error);
         }
     };
 
-    const lessonTable = displayLesson.loading ? (
-        <tr>
-            <td colSpan="8">
-                <h4>Loading...</h4>
-            </td>
-        </tr>
-    ) : (
-        displayLesson.lessons.map((item) => (
-            <tr key={item.id}>
-                <td>{item.id}</td>
-                <td>
-                    {item.subject && item.subject.subject_name
-                        ? item.subject.subject_name
-                        : "-"}
-                </td>
-                <td>{item.level_name ? item.level_name : "-"}</td>
-                <td>{item.teacher_id ? item.teacher_id : "-"}</td>
-                <td>{item.day ? item.day : "-"}</td>
-                <td>{item.start_time ? item.start_time : "-"}</td>
-                <td>{item.end_time ? item.end_time : "-"}</td>
-                <td>
-                    <div className="actions">
-                        <img
-                            className="me-2"
-                            src="http://localhost:8000/icon/edit.png"
-                            alt="Edit"
-                        />
-                        <img
-                            className="me-2"
-                            src="http://localhost:8000/icon/delete.png"
-                            alt="Delete"
-                            onClick={() => handleDelete(item.id)}
-                            style={{ cursor: "pointer" }}
-                        />
-                        <img
-                            src="http://localhost:8000/icon/more.png"
-                            alt="More"
-                        />
-                    </div>
-                </td>
-            </tr>
-        ))
-    );
+    const tableHeader = [
+        "ID",
+        "Subject",
+        "Study Level",
+        "Teacher",
+        "Day",
+        "Start Time",
+        "End Time",
+        "Actions",
+    ];
+
+    const tableData = displayLesson.loading
+        ? [
+              [
+                  <td colSpan="8">
+                      <h4>Loading...</h4>
+                  </td>,
+              ],
+          ]
+        : displayLesson.lessons.map((lesson) => [
+              lesson.id,
+              lesson.subject?.subject_name || "-",
+              lesson.level_name || "-",
+              lesson.teacher_id || "-",
+              lesson.day || "-",
+              lesson.start_time || "-",
+              lesson.end_time || "-",
+              <div className="actions">
+                  <img
+                      className="me-2"
+                      src="http://localhost:8000/icon/edit.png"
+                      alt="Edit"
+                  />
+                  <img
+                      className="me-2"
+                      src="http://localhost:8000/icon/delete.png"
+                      alt="Delete"
+                      onClick={() => handleDelete(lesson.id)}
+                      style={{ cursor: "pointer" }}
+                  />
+                  <img src="http://localhost:8000/icon/more.png" alt="More" />
+              </div>,
+          ]);
 
     return (
         <>
-            <div className="px-3 mt-xl-5 mt-3">
-                <div className="page-title">Lesson</div>
-                <div className="d-flex justify-content-end">
-                    <Button
-                        data-bs-toggle="modal"
-                        data-bs-target="#createLessonModal"
-                    >
-                        Add Lesson
-                    </Button>
-                </div>
-                <div className="content-container mt-3">
-                    <div className="content-title">Current Active Lessons</div>
-                    <div className="table-wrapper position-relative">
-                        <table className="table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Subject</th>
-                                    <th>Study Level</th>
-                                    <th>Teacher</th>
-                                    <th>Day</th>
-                                    <th>Start Time</th>
-                                    <th>End Time</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>{lessonTable}</tbody>
-                        </table>
-                    </div>
-                </div>
+            <div className="page-title">Lesson</div>
+            <div className="d-flex justify-content-end">
+                <Button
+                    data-bs-toggle="modal"
+                    data-bs-target="#createLessonModal"
+                >
+                    Add Lesson
+                </Button>
             </div>
+            <ContentContainer title="Current Active Lessons">
+                <Table header={tableHeader} data={tableData}></Table>
+            </ContentContainer>
             <div
                 id="createLessonModal"
                 className="modal fade"

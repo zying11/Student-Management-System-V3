@@ -3,15 +3,15 @@ import { Link, useNavigate } from "react-router-dom";
 import axiosClient from "../axiosClient";
 import { useStateContext } from "../contexts/ContextProvider";
 import { Form, Alert, InputGroup } from "react-bootstrap";
-import Button from "../components/button/Button";
+import Button from "../components/Button/Button";
 import "../css/Login.css";
 
 export default function Login() {
     // Define state variables
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [role, setRole] = useState('');
-    const [errors, setErrors] = useState('');
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [role, setRole] = useState("");
+    const [errors, setErrors] = useState("");
 
     // Create references for input elements
     const emailRef = useRef();
@@ -41,18 +41,25 @@ export default function Login() {
             };
 
             // Send login request to server
-            axiosClient.post("/login", payload)
+            axiosClient
+                .post("/login", payload)
                 .then(({ data }) => {
                     setUser(data.user);
                     setToken(data.token);
-                    navigate('/users');
+                    navigate("/users");
                 })
-                .catch(err => {
+                .catch((err) => {
                     // Handle login error
-                    if (err.response && err.response.data && err.response.data.message) {
+                    if (
+                        err.response &&
+                        err.response.data &&
+                        err.response.data.message
+                    ) {
                         setErrors({ server: err.response.data.message });
                     } else {
-                        setErrors({ server: 'An error occurred. Please try again later.' });
+                        setErrors({
+                            server: "An error occurred. Please try again later.",
+                        });
                     }
                 });
         }
@@ -85,19 +92,29 @@ export default function Login() {
     };
 
     // Function to handle forgot password
-    const handlePassword = () => { };
+    const handlePassword = () => {};
 
     return (
         <div className="login-form-container box-area row p-3">
             <div className="left-box col-md-6">
-                <img src="http://localhost:8000/images/login-form-element.png" alt="Login illustration" className="login-illustration" />
-                <small className="login-illustration-text text-center mt-3">Student Management System</small>
+                <img
+                    src="http://localhost:8000/images/login-form-element.png"
+                    alt="Login illustration"
+                    className="login-illustration"
+                />
+                <small className="login-illustration-text text-center mt-3">
+                    Student Management System
+                </small>
             </div>
             <div className="right-box col-md-6">
                 <div className="row align-items-center">
-                    <h2 className="login-form-title text-center mb-4">Sign In</h2>
+                    <h2 className="login-form-title text-center mb-4">
+                        Sign In
+                    </h2>
                     <Form onSubmit={Submit}>
-                        {errors.server && <Alert variant="danger">{errors.server}</Alert>}
+                        {errors.server && (
+                            <Alert variant="danger">{errors.server}</Alert>
+                        )}
 
                         <Form.Group className="mb-3" controlId="formEmail">
                             <Form.Label>Email address</Form.Label>
@@ -107,7 +124,9 @@ export default function Login() {
                                 placeholder="Enter your email"
                                 onChange={(e) => setEmail(e.target.value)}
                             />
-                            {errors.email && <Alert variant="danger">{errors.email}</Alert>}
+                            {errors.email && (
+                                <Alert variant="danger">{errors.email}</Alert>
+                            )}
                         </Form.Group>
 
                         <Form.Group className="mb-3" controlId="formPassword">
@@ -118,7 +137,11 @@ export default function Login() {
                                 placeholder="Enter your password"
                                 onChange={(e) => setPassword(e.target.value)}
                             />
-                            {errors.password && <Alert variant="danger">{errors.password}</Alert>}
+                            {errors.password && (
+                                <Alert variant="danger">
+                                    {errors.password}
+                                </Alert>
+                            )}
                         </Form.Group>
 
                         <Form.Group className="mb-4" controlId="formRole">
@@ -132,17 +155,26 @@ export default function Login() {
                                 <option value="admin">Admin</option>
                                 <option value="teacher">Teacher</option>
                             </Form.Select>
-                            {errors.role && <Alert variant="danger">{errors.role}</Alert>}
+                            {errors.role && (
+                                <Alert variant="danger">{errors.role}</Alert>
+                            )}
                         </Form.Group>
 
                         <div className="d-grid mb-1">
-                            <Button className="btn-create-yellow" type="signin" variant="primary">
+                            <Button
+                                className="btn-create-yellow"
+                                type="signin"
+                                variant="primary"
+                            >
                                 Sign In
                             </Button>
                         </div>
 
                         <div className="d-grid justify-content-center">
-                            <Link to="/forgot-password" className="text-decoration-none">
+                            <Link
+                                to="/forgot-password"
+                                className="text-decoration-none"
+                            >
                                 <Button className="link-button" color="">
                                     Forgot password?
                                 </Button>
