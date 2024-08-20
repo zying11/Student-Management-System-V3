@@ -26,3 +26,19 @@
 .btn-create-yellow:hover {
     background-color: #f59607;
 }
+
+.link-button {
+    background-color: transparent;
+    border: none;
+    color: #6c757d;
+    text-decoration: underline;
+    font-size: 14px;
+}
+
+.link-button:hover {
+    background-color: transparent;
+    border: none;
+    color: #6c757d;
+    text-decoration: underline;
+    font-size: 14px;
+}
