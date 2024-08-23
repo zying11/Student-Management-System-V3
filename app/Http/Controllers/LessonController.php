@@ -7,23 +7,9 @@ use App\Models\Lesson;
 
 class LessonController extends Controller
 {
-    // public function index()
-    // {
-    //     $lessons = Lesson::all();
-    //     return response()->json([
-    //         'status' => 200,
-    //         'lessons' => $lessons
-    //     ]);
-    // }
-
     public function index()
     {
-        $lessons = Lesson::with('subject')
-            ->join('subjects', 'lessons.subject_id', '=', 'subjects.id')
-            ->join('study_level', 'subjects.level_id', '=', 'study_level.id')
-            ->select('lessons.*', 'subjects.subject_name', 'study_level.level_name')
-            ->get();
-
+        $lessons = Lesson::all();
         return response()->json([
             'status' => 200,
             'lessons' => $lessons

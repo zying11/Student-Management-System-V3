@@ -1,13 +1,12 @@
 .content-container {
     background-color: white;
     border-radius: 8px;
-    padding: 20px;
+    padding: 30px 40px;
 }
 
 .content-title {
     font-size: 30px;
     font-weight: 500;
-    overflow-x: auto;
 }
 
 /* media query */

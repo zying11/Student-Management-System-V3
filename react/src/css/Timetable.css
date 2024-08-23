@@ -1,0 +1,16 @@
+.unassigned {
+    background-color: #ffeed3;
+    padding: 20px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    min-width: 200px;
+
+    .subject-name {
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    p {
+        font-size: 14px;
+        color: #828282;
+    }
+}

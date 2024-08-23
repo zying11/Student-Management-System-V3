@@ -42,3 +42,18 @@
     text-decoration: underline;
     font-size: 14px;
 }
+
+/* media query */
+@media only screen and (max-width: 820px) {
+    .btn-create {
+        padding: 8px 22px;
+        font-size: 14px;
+    }
+}
+
+@media only screen and (max-width: 450px) {
+    .btn-create {
+        padding: 8px 18px;
+        font-size: 14px;
+    }
+}

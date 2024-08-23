@@ -15,8 +15,9 @@ import AdminDashboard from "./views/AdminDashboard.jsx";
 import AdminProfile from "./views/AdminProfile.jsx";
 import StudentProfile from "./views/StudentProfile.jsx";
 import Attendance from "./views/Attendance.jsx";
-import ForgotPassword from "./views/ForgotPassword.jsx"; 
+import ForgotPassword from "./views/ForgotPassword.jsx";
 import ResetPassword from "./views/ResetPassword.jsx";
+import Timetable from "./views/Timetable.jsx";
 
 // const exampleInvoice = {
 //     id: "1234",
@@ -59,6 +60,10 @@ const router = createBrowserRouter([
             {
                 path: "/timetable",
                 element: <Scheduler />,
+            },
+            {
+                path: "/timetabletest",
+                element: <Timetable />,
             },
             {
                 path: "/lesson",

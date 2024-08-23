@@ -4,8 +4,10 @@ import "./ContentContainer.css";
 export const ContentContainer = ({ title, children }) => {
     return (
         <div className="content-container mt-3">
-            <div className="content-title mb-3">{title}</div>
-            <div className="content-body">{children}</div>
+            <h1 className="content-title">{title}</h1>
+            <div className="position-relative content-body mt-4">
+                {children}
+            </div>
         </div>
     );
 };
