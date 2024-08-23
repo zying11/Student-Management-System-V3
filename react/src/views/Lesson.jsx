@@ -12,32 +12,6 @@ export default function Lesson() {
         teacher: "",
         duration: "",
     });
-    // Variable for fetching lesson data
-    const [displayLesson, setDisplayLesson] = useState({
-        lessons: [],
-        loading: true,
-    });
-
-    // Variable for fetching subject data
-    const [subjects, setSubject] = useState([]);
-
-    // Error handling
-    const [error, setError] = useState("");
-
-    // Handling input changes
-    const handleInput = (e) => {
-        // Destructure name and value from the event target (the input element that triggered the change)
-        const { name, value } = e.target;
-
-        // Update the lessonData state
-        setLessonData((prevLessonData) => ({
-            // Spread the previous state to retain all existing values
-            ...prevLessonData,
-
-            // Update the property that matches the input's name attribute
-            [name]: value,
-        }));
-    };
 
     // Post lessons data
     const saveLesson = async (e) => {
@@ -72,24 +46,11 @@ export default function Lesson() {
         setError("");
     };
 
-    // Fetch subject data
-    useEffect(() => {
-        async function fetchSubjects() {
-            try {
-                const res = await axios.get(
-                    "http://127.0.0.1:8000/api/subjects"
-                );
-
-                console.log(res.data.subjects);
-
-                setSubject(res.data.subjects);
-            } catch (error) {
-                console.error("Error fetching lessons:", error);
-            }
-        }
-
-        fetchSubjects();
-    }, []);
+    // Variable for fetching lesson data
+    const [displayLesson, setDisplayLesson] = useState({
+        lessons: [],
+        loading: true,
+    });
 
     // Fetch lessons data
     useEffect(() => {
@@ -134,6 +95,46 @@ export default function Lesson() {
         } catch (error) {
             console.error("Error deleting lesson:", error);
         }
+    };
+
+    // Variable for fetching subject data
+    const [subjects, setSubject] = useState([]);
+
+    // Fetch subject data
+    useEffect(() => {
+        async function fetchSubjects() {
+            try {
+                const res = await axios.get(
+                    "http://127.0.0.1:8000/api/subjects"
+                );
+
+                console.log(res.data.subjects);
+
+                setSubject(res.data.subjects);
+            } catch (error) {
+                console.error("Error fetching lessons:", error);
+            }
+        }
+
+        fetchSubjects();
+    }, []);
+
+    // Error handling
+    const [error, setError] = useState("");
+
+    // Handling input changes
+    const handleInput = (e) => {
+        // Destructure name and value from the event target (the input element that triggered the change)
+        const { name, value } = e.target;
+
+        // Update the lessonData state
+        setLessonData((prevLessonData) => ({
+            // Spread the previous state to retain all existing values
+            ...prevLessonData,
+
+            // Update the property that matches the input's name attribute
+            [name]: value,
+        }));
     };
 
     const tableHeader = [

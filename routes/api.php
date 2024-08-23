@@ -10,6 +10,7 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\PasswordResetController;
+use App\Http\Controllers\RoomController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -44,6 +45,9 @@ Route::post('/add-lesson', [LessonController::class, 'addNewLesson']);
 Route::post('/update-lesson', [LessonController::class, 'updateLesson']);
 Route::delete('/lessons/{id}', [LessonController::class, 'destroy']);
 Route::get('lessons', [LessonController::class, 'getLessons']);
+Route::get('lessonstest', [LessonController::class, 'index']);
+
+Route::get('rooms', [RoomController::class, 'index']);
 
 Route::get('center-profile', [CenterProfileController::class, 'index']);
 Route::post('/update-center-profile', [CenterProfileController::class, 'update']);

@@ -89,9 +89,6 @@ const menuItems = [
     },
 ];
 
-console.log(window.location.protocol);
-console.log(window.location.hostname);
-
 const SidebarItem = ({ item, activeItem, setActiveItem }) => {
     // State to track the active subItem
     const [activeSubItem, setActiveSubItem] = useState(null);

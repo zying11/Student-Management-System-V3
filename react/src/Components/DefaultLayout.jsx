@@ -60,20 +60,17 @@ export default function DefaultLayout() {
                     <div className="h-100">
                         <div className="sidebar-logo">LOGO</div>
                         <Sidebar />
-                        <div className="logout">
-                            <a
-                                href="#"
-                                onClick={onLogout}
-                                className="btn btn-outline-danger ms-2"
-                            >
-                                Logout
-                            </a>
-                        </div>
                     </div>
                 </aside>
 
-                <div className="main mx-3">
-                    <nav className="navbar navbar-expand">
+                <div
+                    className={
+                        isCollapsed
+                            ? "stretched position-relative main mb-4"
+                            : "position-relative main mb-4"
+                    }
+                >
+                    <nav className="navbar navbar-expand justify-content-between">
                         <button
                             className="btn"
                             id="sidebar-toggle"
@@ -82,8 +79,17 @@ export default function DefaultLayout() {
                         >
                             <span className="navbar-toggler-icon"></span>
                         </button>
+                        <div className="logout">
+                            <a
+                                href="#"
+                                onClick={onLogout}
+                                className="btn btn-outline-danger"
+                            >
+                                Logout
+                            </a>
+                        </div>
                     </nav>
-                    <div className="px-3 mt-xl-5 mt-3">
+                    <div className="px-md-3 px-2 mt-xl-5 mt-3">
                         <Outlet />
                     </div>
                 </div>

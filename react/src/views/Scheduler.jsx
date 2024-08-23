@@ -9,6 +9,7 @@ import "../css/Scheduler.css";
 export default function Scheduler() {
     // To display unassigned lesson data
     const [unassignedLessons, setUnassignedLessons] = useState([]);
+
     // Store the Draggable instance
     let draggableInstance = null;
 
