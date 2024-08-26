@@ -6,14 +6,23 @@ use Illuminate\Support\Facades\Schema;
 
 class AddRoleIdToUsersTable extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->unsignedBigInteger('role_id')->nullable();
-            $table->foreign('role_id')->references('id')->on('roles')->onDelete('set null');
+            // Foreign key to users table
+            $table->unsignedBigInteger('role_id');
+
+            // Foreign key constraint
+            $table->foreign('role_id')->references('id')->on('roles')->onDelete('restrict');
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
