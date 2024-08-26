@@ -15,15 +15,27 @@ class UpdateUserRequest extends FormRequest
         return true;
     }
 
-    
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
     public function rules(): array
     {
         return [
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,'.$this->id,
+            // 'email' => 'required|email|unique:users,email,'.$this->id,
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                'unique:users,email,' . $this->id,
+            ],
             'password' => [
+                'nullable',
                 Password::min(8)
                 ->letters()
+                // Password::min(8)->letters()->numbers()->mixedCase()->symbols(),
             ],
             'role_id' => 'sometimes|exists:roles,id', 
         ];

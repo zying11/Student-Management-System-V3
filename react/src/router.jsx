@@ -18,6 +18,10 @@ import Attendance from "./views/Attendance.jsx";
 import ForgotPassword from "./views/ForgotPassword.jsx";
 import ResetPassword from "./views/ResetPassword.jsx";
 import Timetable from "./views/Timetable.jsx";
+import Admin from "./views/Admin.jsx";
+import AdminForm from "./views/AdminForm.jsx";
+import Teacher from "./views/Teacher.jsx";
+import TeacherForm from "./views/TeacherForm.jsx";
 
 // const exampleInvoice = {
 //     id: "1234",
@@ -108,6 +112,30 @@ const router = createBrowserRouter([
             {
                 path: "/students/:id/profile",
                 element: <StudentProfile key="studentProfile" />,
+            },
+            {
+                path: "/admin",
+                element: <Admin key="admin" />,
+            },
+            {
+                path: "/admin/create",
+                element: <AdminForm isEditing={false} key="adminCreate" />,
+            },
+            {
+                path: "/admin/edit/:id",
+                element: <AdminForm isEditing={true} key="adminEdit" />,
+            },
+            {
+                path: "/teacher",
+                element: <Teacher key="teacher" />,
+            },
+            {
+                path: "/teacher/create",
+                element: <TeacherForm isEditing={false} key="teacherCreate" />,
+            },
+            {
+                path: "/teacher/edit/:id",
+                element: <TeacherForm isEditing={true} key="teacherEdit" />,
             },
         ],
     },

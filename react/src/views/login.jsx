@@ -44,9 +44,12 @@ export default function Login() {
             axiosClient
                 .post("/login", payload)
                 .then(({ data }) => {
+                    // Set user and token in context
                     setUser(data.user);
                     setToken(data.token);
-                    navigate("/users");
+                    
+                    // Redirect to admin page
+                    navigate("/admin");
                 })
                 .catch((err) => {
                     // Handle login error
