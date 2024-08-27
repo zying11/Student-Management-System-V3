@@ -37,6 +37,19 @@ export default function ForgotPassword() {
             });
     };
 
+    const handleEmailChange = (e) => {
+        setEmail(e.target.value);
+        // Clear email-related errors when the user starts typing
+        if (errors.email) {
+            setErrors((prevErrors) => ({ ...prevErrors, email: "" }));
+        }
+    };
+
+    // Function to clear the specific error when the user starts typing
+    const clearError = (field) => {
+        setErrors((prevErrors) => ({ ...prevErrors, [field]: "" }));
+    };
+
     return (
         <div className="forgot-password-form-container box-area row p-3">
             <div className="col p-5">
@@ -48,6 +61,10 @@ export default function ForgotPassword() {
                     />
 
                     <h2 className="text-center mb-2">Forgot Password?</h2>
+                    <small className="forgot-password-message text-center mb-4">
+                        Enter your email and we will send you a link to reset
+                        your password
+                    </small>
 
                     {/* Success message */}
                     {message && <Alert variant="success">{message}</Alert>}
@@ -57,26 +74,22 @@ export default function ForgotPassword() {
                         <Alert variant="danger">{errors.general}</Alert>
                     )}
 
-                    <small className="forgot-password-message text-center mb-4">
-                        Enter your email and we will send you a link to reset
-                        your password
-                    </small>
                     <Form onSubmit={handleSubmit}>
                         <Form.Group className="mb-4" controlId="formEmail">
                             <Form.Control
                                 type="email"
                                 placeholder="Enter your email here"
                                 value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                onChange={(e) => {
+                                    setEmail(e.target.value);
+                                    clearError("email");
+                                }}
+                                isInvalid={!!errors.email}
                                 className="email-placeholder"
                             />
-                            {/* Email validation error */}
-                            {errors.email &&
-                                errors.email.map((error, index) => (
-                                    <Alert key={index} variant="danger">
-                                        {error}
-                                    </Alert>
-                                ))}
+                            <Form.Control.Feedback type="invalid">
+                                {errors.email}
+                            </Form.Control.Feedback>
                         </Form.Group>
 
                         <div className="d-grid">

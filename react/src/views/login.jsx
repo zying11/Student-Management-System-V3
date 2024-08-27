@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axiosClient from "../axiosClient";
 import { useStateContext } from "../contexts/ContextProvider";
-import { Form, Alert, InputGroup } from "react-bootstrap";
+import { Form, Alert, Col } from "react-bootstrap";
 import Button from "../components/Button/Button";
 import "../css/Login.css";
 
@@ -47,7 +47,7 @@ export default function Login() {
                     // Set user and token in context
                     setUser(data.user);
                     setToken(data.token);
-                    
+
                     // Redirect to admin page
                     navigate("/admin");
                 })
@@ -94,8 +94,10 @@ export default function Login() {
         return error;
     };
 
-    // Function to handle forgot password
-    const handlePassword = () => {};
+    // Function to clear the specific error when the user starts typing
+    const clearError = (field) => {
+        setErrors((prevErrors) => ({ ...prevErrors, [field]: "" }));
+    };
 
     return (
         <div className="login-form-container box-area row p-3">
@@ -119,48 +121,61 @@ export default function Login() {
                             <Alert variant="danger">{errors.server}</Alert>
                         )}
 
-                        <Form.Group className="mb-3" controlId="formEmail">
+                        <Form.Group className="mb-3" as={Col} controlId="formEmail">
                             <Form.Label>Email address</Form.Label>
                             <Form.Control
                                 ref={emailRef}
                                 type="email"
                                 placeholder="Enter your email"
-                                onChange={(e) => setEmail(e.target.value)}
+                                value={email}
+                                onChange={(e) => {
+                                    setEmail(e.target.value);
+                                    clearError("email");
+                                }}
+                                isInvalid={!!errors.email}
                             />
-                            {errors.email && (
-                                <Alert variant="danger">{errors.email}</Alert>
-                            )}
+                            <Form.Control.Feedback type="invalid">
+                                {errors.email}
+                            </Form.Control.Feedback>
                         </Form.Group>
 
-                        <Form.Group className="mb-3" controlId="formPassword">
+                        <Form.Group className="mb-3" as={Col} controlId="formPassword">
                             <Form.Label>Password</Form.Label>
                             <Form.Control
                                 ref={passwordRef}
                                 type="password"
                                 placeholder="Enter your password"
-                                onChange={(e) => setPassword(e.target.value)}
+                                value={password}
+                                onChange={(e) => {
+                                    setPassword(e.target.value);
+                                    clearError("password");
+                                }}
+                                isInvalid={!!errors.password}
                             />
-                            {errors.password && (
-                                <Alert variant="danger">
-                                    {errors.password}
-                                </Alert>
-                            )}
+                            <Form.Control.Feedback type="invalid">
+                                {errors.password}
+                            </Form.Control.Feedback>
                         </Form.Group>
 
-                        <Form.Group className="mb-4" controlId="formRole">
+                        <Form.Group className="mb-4" as={Col} controlId="formRole">
                             <Form.Label>Role</Form.Label>
                             <Form.Select
                                 ref={roleBasedRef}
                                 aria-label="Select your role"
-                                onChange={(e) => setRole(e.target.value)}
+                                value={role}
+                                onChange={(e) => {
+                                    setRole(e.target.value);
+                                    clearError("role");
+                                }}
+                                isInvalid={!!errors.role}
                             >
                                 <option value="">Select your role</option>
                                 <option value="admin">Admin</option>
                                 <option value="teacher">Teacher</option>
                             </Form.Select>
-                            {errors.role && (
-                                <Alert variant="danger">{errors.role}</Alert>
-                            )}
+                            <Form.Control.Feedback type="invalid">
+                                {errors.role}
+                            </Form.Control.Feedback>
                         </Form.Group>
 
                         <div className="d-grid mb-1">
