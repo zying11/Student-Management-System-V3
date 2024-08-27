@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -22,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role_id',
     ];
 
     /**
@@ -30,6 +30,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
+        // Password should not be visible in JSON responses
         'password',
         'remember_token',
     ];
@@ -44,8 +45,25 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
+    /**
+     * Define the relationship to the Role model.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function role()
     {
-        return $this->belongsTo(Role::class);
+        // A user belongs to a role
+        return $this->belongsTo(Role::class, 'role_id');
+    }
+
+    /**
+     * Define the relationship to the Admin model.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function admin()
+    {
+        // A user has one admin record
+        return $this->hasOne(Admin::class, 'user_id');
     }
 }

@@ -25,8 +25,8 @@ const menuItems = [
         icon: "teachers.png",
         title: "Teachers",
         subItems: [
-            { title: "All Teachers", link: "" },
-            { title: "Add New Teacher", link: "" },
+            { title: "All Teachers", link: "/teacher" },
+            { title: "Add New Teacher", link: "/teacher/create" },
             { title: "Edit Teacher", link: "" },
             { title: "Teacher Profile", link: "" },
         ],
@@ -36,8 +36,8 @@ const menuItems = [
         icon: "admins.png",
         title: "Admins",
         subItems: [
-            { title: "All Admins", link: "" },
-            { title: "Add New Admin", link: "" },
+            { title: "All Admins", link: "/admin" },
+            { title: "Add New Admin", link: "/admin/create" },
             { title: "Edit Admin", link: "" },
             { title: "Admin Profile", link: "" },
         ],

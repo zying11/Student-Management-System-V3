@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password;
 
-class StoreUserRequest extends FormRequest
+class UpdateAdminRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,15 +23,13 @@ class StoreUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => [
-                'required',
-                Password::min(8)
-                ->letters()
-                // Password::min(8)->letters()->numbers()->mixedCase()->symbols(),
-            ],
-            'role_id' => 'required|exists:roles,id',
+            'phone_number' => 'required|digits_between:10,15',
+            'birth_date' => 'required|date',
+            'gender' => 'required|in:male,female',
+            'nationality' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
+            'postal_code' => 'required|digits:5',
+            'user_id' => 'required|exists:users,id',
         ];
     }
 }
