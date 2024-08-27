@@ -8,16 +8,25 @@ import interactionPlugin, { Draggable } from "@fullcalendar/interaction";
 import "../css/Timetable.css";
 
 export default function Timetable() {
-    // Variable for fetching room data
-    const [rooms, setRoom] = useState([]);
+    // Variable for room operation
+    const [selectedRoomId, setSelectedRoomId] = useState(null);
+    const [rooms, setRooms] = useState([]);
+
+    const handleRoomChange = (event) => {
+        setSelectedRoomId(event.target.value);
+        console.log(selectedRoomId);
+    };
 
     // Fetch room data
     useEffect(() => {
         async function fetchRooms() {
             try {
                 const res = await axios.get("http://127.0.0.1:8000/api/rooms");
-                // console.log(res.data.rooms);
-                setRoom(res.data.rooms);
+                const roomsData = res.data.rooms;
+                setRooms(roomsData);
+                if (roomsData.length > 0) {
+                    setSelectedRoomId(roomsData[0].id); // Set the first room's ID as the default
+                }
             } catch (error) {
                 console.error("Error fetching rooms:", error);
             }
@@ -56,11 +65,29 @@ export default function Timetable() {
 
         fetchUnassignedLessons();
     }, []);
-    // console.log(unassignedLessons);
 
     // Store the Draggable instance
     let draggableInstance = null;
 
+    const formatDuration = (durationFloat) => {
+        // Get the whole number part (hours)
+        // Example: If durationFloat is 1.75, Math.floor(1.75) returns 1
+        const hours = Math.floor(durationFloat);
+        // Calculates the fractional part (minutes)
+        // Example: If durationFloat is 1.75 and hours is 1, then 1.75 - 1 gives 0.75
+        // The fractional part is multiplied by 60 to convert it into minutes
+        const minutes = Math.round((durationFloat - hours) * 60);
+
+        // Ensure two-digit format, String(hours) convert them into string
+        // padStart(2, '0'): Ensures the string has at least 2 digits by padding it with leading zeros if necessary
+        // Example: If hours is 5, padStart(2, '0') converts it to "05"
+        const formattedHours = String(hours).padStart(2, "0");
+        const formattedMinutes = String(minutes).padStart(2, "0");
+
+        return `${formattedHours}:${formattedMinutes}`;
+    };
+
+    // Draggable div logic
     useEffect(() => {
         const containerEl = document.querySelector("#unassigned-container");
         if (containerEl && !draggableInstance) {
@@ -68,9 +95,16 @@ export default function Timetable() {
             draggableInstance = new Draggable(containerEl, {
                 itemSelector: ".unassigned",
                 eventData: (eventEl) => {
+                    // dataset is a read-only property that provides access to all the data attributes defined on that element
+                    // Data attributes are custom attributes that start with data-
                     // lessonId is a constant variable that stores the value of the data-lesson-id
                     // so must make sure .unassigned div has 'data-lesson-id' attribute
+                    // in this case, is used to find the corresponding lesson from the unassignedLessons array
                     const lessonId = eventEl.dataset.lessonId;
+                    // Convert duration to a number
+                    const durationFloat = parseFloat(
+                        eventEl.dataset.lessonDuration
+                    );
                     const lesson = unassignedLessons.find(
                         (l) => l.id.toString() === lessonId
                     );
@@ -78,12 +112,14 @@ export default function Timetable() {
                         return {
                             id: lesson.id.toString(),
                             title: lesson.subject_name,
+                            duration: formatDuration(durationFloat),
                         };
                     } else {
                         // Return a default object to avoid errors
                         return {
                             id: "",
                             title: "Unknown Lesson",
+                            duration: "01:00",
                         };
                     }
                 },
@@ -100,6 +136,118 @@ export default function Timetable() {
         // UseEffect Hook will only run whenever the unassignedLessons variable changes
     }, [unassignedLessons]);
 
+    // Variable to catch multiple lesson times
+    const [selectedEvents, setSelectedEvents] = useState([]);
+
+    // Catch event start and end time
+    const handleEventDrop = (eventInfo) => {
+        // Get lesson ID from data attribute
+        const lessonId = eventInfo.draggedEl.dataset.lessonId;
+        // Get lesson duration from data attribute
+        const lessonDuration = parseFloat(
+            eventInfo.draggedEl.dataset.lessonDuration
+        );
+
+        // Validate eventInfo and dateStr
+        if (!eventInfo || !eventInfo.dateStr) {
+            console.error("Invalid eventInfo or dateStr.");
+            return;
+        }
+
+        const dateObj = new Date(eventInfo.dateStr);
+        // Extract day of week (0-6, where 0 is Sunday)
+        const dayOfWeek = dateObj.getDay();
+        // Extract HH:mm format for start time
+        const startTime = dateObj.toTimeString().slice(0, 5);
+
+        // Convert the duration into hours and minutes
+        const hours = Math.floor(lessonDuration);
+        const minutes = Math.round((lessonDuration - hours) * 60);
+
+        // Calculate the end time
+        dateObj.setHours(dateObj.getHours() + hours);
+        dateObj.setMinutes(dateObj.getMinutes() + minutes);
+
+        // Extract HH:mm format for end time
+        const endTime = dateObj.toTimeString().slice(0, 5);
+
+        const newEvent = {
+            id: lessonId,
+            day: dayOfWeek,
+            startTime: startTime,
+            endTime: endTime,
+        };
+
+        // Append the new event to the selectedEvents array
+        setSelectedEvents((prevEvents) => [...prevEvents, newEvent]);
+    };
+
+    // Save timetable to the database
+    const handleSaveTimetable = async () => {
+        console.log(selectedRoomId);
+        if (!selectedRoomId) {
+            console.error("No room selected.");
+            return;
+        }
+
+        try {
+            // Iterate over each selected event and send it to the backend separately
+            for (const event of selectedEvents) {
+                const eventData = {
+                    ...event,
+                    roomId: selectedRoomId, // Include the selected room ID
+                };
+
+                const response = await axios.post(
+                    "http://127.0.0.1:8000/api/update-lesson",
+                    eventData
+                );
+                console.log("Event saved to database:", response.data);
+            }
+            console.log("All events saved successfully.");
+        } catch (error) {
+            console.error("Error saving event to database:", error.response);
+        }
+    };
+
+    // Variable to display timetable events
+    const [timetableEvents, setTimetableEvents] = useState([]);
+
+    // Format the fetched data into FullCalendar event format
+    const formatEventData = (lessons) => {
+        return lessons.map((lesson) => {
+            const startTime = lesson.start_time.slice(0, 5); // Extract HH:mm format
+            const endTime = lesson.end_time.slice(0, 5); // Extract HH:mm format
+
+            return {
+                id: lesson.id.toString(),
+                title: lesson.subject.subject_name,
+                startTime: startTime,
+                endTime: endTime,
+                daysOfWeek: [parseInt(lesson.day)], // Set the day of the week (0-6)
+            };
+        });
+    };
+
+    // Fetch events based on the selected room
+    useEffect(() => {
+        if (selectedRoomId) {
+            async function fetchEvents() {
+                try {
+                    const res = await axios.get(
+                        `http://127.0.0.1:8000/api/timetable-lessons?room_id=${selectedRoomId}`
+                    );
+                    // console.log(res.data); // To check data format
+                    const formattedEvents = formatEventData(res.data.lessons);
+                    setTimetableEvents(formattedEvents);
+                } catch (error) {
+                    console.error("Error fetching events:", error);
+                }
+            }
+            fetchEvents();
+        }
+    }, [selectedRoomId]);
+
     return (
         <>
             <div className="page-title">Timetable</div>
@@ -112,6 +260,7 @@ export default function Timetable() {
                         <div
                             className="unassigned"
                             data-lesson-id={lesson.id}
+                            data-lesson-duration={lesson.duration}
                             key={lesson.id}
                         >
                             <div className="subject-name mb-2">
@@ -125,7 +274,11 @@ export default function Timetable() {
             </ContentContainer>
             <ContentContainer title="Timetable">
                 <div className="room-selection d-flex justify-content-end my-3">
-                    <select name="roomID">
+                    <select
+                        name="roomID"
+                        value={selectedRoomId || ""}
+                        onChange={handleRoomChange}
+                    >
                         {rooms.map((room) => (
                             <option key={room.id} value={room.id}>
                                 {room.room_name}
@@ -142,7 +295,17 @@ export default function Timetable() {
                     // slotMaxTime="19:00:00"
                     editable="true"
                     droppable="true"
+                    drop={handleEventDrop}
+                    events={timetableEvents}
                 />
+                <div className="d-flex justify-content-end p-4">
+                    <button
+                        className="btn btn-primary btn-save"
+                        onClick={handleSaveTimetable}
+                    >
+                        Save Timetable
+                    </button>
+                </div>
             </ContentContainer>
         </>
     );
