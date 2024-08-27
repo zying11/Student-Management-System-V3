@@ -49,6 +49,11 @@ export default function ResetPassword() {
             });
     };
 
+    // Function to clear the specific error when the user starts typing
+    const clearError = (field) => {
+        setErrors((prevErrors) => ({ ...prevErrors, [field]: "" }));
+    };
+
     return (
         <div className="reset-password-form-container box-area row p-3">
             <div className="col p-5">
@@ -60,6 +65,9 @@ export default function ResetPassword() {
                     />
 
                     <h2 className="text-center mb-2">Reset Password</h2>
+                    <small className="reset-password-message text-center mb-4">
+                        Reset your new password here
+                    </small>
 
                     {/* Success message */}
                     {message && <Alert variant="success">{message}</Alert>}
@@ -69,9 +77,6 @@ export default function ResetPassword() {
                         <Alert variant="danger">{errors.general}</Alert>
                     )}
 
-                    <small className="reset-password-message text-center mb-4">
-                        Reset your new password here
-                    </small>
                     <Form onSubmit={handleSubmit}>
                         {/* Email Input */}
                         <Form.Group className="mb-3" controlId="formEmail">
@@ -79,16 +84,17 @@ export default function ResetPassword() {
                                 type="email"
                                 placeholder="Enter your email"
                                 value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                name="email"
+                                onChange={(e) => {
+                                    setEmail(e.target.value);
+                                    clearError("email");
+                                }}
+                                isInvalid={!!errors.email}
                                 className="email-placeholder"
                             />
-                            {/* Email validation error */}
-                            {errors.email &&
-                                errors.email.map((error, index) => (
-                                    <Alert key={index} variant="danger">
-                                        {error}
-                                    </Alert>
-                                ))}
+                            <Form.Control.Feedback type="invalid">
+                                {errors.email}
+                            </Form.Control.Feedback>
                         </Form.Group>
 
                         <Form.Group className="mb-3" controlId="formPassword">
@@ -96,40 +102,35 @@ export default function ResetPassword() {
                                 type="password"
                                 placeholder="Enter new password"
                                 value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                name="password"
+                                onChange={(e) => {
+                                    setPassword(e.target.value);
+                                    clearError("password");
+                                }}
+                                isInvalid={!!errors.password}
                                 className="newpassword-placeholder"
                             />
-                            {/* Password validation error */}
-                            {errors.password &&
-                                errors.password.map((error, index) => (
-                                    <Alert key={index} variant="danger">
-                                        {error}
-                                    </Alert>
-                                ))}
+                            <Form.Control.Feedback type="invalid">
+                                {errors.password}
+                            </Form.Control.Feedback>
                         </Form.Group>
 
-                        <Form.Group
-                            className="mb-4"
-                            controlId="formPasswordConfirmation"
-                        >
+                        <Form.Group className="mb-4" controlId="formPasswordConfirmation">
                             <Form.Control
                                 type="password"
                                 placeholder="Confirm new password"
                                 value={passwordConfirmation}
-                                onChange={(e) =>
-                                    setPasswordConfirmation(e.target.value)
-                                }
+                                name="password_confirmation"
+                                onChange={(e) => {
+                                    setPasswordConfirmation(e.target.value);
+                                    clearError("password_confirmation");
+                                }}
+                                isInvalid={!!errors.password_confirmation}
                                 className="confirm-password-placeholder"
                             />
-                            {/* Password confirmation validation error */}
-                            {errors.password_confirmation &&
-                                errors.password_confirmation.map(
-                                    (error, index) => (
-                                        <Alert key={index} variant="danger">
-                                            {error}
-                                        </Alert>
-                                    )
-                                )}
+                            <Form.Control.Feedback type="invalid">
+                                {errors.password_confirmation}
+                            </Form.Control.Feedback>
                         </Form.Group>
 
                         <div className="d-grid">
