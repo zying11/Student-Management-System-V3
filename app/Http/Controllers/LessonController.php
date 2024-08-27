@@ -33,12 +33,13 @@ class LessonController extends Controller
 
     public function getLessons()
     {
+        // Setting up the variable to hold the collection of Lesson objects
         $lessons = Lesson::with('subject')
-            //Retrieve data from the subjects table related to each lesson
+            // Retrieve data from the subjects table related to each lesson
             ->join('subjects', 'lessons.subject_id', '=', 'subjects.id')
-            //Retrieve data from the study_level table related to each subject
+            // Retrieve data from the study_level table related to each subject
             ->join('study_level', 'subjects.level_id', '=', 'study_level.id')
-            //Specifies which columns should be retrieved 
+            // Specifies which columns should be retrieved 
             ->select('lessons.*', 'subjects.subject_name', 'study_level.level_name')
             ->get();
 
@@ -47,6 +48,37 @@ class LessonController extends Controller
             'lessons' => $lessons
         ]);
     }
+
+    // public function getTimetableLessons()
+    // {
+    //     $lessons = Lesson::with(['subject', 'room'])
+    //         ->join('subjects', 'lessons.subject_id', '=', 'subjects.id')
+    //         ->join('study_level', 'subjects.level_id', '=', 'study_level.id')
+    //         ->join('rooms', 'lessons.room_id', '=', 'rooms.id')
+    //         ->select('lessons.*', 'subjects.subject_name', 'study_level.level_name', 'rooms.id as room_id', 'rooms.room_name')
+    //         ->get();
+
+    //     return response()->json([
+    //         'status' => 200,
+    //         'lessons' => $lessons
+    //     ]);
+    // }
+
+    public function getTimetableLessons(Request $request)
+    {
+        $roomId = $request->query('room_id');
+
+        // If room_id is provided, filter lessons by room_id
+        if ($roomId) {
+            $lessons = Lesson::where('room_id', $roomId)->with(['subject', 'room'])->get();
+        } else {
+            // Otherwise, return all lessons
+            $lessons = Lesson::with(['subject', 'room'])->get();
+        }
+
+        return response()->json(['lessons' => $lessons]);
+    }
+
 
 
     public function updateLesson(Request $request)
@@ -62,6 +94,7 @@ class LessonController extends Controller
         }
 
         // Update lesson attributes with request data
+        $lesson->room_id = $request->input('roomId');
         $lesson->day = $request->input('day');
         $lesson->start_time = $request->input('startTime');
         $lesson->end_time = $request->input('endTime');

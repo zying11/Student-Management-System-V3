@@ -45,7 +45,7 @@ Route::post('/add-lesson', [LessonController::class, 'addNewLesson']);
 Route::post('/update-lesson', [LessonController::class, 'updateLesson']);
 Route::delete('/lessons/{id}', [LessonController::class, 'destroy']);
 Route::get('lessons', [LessonController::class, 'getLessons']);
-Route::get('lessonstest', [LessonController::class, 'index']);
+Route::get('/timetable-lessons', [LessonController::class, 'getTimetableLessons']);
 
 Route::get('rooms', [RoomController::class, 'index']);
 

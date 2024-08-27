@@ -143,32 +143,6 @@ export default function Scheduler() {
             return;
         }
 
-        // // Parse duration (assuming duration is in hours)
-        // const duration = parseFloat(lesson.duration);
-
-        // // Calculate end time based on duration
-        // const startTime = new Date(eventInfo.dateStr);
-        // const endTime = new Date(
-        //     startTime.getTime() + duration * 60 * 60 * 1000
-        // ); // Add duration in milliseconds
-
-        // // Extract day of week (0-6, where 0 is Sunday)
-        // const dayOfWeek = startTime.getDay();
-
-        // // Extract HH:mm format for start and end time
-        // const startTimeString = startTime.toTimeString().slice(0, 5);
-        // const endTimeString = endTime.toTimeString().slice(0, 5);
-
-        // // Construct transformed event object
-        // const transformedEvent = {
-        //     id: lessonId, // Get lesson id in the db table instead of id of the event in FullCalendar
-        //     day: dayOfWeek,
-        //     startTime: startTimeString,
-        //     endTime: endTimeString,
-        // };
-
-        // setSelectedEvent(transformedEvent);
-
         const dateObj = new Date(eventInfo.dateStr);
         // Extract day of week (0-6, where 0 is Sunday)
         const dayOfWeek = dateObj.getDay();
@@ -179,7 +153,6 @@ export default function Scheduler() {
         dateObj.setHours(dateObj.getHours() + 1);
         // Extract HH:mm format for end time
         const endTime = dateObj.toTimeString().slice(0, 5);
-        console.log(endTime);
         const transformedEvent = {
             // Get lesson id in the db table instead of id of the event in FullCalendar
             id: lessonId,
