@@ -72,14 +72,11 @@ export default function TeacherForm({ isEditing }) {
                     setUserId(fetchedUserId);
                     setTeacherId(fetchedTeacherId);
 
-                    // Fetch user data using the user_id
-                    const userResponse = await axiosClient.get(`/users/${fetchedUserId}`);
-
-                    // Set the login and teacher details
+                    // Set the login, teacher basic info and subject teaching details
                     setLoginDetails({
-                        name: userResponse.data.name,
-                        email: userResponse.data.email,
-                        role_id: userResponse.data.role_id,
+                        name: teacherResponse.data.name,
+                        email: teacherResponse.data.email,
+                        role_id: teacherResponse.data.role_id,
                     });
 
                     setTeacherDetails({
@@ -92,11 +89,7 @@ export default function TeacherForm({ isEditing }) {
                         postal_code: teacherResponse.data.postal_code,
                     });
 
-                    // Fetch the subjects assigned to the teacher
-                    const subjectsResponse = await axiosClient.get(`/teachers/${id}/subjects`);
-
-                    // Set the selected subjects
-                    setSelectedSubjects(subjectsResponse.data.subjects);
+                    setSelectedSubjects(teacherResponse.data.subject_teaching);
 
                 } catch (error) {
                     console.error('Error fetching teacher data:', error);
