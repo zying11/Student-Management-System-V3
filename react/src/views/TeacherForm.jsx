@@ -6,6 +6,7 @@ import Button from "../components/Button/Button";
 import { ContentContainer } from "../components/ContentContainer/ContentContainer";
 import LoginDetailsForm from "../components/Form/LoginDetailsForm";
 import BasicDetailsForm from "../components/Form/BasicDetailsForm";
+import SubjectForm from "../components/Form/SubjectForm";
 import Spinner from 'react-bootstrap/Spinner';
 
 export default function TeacherForm({ isEditing }) {
@@ -31,18 +32,35 @@ export default function TeacherForm({ isEditing }) {
         nationality: "",
         address: "",
         postal_code: "",
-        subject_teaching: "",
+        subject_ids: [], // Array to store multiple subject teaching id
     });
 
+    const [subjects, setSubjects] = useState([]);
+    const [selectedSubjects, setSelectedSubjects] = useState([]);
     const [errors, setErrors] = useState({});
     const [userId, setUserId] = useState(null);
     const [teacherId, setTeacherId] = useState(null);
     const [loading, setLoading] = useState(false);
 
-    // Fetch teacher data if editing
     useEffect(() => {
+        // Fetch subjects
+        const fetchSubjects = async () => {
+            try {
+                const response = await axiosClient.get('/subjects');
+                setSubjects(response.data.subjects);
+            } catch (error) {
+                console.error('Error fetching subjects:', error);
+            }
+        };
+
+        // Call the fetchSubjects function
+        fetchSubjects();
+
+        // If editing and ID is available
         if (isEditing && id) {
             const fetchTeacherData = async () => {
+                // Set loading to true while fetching data
+                setLoading(true);
                 try {
                     // Fetch teacher data using the ID
                     const teacherResponse = await axiosClient.get(`/teachers/${id}`);
@@ -72,8 +90,14 @@ export default function TeacherForm({ isEditing }) {
                         nationality: teacherResponse.data.nationality,
                         address: teacherResponse.data.address,
                         postal_code: teacherResponse.data.postal_code,
-                        subject_teaching: teacherResponse.data.subject_teaching,
                     });
+
+                    // Fetch the subjects assigned to the teacher
+                    const subjectsResponse = await axiosClient.get(`/teachers/${id}/subjects`);
+
+                    // Set the selected subjects
+                    setSelectedSubjects(subjectsResponse.data.subjects);
+
                 } catch (error) {
                     console.error('Error fetching teacher data:', error);
                 } finally {
@@ -147,6 +171,35 @@ export default function TeacherForm({ isEditing }) {
         }
     };
 
+    // Function to handle changes in the subject teaching details
+    const handleSubjectChange = (e, index) => {
+        // Get the value from the input field
+        const updatedSubjects = [...selectedSubjects];
+
+        // Update the selected subjects
+        updatedSubjects[index] = e.target.value;
+
+        // Set the updated subjects
+        setSelectedSubjects(updatedSubjects);
+
+        // Clear the specific error when the user starts typing
+        if (errors.subject_ids) {
+            setErrors({ ...errors, subject_ids: "" });
+        }
+    };
+
+    // Helper function to add a new subject field
+    const handleAddSubject = () => {
+        // setSelectedSubjects([...selectedSubjects, { id: '' }]);
+        setSelectedSubjects([...selectedSubjects, '']);
+    };
+
+    // Helper function to remove a subject field
+    const handleRemoveSubject = (index) => {
+        const updatedSubjects = selectedSubjects.filter((_, i) => i !== index);
+        setSelectedSubjects(updatedSubjects);
+    };
+
     // Function to handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -173,6 +226,13 @@ export default function TeacherForm({ isEditing }) {
                     await axiosClient.put(`/teachers/${teacherId}`, {
                         ...teacherDetails,
                         user_id: userId,
+
+                    });
+
+                    // Update the subjects teaching details
+                    await axiosClient.put(`/teachers/${teacherId}/subjects`, {
+                        teacher_id: teacherId,
+                        subject_ids: selectedSubjects
                     });
                 }
                 // If creating a new teacher
@@ -182,17 +242,25 @@ export default function TeacherForm({ isEditing }) {
                 const newUserId = userResponse.data.id;
 
                 // Create the teacher using the user_id from the response
-                await axiosClient.post('/teachers', {
+                const teacherResponse = await axiosClient.post(`/teachers`, {
                     ...teacherDetails,
                     // Associate teacher with the created user
                     user_id: newUserId,
+
+                });
+                const newTeacherId = teacherResponse.data.id;
+
+                // Create the subjects teaching details
+                await axiosClient.post(`/teachers/subjects`, {
+                    teacher_id: newTeacherId,
+                    subject_ids: selectedSubjects
                 });
             }
 
             alert(`Teacher ${isEditing ? 'updated' : 'created'} successfully`);
 
             // Redirect to the teacher list page
-            navigate('/teachers');
+            navigate('/teacher');
         } catch (error) {
             if (error.response && error.response.data) {
                 setErrors(error.response.data.errors);
@@ -281,8 +349,8 @@ export default function TeacherForm({ isEditing }) {
         }
 
         // Validate subject teaching details
-        if (!teacherDetails.subject_teaching) {
-            errors.subject_teaching = "Subject is required";
+        if (selectedSubjects.includes('')) {
+            errors.subject_ids = "At least one subject must be selected, and no fields can be empty";
         }
 
         return errors;
@@ -317,24 +385,14 @@ export default function TeacherForm({ isEditing }) {
                     </ContentContainer>
 
                     <ContentContainer title="Subject Teaching Details">
-                        <Form.Group controlId="subject_teaching">
-                            <Form.Label>Subject</Form.Label>
-                            <Form.Select
-                                name="subject_teaching"
-                                value={teacherDetails.subject_teaching}
-                                onChange={handleTeacherChange}
-                                isInvalid={!!errors.subject_teaching}
-                            >
-                                <option>Select subject</option>
-                                <option value="Math">Math</option>
-                                <option value="Science">Science</option>
-                                <option value="English">English</option>
-
-                            </Form.Select>
-                            <Form.Control.Feedback type="invalid">
-                                {errors.subject_teaching}
-                            </Form.Control.Feedback>
-                        </Form.Group>
+                        <SubjectForm
+                            availableSubjects={subjects}
+                            selectedSubjects={selectedSubjects}
+                            handleSubjectChange={handleSubjectChange}
+                            addSubject={handleAddSubject}
+                            removeSubject={handleRemoveSubject}
+                            errors={errors}
+                        />
                     </ContentContainer>
 
                     <div className="d-flex justify-content-end mt-4 mb-4">

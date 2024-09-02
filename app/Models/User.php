@@ -66,4 +66,15 @@ class User extends Authenticatable
         // A user has one admin record
         return $this->hasOne(Admin::class, 'user_id');
     }
+
+    /**
+     * Define the relationship to the Teacher model.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function teacher()
+    {
+        // A user has one teacher record
+        return $this->hasOne(Teacher::class, 'user_id');
+    }
 }

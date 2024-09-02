@@ -13,4 +13,15 @@ class Subject extends Model
         'level_id',
         'subject_name'
     ];
+
+    /**
+     * Define the relationship to the Teacher model.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function teacher()
+    {
+        // A subject belongs many teachers
+        return $this->belongsToMany(Teacher::class, 'teacher_subject');
+    }
 }
