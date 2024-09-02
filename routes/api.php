@@ -12,6 +12,8 @@ use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\TeacherController;
+use App\Http\Controllers\TeacherSubjectController;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -40,7 +42,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 Route::post('login', [AuthController::class, 'login']);
-Route::post('register', [AuthController::class, 'register']);
+// Route::post('register', [AuthController::class, 'register']);
 // Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 
 Route::post('/add-lesson', [LessonController::class, 'addNewLesson']);
@@ -97,3 +99,22 @@ Route::get('/admins/{id}', [AdminController::class, 'show']);
 Route::put('/admins/{id}', [AdminController::class, 'update']); 
 // Route to delete specific admin details and the associated user account by ID
 Route::delete('/admins/{id}', [AdminController::class, 'destroy']); 
+
+// Route to fetch the list of all teachers
+Route::get('/teachers', [TeacherController::class, 'index']);
+// Route to store a new teacher and associated user details
+Route::post('/teachers', [TeacherController::class, 'store']);
+// Route to fetch specific teacher details by ID
+Route::get('/teachers/{id}', [TeacherController::class, 'show']); 
+// Route to update specific teacher details by ID
+Route::put('/teachers/{id}', [TeacherController::class, 'update']); 
+// Route to delete specific teacher details and the associated user account by ID
+Route::delete('/teachers/{id}', [TeacherController::class, 'destroy']); 
+
+
+// Route to store subjects teaching for a teacher
+Route::post('/teachers/subjects', [TeacherSubjectController::class, 'store']);
+// Route to update subjects teaching for a specific teacher
+Route::put('/teachers/{id}/subjects', [TeacherSubjectController::class, 'update']);
+// Route to get subjects teaching assigned to a specific teacher
+Route::get('/teachers/{id}/subjects', [TeacherSubjectController::class, 'show']);
