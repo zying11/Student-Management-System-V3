@@ -20,7 +20,12 @@ class TeacherResource extends JsonResource
     {
         return [
             // Display the teacher's basic details
+            // Join the user login details with the teacher details and display
             'id' => $this->id,
+            'user_id' => $this->user->id,
+            'name' => $this->user->name,
+            'email' => $this->user->email,
+            'joining_date' => $this->user->created_at->format('d-m-Y'),
             'phone_number' => $this->phone_number,
             'gender' => $this->gender,
             'age' => $this->age,
@@ -29,17 +34,8 @@ class TeacherResource extends JsonResource
             'address' => $this->address,
             'postal_code' => $this->postal_code,
 
-            // Join the user login details with the teacher details and display
-            'user_id' => $this->user->id,
-            'name' => $this->user->name,
-            'email' => $this->user->email,
-            'joining_date' => $this->user->created_at->format('d-m-Y'),
-
-            // Display all the user data
-            'user' => new UserResource($this->whenLoaded('user')),
-
             // Display the subjects the teacher is teaching
-            'subject_teaching' => $this-> subject->pluck('id'),
+            'subject_teaching' => $this->subject->pluck('id'),
         ];
     }
 }
