@@ -89,7 +89,7 @@ export default function TeacherForm({ isEditing }) {
                         postal_code: teacherResponse.data.postal_code,
                     });
 
-                    setSelectedSubjects(teacherResponse.data.subject_teaching);
+                    setSelectedSubjects(teacherResponse.data.subject_teaching_ids);
 
                 } catch (error) {
                     console.error('Error fetching teacher data:', error);
