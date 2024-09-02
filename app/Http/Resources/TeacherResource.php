@@ -34,8 +34,9 @@ class TeacherResource extends JsonResource
             'address' => $this->address,
             'postal_code' => $this->postal_code,
 
-            // Display the subjects the teacher is teaching
-            'subject_teaching' => $this->subject->pluck('id'),
+            // Display the subject teaching details
+            'subject_teaching_ids' => $this->subject->pluck('id'),
+            'subject_teaching_names' => $this->subject->pluck('subject_name'),
         ];
     }
 }

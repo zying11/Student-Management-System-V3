@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreTeacherSubjectRequest;
 use App\Http\Requests\UpdateTeacherSubjectRequest;
 use App\Models\Teacher;
+use App\Http\Resources\TeacherSubjectResource;
 
 class TeacherSubjectController extends Controller
 {
@@ -41,12 +42,10 @@ class TeacherSubjectController extends Controller
      */
     public function show($id)
     {
-        // Find the teacher by ID
-        $teacher = Teacher::findOrFail($id);
+        // Find the teacher by ID and load associated subjects
+        $teacher = Teacher::with('subject')->findOrFail($id);
 
-        // Get the subject IDs assigned to the teacher
-        $subjectIds = $teacher->subject->pluck('id');
-
-        return response()->json(['subjects' => $subjectIds]);
+        // Return the subject associated with the teacher using the TeacherSubjectResource
+        return TeacherSubjectResource::collection($teacher->subject);
     }
 }

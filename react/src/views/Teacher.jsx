@@ -56,12 +56,12 @@ export default function Teacher() {
         }
     };
 
-    const tableHeader = ["ID", "Teacher Name", "Email", "Joining Date", "Actions"];
+    const tableHeader = ["ID", "Teacher Name", "Subject", "Email", "Joining Date", "Actions"];
 
     const tableData = teacherData.loading
         ? [
             [
-                <td key="loading" colSpan="5" className="text-center">
+                <td key="loading" colSpan="6" className="text-center">
                     Loading...
                 </td>,
             ],
@@ -69,6 +69,9 @@ export default function Teacher() {
         : teacherData.teachers.map((teacher) => [
             teacher.id || "-",
             teacher.name || "-",
+            Array.isArray(teacher.subject_teaching_names) && teacher.subject_teaching_names.length > 0 
+            ? teacher.subject_teaching_names.join(", ") 
+            : "-",
             teacher.email || "-",
             teacher.joining_date || "-",
             <div className="actions">
