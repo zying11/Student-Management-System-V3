@@ -14,6 +14,7 @@ use App\Http\Controllers\RoomController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\TeacherSubjectController;
+use App\Http\Controllers\ParentController;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -73,7 +74,6 @@ Route::get('/users/{id}', [UserController::class, 'show']);
 // Route to update specific user details by ID
 Route::put('/users/{id}', [UserController::class, 'update']);
 
-Route::apiResource('/students', StudentController::class);
 Route::apiResource('/invoices', InvoiceController::class);
 Route::apiResource('/students/{student}/enrollments', EnrollmentController::class);
 
@@ -119,3 +119,30 @@ Route::post('/teachers/subjects', [TeacherSubjectController::class, 'store']);
 Route::put('/teachers/{id}/subjects', [TeacherSubjectController::class, 'update']);
 // Route to get subjects teaching assigned to a specific teacher
 Route::get('/teachers/{id}/subjects', [TeacherSubjectController::class, 'show']);
+
+// Route::apiResource('/students', StudentController::class);
+// Route to fetch the list of all students
+Route::get('/students', [StudentController::class, 'index']);
+// Route to store a new student 
+Route::post('/students', [StudentController::class, 'store']);
+// Route to fetch specific student details by ID
+Route::get('/students/{id}', [StudentController::class, 'show']); 
+// Route to update specific student details by ID
+Route::put('/students/{id}', [StudentController::class, 'update']); 
+// Route to delete specific student details by ID
+Route::delete('/students/{id}', [StudentController::class, 'destroy']); 
+
+// Additional routes for managing the relationship
+Route::post('students/{id}/parents', [StudentController::class, 'addParents']);
+Route::delete('students/{id}/parents/{parent}', [StudentController::class, 'removeParent']);
+Route::get('students/{id}/parents', [StudentController::class, 'getParents']);
+
+// Route::apiResource('/parents', ParentController::class);
+// Route to fetch the list of all parents
+Route::get('/parents', [ParentController::class, 'index']);
+// Route to store a new parent 
+Route::post('/parents', [ParentController::class, 'store']);
+// Route to fetch specific parent details by ID
+Route::get('/parents/{id}', [ParentController::class, 'show']); 
+// Route to update specific parent details by ID
+Route::put('/parents/{id}', [ParentController::class, 'update']); 

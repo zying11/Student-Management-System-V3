@@ -102,17 +102,25 @@ const router = createBrowserRouter([
                 element: <Students />,
             },
             {
-                path: "/students/new",
-                element: <StudentForm key="studentCreate" />,
+                path: "/student/create",
+                element: <StudentForm isEditing={false} key="studentCreate" />,
             },
             {
-                path: "/students/:id",
-                element: <StudentForm key="studentUpdate" />,
+                path: "/student/edit/:id",
+                element: <StudentForm isEditing={true} key="studentEdit" />,
             },
-            {
-                path: "/students/:id/profile",
-                element: <StudentProfile key="studentProfile" />,
-            },
+            // {
+            //     path: "/students/new",
+            //     element: <StudentForm key="studentCreate" />,
+            // },
+            // {
+            //     path: "/students/:id",
+            //     element: <StudentForm key="studentUpdate" />,
+            // },
+            // {
+            //     path: "/students/:id/profile",
+            //     element: <StudentProfile key="studentProfile" />,
+            // },
             {
                 path: "/admin",
                 element: <Admin key="admin" />,
