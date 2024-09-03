@@ -11,8 +11,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('students', function (Blueprint $table) {
-            // $table->id();
-            $table->bigIncrements('id');
+            $table->id();
             $table->string('name');
             $table->string('gender');
             $table->date('birth_date');
@@ -20,10 +19,9 @@ return new class extends Migration {
             $table->string('nationality');
             $table->string('address');
             $table->integer('postal_code');
-            $table->string('study_level');
-            $table->string('subject');
-            $table->date('registration_date');
-            $table->timestamps('');
+            $table->timestamp('registration_date')->useCurrent(); // Use created_at as registration_date
+
+            $table->timestamps();
         });
     }
 

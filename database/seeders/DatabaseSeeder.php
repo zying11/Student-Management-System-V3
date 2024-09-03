@@ -22,11 +22,15 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserSeeder::class,
             StudentDataSeeder::class,
+            ParentsTableSeeder::class,
+            ParentStudentTableSeeder::class,
             CenterProfileSeeder::class,
             StudyLevelSeeder::class,
             SubjectSeeder::class,
             RoomSeeder::class,
             // LessonSeeder::class,
+            LessonDummyZy::class,
+            EnrollmentTableSeeder::class,
         ]);
     }
 }
