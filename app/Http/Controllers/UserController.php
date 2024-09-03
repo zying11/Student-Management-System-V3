@@ -35,7 +35,7 @@ class UserController extends Controller
         // Create a new user record with the validated data
         $user = User::create($data);
 
-        return response(new UserResource($user), 201);
+        return new UserResource($user);
     }
 
     /**
