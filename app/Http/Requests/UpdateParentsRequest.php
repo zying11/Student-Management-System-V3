@@ -3,8 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class UpdateStudentRequest extends FormRequest
+class UpdateParentsRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,12 +24,14 @@ class UpdateStudentRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'gender' => 'required|string|in:male,female',
-            'birth_date' => 'required|date',
-            'age' => 'required|integer|min:0',
-            'nationality' => 'required|string|max:255',
-            'address' => 'required|string|max:255',
-            'postal_code' => 'required|numeric',
+            'relationship' => 'required|string|max:255',
+            'email' => [
+                'nullable',
+                'email',
+                'max:255',
+                Rule::unique('parents')->ignore($this->route('parent')),
+            ],
+            'phone_number' => 'required|digits_between:10,15',
         ];
     }
 }
