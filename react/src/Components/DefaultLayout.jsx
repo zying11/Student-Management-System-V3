@@ -6,10 +6,10 @@ import { useState } from "react";
 import Sidebar from "./Sidebar";
 import "../css/DefaultLayout.css";
 
+import "bootstrap";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "jquery/dist/jquery.min.js";
 import "bootstrap/dist/js/bootstrap.min.js";
+import "jquery/dist/jquery.min.js";
 
 export default function DefaultLayout() {
     const { user, token, setUser, setToken } = useStateContext();

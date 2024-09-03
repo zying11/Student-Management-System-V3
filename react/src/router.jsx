@@ -63,11 +63,11 @@ const router = createBrowserRouter([
             },
             {
                 path: "/timetable",
-                element: <Scheduler />,
+                element: <Timetable />,
             },
             {
                 path: "/timetabletest",
-                element: <Timetable />,
+                element: <Scheduler />,
             },
             {
                 path: "/lesson",

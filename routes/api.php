@@ -44,8 +44,9 @@ Route::post('register', [AuthController::class, 'register']);
 // Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 
 Route::post('/add-lesson', [LessonController::class, 'addNewLesson']);
-Route::post('/update-lesson', [LessonController::class, 'updateLesson']);
-Route::delete('/lessons/{id}', [LessonController::class, 'destroy']);
+Route::post('/update-lesson', [LessonController::class, 'setLessonTime']);
+Route::put('/edit-lesson/{id}', [LessonController::class, 'updateLesson']);
+Route::delete('/delete-lesson/{id}', [LessonController::class, 'destroy']);
 Route::get('lessons', [LessonController::class, 'getLessons']);
 Route::get('/timetable-lessons', [LessonController::class, 'getTimetableLessons']);
 
@@ -66,7 +67,7 @@ Route::get('/users', [UserController::class, 'index']);
 // Route to store a new user details
 Route::post('/users', [UserController::class, 'store']);
 // Route to fetch specific user details by ID
-Route::get('/users/{id}', [UserController::class, 'show']); 
+Route::get('/users/{id}', [UserController::class, 'show']);
 // Route to update specific user details by ID
 Route::put('/users/{id}', [UserController::class, 'update']);
 
@@ -92,8 +93,8 @@ Route::get('/admins', [AdminController::class, 'index']);
 // Route to store a new admin and associated user details
 Route::post('/admins', [AdminController::class, 'store']);
 // Route to fetch specific admin details by ID
-Route::get('/admins/{id}', [AdminController::class, 'show']); 
+Route::get('/admins/{id}', [AdminController::class, 'show']);
 // Route to update specific admin details by ID
-Route::put('/admins/{id}', [AdminController::class, 'update']); 
+Route::put('/admins/{id}', [AdminController::class, 'update']);
 // Route to delete specific admin details and the associated user account by ID
-Route::delete('/admins/{id}', [AdminController::class, 'destroy']); 
+Route::delete('/admins/{id}', [AdminController::class, 'destroy']);

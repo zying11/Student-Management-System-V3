@@ -9,8 +9,8 @@ class Subject extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'level_id',
-        'subject_name'
-    ];
+    public function studyLevel()
+    {
+        return $this->belongsTo(StudyLevel::class, 'level_id');
+    }
 }

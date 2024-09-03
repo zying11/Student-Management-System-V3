@@ -14,3 +14,86 @@
         color: #828282;
     }
 }
+
+.room-select {
+    word-wrap: normal;
+    width: 200px;
+    background: #f0f1f3;
+    border: none;
+    padding: 5px;
+    border-radius: 6px;
+
+    option {
+        background: #f0f1f3;
+        border: none;
+    }
+}
+/* Modal styling */
+#confirmationModal .modal-header {
+    border-bottom: none;
+}
+
+.right-content {
+    h1 {
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    p {
+        font-size: 14px;
+        color: rgba(73, 73, 73, 0.6);
+    }
+}
+
+.modal-footer {
+    border: none;
+
+    .btn-create {
+        width: 200px;
+    }
+}
+
+.alert-modal {
+    border: #0ca565 solid 1px;
+
+    .content {
+        color: #1b998b;
+        border-radius: 10px;
+        border: solid 1px #1b998b;
+        background: #dafae9;
+    }
+}
+
+/* Full Calendar styling */
+.fc-direction-ltr {
+    height: 643px;
+}
+
+.fc-timegrid-event-harness-inset .fc-timegrid-event {
+    border-radius: 10px;
+}
+
+.fc-v-event .fc-event-main-frame {
+    align-items: center;
+}
+
+.fc .fc-col-header-cell-cushion {
+    color: #494949;
+    font-weight: 400;
+}
+
+.fc .fc-button-primary {
+    background-color: #a9a0e1;
+    border: none;
+    color: white;
+}
+
+.fc .fc-button-primary:disabled {
+    background-color: #a9a0e1;
+    border: none;
+    color: white;
+}
+
+.fc .fc-button-primary:hover {
+    background-color: #f5aa39;
+}

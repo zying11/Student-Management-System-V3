@@ -24,6 +24,11 @@ class Lesson extends Model
         return $this->belongsTo(Room::class);
     }
 
+    public function studyLevel()
+    {
+        return $this->belongsTo(StudyLevel::class);
+    }
+
 }
 
 

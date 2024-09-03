@@ -66,14 +66,18 @@ class LessonController extends Controller
 
     public function getTimetableLessons(Request $request)
     {
+        // Extracts the value of the room_id query parameter from the URL
+        // `http://example.com/api/lessons?room_id=3`
         $roomId = $request->query('room_id');
 
         // If room_id is provided, filter lessons by room_id
         if ($roomId) {
-            $lessons = Lesson::where('room_id', $roomId)->with(['subject', 'room'])->get();
+            $lessons = Lesson::where('room_id', $roomId)
+                ->with(['subject.studyLevel', 'room'])
+                ->get();
         } else {
-            // Otherwise, return all lessons
-            $lessons = Lesson::with(['subject', 'room'])->get();
+            // Otherwise, return all lessons with their related data
+            $lessons = Lesson::with(['subject.studyLevel', 'room'])->get();
         }
 
         return response()->json(['lessons' => $lessons]);
@@ -81,7 +85,8 @@ class LessonController extends Controller
 
 
 
-    public function updateLesson(Request $request)
+
+    public function setLessonTime(Request $request)
     {
         // Find the lesson by its ID 
         $lesson = Lesson::find($request->input('id'));
@@ -99,6 +104,10 @@ class LessonController extends Controller
         $lesson->start_time = $request->input('startTime');
         $lesson->end_time = $request->input('endTime');
 
+        // Update teacher
+        $lesson->teacher_id = $request->input('teacher');
+        $lesson->subject->save();
+
         $lesson->save();
 
         return response()->json([
@@ -107,6 +116,30 @@ class LessonController extends Controller
             'lesson' => $lesson,
         ]);
     }
+
+    public function updateLesson(Request $request, $id)
+    {
+        // Find the lesson by its ID 
+        $lesson = Lesson::find($id);
+
+        if (!$lesson) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Lesson not found',
+            ], 404);
+        }
+
+        // Update lesson attributes with request data
+        $lesson->teacher_id = $request->input('teacher');
+        $lesson->save();
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Lesson updated successfully',
+            'lesson' => $lesson,
+        ]);
+    }
+
 
     public function destroy($id)
     {
