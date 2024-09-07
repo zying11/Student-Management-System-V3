@@ -9,12 +9,6 @@ class Lesson extends Model
 {
     use HasFactory;
 
-    // protected $fillable = [
-    //     'subject_id',
-    //     'capacity',
-    //     'duration',
-    // ];
-
     public function subject()
     {
         return $this->belongsTo(Subject::class, 'subject_id');

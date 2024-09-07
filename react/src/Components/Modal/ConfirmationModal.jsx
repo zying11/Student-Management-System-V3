@@ -1,10 +1,11 @@
 import React from "react";
 import Button from "../Button/Button";
+import "./ConfirmationModal.css";
 
 const ConfirmationModal = ({ id, icon, headerText, bodyText, onConfirm }) => {
     return (
         <div
-            className="modal fade"
+            className="modal fade confirmation"
             id={id}
             data-bs-backdrop="static"
             data-bs-keyboard="false"

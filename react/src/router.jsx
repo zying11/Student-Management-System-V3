@@ -22,6 +22,7 @@ import Admin from "./views/Admin.jsx";
 import AdminForm from "./views/AdminForm.jsx";
 import Teacher from "./views/Teacher.jsx";
 import TeacherForm from "./views/TeacherForm.jsx";
+import Room from "./views/Room.jsx";
 
 // const exampleInvoice = {
 //     id: "1234",
@@ -68,6 +69,10 @@ const router = createBrowserRouter([
             {
                 path: "/timetabletest",
                 element: <Scheduler />,
+            },
+            {
+                path: "/room",
+                element: <Room />,
             },
             {
                 path: "/lesson",

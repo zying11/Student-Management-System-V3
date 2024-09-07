@@ -3,8 +3,8 @@ import axios from "axios";
 import Button from "../components/Button/Button";
 import { ContentContainer } from "../components/ContentContainer/ContentContainer";
 import { Table } from "../components/Table/Table";
-import "../css/Lesson.css";
 import ConfirmationModal from "../components/Modal/ConfirmationModal";
+import "../css/Lesson.css";
 
 export default function Lesson() {
     // Variable for posting lessons data
@@ -280,7 +280,11 @@ export default function Lesson() {
                 </Button>
             </div>
             <ContentContainer title="Current Active Lessons">
-                <Table header={tableHeader} data={tableData}></Table>
+                <Table
+                    header={tableHeader}
+                    data={tableData}
+                    itemsPerPage={5}
+                ></Table>
             </ContentContainer>
             <div
                 id="editLessonModal"

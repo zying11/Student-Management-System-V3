@@ -15,6 +15,9 @@ class LessonFactory extends Factory
 
     public function definition()
     {
+        $subjects = [1, 2, 3, 4]; // there are 4 data in the subject table by default
+        $teachers = [1, 2, 3, 4]; // there are 4 data in the teacher table by default
+        $rooms = [1, 2, 3, 4];
         $durations = [1, 1.5];
         $days = [0, 1, 2, 3, 4, 5, 6];
 
@@ -25,9 +28,11 @@ class LessonFactory extends Factory
             ->format('H:i:s');
 
         return [
+            'subject_id' => $this->faker->randomElement($subjects),
+            'teacher_id' => $this->faker->randomElement($teachers),
+            'room_id' => $this->faker->randomElement($rooms),
             'duration' => $duration,
             'day' => $this->faker->randomElement($days),
-            'capacity' => $this->faker->numberBetween(1, 10),
             'start_time' => $start_time,
             'end_time' => $end_time,
         ];

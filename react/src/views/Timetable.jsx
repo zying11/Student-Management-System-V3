@@ -40,6 +40,9 @@ export default function Timetable() {
     // Variable to display unassigned lesson data
     const [unassignedLessons, setUnassignedLessons] = useState([]);
 
+    // Variable to render component instantly when there is changes
+    const [isChange, setIsChange] = useState(false);
+
     // Display unassigned lesson data
     useEffect(() => {
         async function fetchUnassignedLessons() {
@@ -66,7 +69,7 @@ export default function Timetable() {
         }
 
         fetchUnassignedLessons();
-    }, []);
+    }, [isChange]);
 
     // Store the Draggable instance
     let draggableInstance = null;
@@ -200,12 +203,14 @@ export default function Timetable() {
                     roomId: selectedRoomId, // Include the selected room ID
                 };
 
-                const response = await axios.post(
-                    "http://127.0.0.1:8000/api/update-lesson",
+                const res = await axios.post(
+                    "http://127.0.0.1:8000/api/set-lesson-time",
                     eventData
                 );
                 console.log("Saved successfully!");
             }
+
+            setIsChange(!isChange);
         } catch (error) {
             console.error("Error", error.response);
         }
@@ -302,6 +307,20 @@ export default function Timetable() {
                         slotMaxTime="19:00:00"
                         editable={true}
                         droppable={true}
+                        eventReceive={(info) => {
+                            // Remove or hide the dragged element after drop
+                            const draggableElement = document.querySelector(
+                                `[data-lesson-id="${info.event.id}"]`
+                            );
+
+                            if (draggableElement) {
+                                // Option 1: Hide the element
+                                draggableElement.style.display = "none";
+
+                                // Option 2: Remove the element entirely
+                                // draggableElement.remove();
+                            }
+                        }}
                         drop={handleEventDrop}
                         events={timetableEvents}
                         eventBackgroundColor="#E9FFEE"

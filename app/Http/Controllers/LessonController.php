@@ -105,7 +105,7 @@ class LessonController extends Controller
         $lesson->end_time = $request->input('endTime');
 
         // Update teacher
-        $lesson->teacher_id = $request->input('teacher');
+        // $lesson->teacher_id = $request->input('teacher');
         $lesson->subject->save();
 
         $lesson->save();
@@ -141,7 +141,7 @@ class LessonController extends Controller
     }
 
 
-    public function destroy($id)
+    public function deleteLesson($id)
     {
         $lesson = Lesson::find($id);
 
