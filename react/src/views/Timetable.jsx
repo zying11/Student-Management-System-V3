@@ -5,6 +5,8 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin, { Draggable } from "@fullcalendar/interaction";
+import Button from "../components/Button/Button";
+import ConfirmationModal from "../components/Modal/ConfirmationModal";
 import "../css/Timetable.css";
 
 export default function Timetable() {
@@ -38,6 +40,9 @@ export default function Timetable() {
     // Variable to display unassigned lesson data
     const [unassignedLessons, setUnassignedLessons] = useState([]);
 
+    // Variable to render component instantly when there is changes
+    const [isChange, setIsChange] = useState(false);
+
     // Display unassigned lesson data
     useEffect(() => {
         async function fetchUnassignedLessons() {
@@ -64,7 +69,7 @@ export default function Timetable() {
         }
 
         fetchUnassignedLessons();
-    }, []);
+    }, [isChange]);
 
     // Store the Draggable instance
     let draggableInstance = null;
@@ -184,7 +189,7 @@ export default function Timetable() {
 
     // Save timetable to the database
     const handleSaveTimetable = async () => {
-        console.log(selectedRoomId);
+        // console.log(selectedRoomId); // To check which room is selected
         if (!selectedRoomId) {
             console.error("No room selected.");
             return;
@@ -198,15 +203,16 @@ export default function Timetable() {
                     roomId: selectedRoomId, // Include the selected room ID
                 };
 
-                const response = await axios.post(
-                    "http://127.0.0.1:8000/api/update-lesson",
+                const res = await axios.post(
+                    "http://127.0.0.1:8000/api/set-lesson-time",
                     eventData
                 );
-                console.log("Event saved to database:", response.data);
+                console.log("Saved successfully!");
             }
-            console.log("All events saved successfully.");
+
+            setIsChange(!isChange);
         } catch (error) {
-            console.error("Error saving event to database:", error.response);
+            console.error("Error", error.response);
         }
     };
 
@@ -275,6 +281,7 @@ export default function Timetable() {
             <ContentContainer title="Timetable">
                 <div className="room-selection d-flex justify-content-end my-3">
                     <select
+                        className="room-select"
                         name="roomID"
                         value={selectedRoomId || ""}
                         onChange={handleRoomChange}
@@ -286,27 +293,80 @@ export default function Timetable() {
                         ))}
                     </select>
                 </div>
-                <FullCalendar
-                    id="calendar"
-                    className=""
-                    plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-                    initialView="timeGridWeek"
-                    // slotMinTime="08:00:00"
-                    // slotMaxTime="19:00:00"
-                    editable="true"
-                    droppable="true"
-                    drop={handleEventDrop}
-                    events={timetableEvents}
-                />
-                <div className="d-flex justify-content-end p-4">
-                    <button
-                        className="btn btn-primary btn-save"
-                        onClick={handleSaveTimetable}
+                <div className="calendar-container">
+                    <FullCalendar
+                        id="calendar"
+                        className=""
+                        plugins={[
+                            dayGridPlugin,
+                            timeGridPlugin,
+                            interactionPlugin,
+                        ]}
+                        initialView="timeGridWeek"
+                        slotMinTime="08:00:00"
+                        slotMaxTime="19:00:00"
+                        editable={true}
+                        droppable={true}
+                        eventReceive={(info) => {
+                            // Remove or hide the dragged element after drop
+                            const draggableElement = document.querySelector(
+                                `[data-lesson-id="${info.event.id}"]`
+                            );
+
+                            if (draggableElement) {
+                                // Option 1: Hide the element
+                                draggableElement.style.display = "none";
+
+                                // Option 2: Remove the element entirely
+                                // draggableElement.remove();
+                            }
+                        }}
+                        drop={handleEventDrop}
+                        events={timetableEvents}
+                        eventBackgroundColor="#E9FFEE"
+                        eventBorderColor="#0CB631"
+                        eventTextColor="#006A37"
+                        eventOverlap={false}
+                        eventDurationEditable={false}
+                        eventResizableFromStart={false}
+                        allDaySlot={false}
+                    />
+                </div>
+
+                <div className="d-flex justify-content-end mt-4">
+                    <Button
+                        data-bs-toggle="modal"
+                        data-bs-target="#confirmationModal"
+                        color="yellow"
                     >
                         Save Timetable
-                    </button>
+                    </Button>
                 </div>
             </ContentContainer>
+
+            <div
+                className="modal fade"
+                id="alertModal"
+                tabIndex="-1"
+                aria-labelledby="alertModalLabel"
+                aria-hidden="true"
+            >
+                <div className="modal-dialog">
+                    <div className="modal-content">
+                        <div className="modal-body">
+                            Timetable saved successfully!
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <ConfirmationModal
+                id="confirmationModal"
+                icon="tick.png"
+                headerText="Save timetable?"
+                bodyText="Are you sure you want to save this timetable?"
+                onConfirm={handleSaveTimetable}
+            />
         </>
     );
 }

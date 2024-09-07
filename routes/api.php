@@ -47,12 +47,15 @@ Route::post('login', [AuthController::class, 'login']);
 // Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 
 Route::post('/add-lesson', [LessonController::class, 'addNewLesson']);
-Route::post('/update-lesson', [LessonController::class, 'updateLesson']);
-Route::delete('/lessons/{id}', [LessonController::class, 'destroy']);
+Route::post('/set-lesson-time', [LessonController::class, 'setLessonTime']);
+Route::put('/edit-lesson/{id}', [LessonController::class, 'updateLesson']);
+Route::delete('/delete-lesson/{id}', [LessonController::class, 'deleteLesson']);
 Route::get('lessons', [LessonController::class, 'getLessons']);
 Route::get('/timetable-lessons', [LessonController::class, 'getTimetableLessons']);
 
 Route::get('rooms', [RoomController::class, 'index']);
+Route::post('/add-room', [RoomController::class, 'addNewRoom']);
+Route::delete('/rooms/{id}', [RoomController::class, 'deleteRoom']);
 
 Route::get('center-profile', [CenterProfileController::class, 'index']);
 Route::post('/update-center-profile', [CenterProfileController::class, 'update']);
@@ -69,7 +72,7 @@ Route::get('/users', [UserController::class, 'index']);
 // Route to store a new user details
 Route::post('/users', [UserController::class, 'store']);
 // Route to fetch specific user details by ID
-Route::get('/users/{id}', [UserController::class, 'show']); 
+Route::get('/users/{id}', [UserController::class, 'show']);
 // Route to update specific user details by ID
 Route::put('/users/{id}', [UserController::class, 'update']);
 
@@ -94,22 +97,22 @@ Route::get('/admins', [AdminController::class, 'index']);
 // Route to store a new admin and associated user details
 Route::post('/admins', [AdminController::class, 'store']);
 // Route to fetch specific admin details by ID
-Route::get('/admins/{id}', [AdminController::class, 'show']); 
+Route::get('/admins/{id}', [AdminController::class, 'show']);
 // Route to update specific admin details by ID
-Route::put('/admins/{id}', [AdminController::class, 'update']); 
+Route::put('/admins/{id}', [AdminController::class, 'update']);
 // Route to delete specific admin details and the associated user account by ID
-Route::delete('/admins/{id}', [AdminController::class, 'destroy']); 
+Route::delete('/admins/{id}', [AdminController::class, 'destroy']);
 
 // Route to fetch the list of all teachers
 Route::get('/teachers', [TeacherController::class, 'index']);
 // Route to store a new teacher and associated user details
 Route::post('/teachers', [TeacherController::class, 'store']);
 // Route to fetch specific teacher details by ID
-Route::get('/teachers/{id}', [TeacherController::class, 'show']); 
+Route::get('/teachers/{id}', [TeacherController::class, 'show']);
 // Route to update specific teacher details by ID
-Route::put('/teachers/{id}', [TeacherController::class, 'update']); 
+Route::put('/teachers/{id}', [TeacherController::class, 'update']);
 // Route to delete specific teacher details and the associated user account by ID
-Route::delete('/teachers/{id}', [TeacherController::class, 'destroy']); 
+Route::delete('/teachers/{id}', [TeacherController::class, 'destroy']);
 
 
 // Route to store subjects teaching for a teacher
@@ -125,11 +128,11 @@ Route::get('/students', [StudentController::class, 'index']);
 // Route to store a new student 
 Route::post('/students', [StudentController::class, 'store']);
 // Route to fetch specific student details by ID
-Route::get('/students/{id}', [StudentController::class, 'show']); 
+Route::get('/students/{id}', [StudentController::class, 'show']);
 // Route to update specific student details by ID
-Route::put('/students/{id}', [StudentController::class, 'update']); 
+Route::put('/students/{id}', [StudentController::class, 'update']);
 // Route to delete specific student details by ID
-Route::delete('/students/{id}', [StudentController::class, 'destroy']); 
+Route::delete('/students/{id}', [StudentController::class, 'destroy']);
 
 // Additional routes for managing the relationship
 Route::post('students/{id}/parents', [StudentController::class, 'addParents']);
@@ -142,6 +145,6 @@ Route::get('/parents', [ParentController::class, 'index']);
 // Route to store a new parent 
 Route::post('/parents', [ParentController::class, 'store']);
 // Route to fetch specific parent details by ID
-Route::get('/parents/{id}', [ParentController::class, 'show']); 
+Route::get('/parents/{id}', [ParentController::class, 'show']);
 // Route to update specific parent details by ID
-Route::put('/parents/{id}', [ParentController::class, 'update']); 
+Route::put('/parents/{id}', [ParentController::class, 'update']);

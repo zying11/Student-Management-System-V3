@@ -9,12 +9,6 @@ class Lesson extends Model
 {
     use HasFactory;
 
-    // protected $fillable = [
-    //     'subject_id',
-    //     'capacity',
-    //     'duration',
-    // ];
-
     public function subject()
     {
         return $this->belongsTo(Subject::class, 'subject_id');
@@ -24,10 +18,18 @@ class Lesson extends Model
         return $this->belongsTo(Room::class);
     }
 
+    public function studyLevel()
+    {
+        return $this->belongsTo(StudyLevel::class);
+    }
+
     public function student()
     {
         return $this->belongsToMany(Student::class, 'student_enrollment');
     }
+
 }
+
+
 
 

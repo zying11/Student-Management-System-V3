@@ -28,8 +28,8 @@ class DatabaseSeeder extends Seeder
             StudyLevelSeeder::class,
             SubjectSeeder::class,
             RoomSeeder::class,
-            // LessonSeeder::class,
-            LessonDummyZy::class,
+                // LessonSeeder::class,
+                // LessonDummyZy::class,
             EnrollmentTableSeeder::class,
         ]);
     }

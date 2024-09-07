@@ -1,43 +1,36 @@
-/* table CSS STARTS */
+/* Edit modal */
+.lesson-modal {
+    .modal-title {
+        font-weight: 700;
+    }
 
-.table-wrapper {
-    width: 100%;
-    overflow-x: auto;
+    .form-label {
+        font-weight: 600;
+    }
 }
 
-.table {
-    min-width: 500px;
-    width: 100%;
-    table-layout: auto;
-    border: 1px solid #dddeee;
-}
-
-.table th {
-    color: #f59607;
-    font-weight: 500;
-}
-
-/* Scrollbar Styles for WebKit Browsers */
-.table-wrapper::-webkit-scrollbar {
+/* HTML: <div class="loader"></div> */
+.loader {
     width: 10px;
-    height: 5px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    animation: l5 1s infinite linear alternate;
 }
-
-.table-wrapper::-webkit-scrollbar-thumb {
-    background-color: #f5aa39;
-    border-radius: 5px;
-}
-
-.table-wrapper::-webkit-scrollbar-thumb:hover {
-    background-color: #f59607;
-}
-
-.table-wrapper::-webkit-scrollbar-track {
-    background-color: #f1f1f1;
-    border-radius: 5px;
-}
-
-.actions {
-    display: block;
-    width: fit-content;
+@keyframes l5 {
+    0% {
+        box-shadow: 20px 0 #000, -20px 0 #0002;
+        background: #000;
+    }
+    33% {
+        box-shadow: 20px 0 #000, -20px 0 #0002;
+        background: #0002;
+    }
+    66% {
+        box-shadow: 20px 0 #0002, -20px 0 #000;
+        background: #0002;
+    }
+    100% {
+        box-shadow: 20px 0 #0002, -20px 0 #000;
+        background: #000;
+    }
 }
