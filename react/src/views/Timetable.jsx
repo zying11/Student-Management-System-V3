@@ -227,10 +227,16 @@ export default function Timetable() {
 
             return {
                 id: lesson.id.toString(),
+                // title: `${lesson.subject.subject_name} - ${lesson.subject.study_level.level_name} `,
                 title: lesson.subject.subject_name,
                 startTime: startTime,
                 endTime: endTime,
                 daysOfWeek: [parseInt(lesson.day)], // Set the day of the week (0-6)
+                extendedProps: {
+                    subject: lesson.subject.subject_name,
+                    studyLevel: lesson.subject.study_level.level_name,
+                    teacher: lesson.teacher_id,
+                },
             };
         });
     };
@@ -243,7 +249,7 @@ export default function Timetable() {
                     const res = await axios.get(
                         `http://127.0.0.1:8000/api/timetable-lessons?room_id=${selectedRoomId}`
                     );
-                    // console.log(res.data); // To check data format
+                    console.log(res.data); // To check data format
                     const formattedEvents = formatEventData(res.data.lessons);
                     setTimetableEvents(formattedEvents);
                 } catch (error) {
