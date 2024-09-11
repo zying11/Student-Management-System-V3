@@ -94,6 +94,35 @@ export default function Room() {
         }
     };
 
+    // Fetch the data of the selected room to edit
+    const fetchRoomData = async (roomId) => {
+        try {
+            const res = await axios.get(
+                `http://127.0.0.1:8000/api/get-room/${roomId}`
+            );
+            // setRoomData(res.data);
+            // console.log(roomData.roomName);
+            console.log(selectedRoomId);
+        } catch (error) {
+            console.error("Error fetching room data:", error);
+        }
+    };
+
+    // Function to updating room information
+    const handleEditRoom = async () => {
+        try {
+            await axios.put(
+                `http://127.0.0.1:8000/api/edit-room/${selectedRoomId}`,
+                roomData
+            );
+            setIsChange(!isChange); // Update the state
+            alert("Room updated successfully");
+        } catch (error) {
+            console.error("Error updating room:", error);
+            alert("Failed to update room.");
+        }
+    };
+
     // Error handling
     const [error, setError] = useState("");
 
@@ -135,6 +164,10 @@ export default function Room() {
                       alt="Edit"
                       data-bs-toggle="modal"
                       data-bs-target="#editRoomModal"
+                      onClick={() => {
+                          setSelectedRoomId(room.id);
+                          fetchRoomData(room.id); // Fetch room data for editing
+                      }}
                       style={{ cursor: "pointer" }}
                   />
                   <img
@@ -168,6 +201,80 @@ export default function Room() {
                     itemsPerPage={5}
                 ></Table>
             </ContentContainer>
+
+            <div
+                id="editRoomModal"
+                className="modal fade lesson-modal"
+                tabindex="-1"
+                data-bs-backdrop="static"
+                data-bs-keyboard="false"
+            >
+                <div className="modal-dialog">
+                    <div className="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Edit a Room</h5>
+                            <button
+                                type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                            ></button>
+                        </div>
+                        {error && (
+                            <div className="alert alert-danger">{error}</div>
+                        )}
+                        <form
+                            className="p-3"
+                            method="post"
+                            onSubmit={handleEditRoom}
+                        >
+                            {/* Room Name */}
+                            <div className="mb-3">
+                                <label className="form-label">Room Name</label>
+                                <input
+                                    type="text"
+                                    name="roomName"
+                                    onChange={(e) =>
+                                        setRoomData({
+                                            ...roomData,
+                                            capacity: e.target.value,
+                                        })
+                                    }
+                                    value={roomData.roomName}
+                                    className="form-control"
+                                    required
+                                />
+                            </div>
+
+                            {/* Room Name */}
+                            <div className="mb-3">
+                                <label className="form-label">
+                                    Max Capacity
+                                </label>
+                                <input
+                                    type="number"
+                                    step="1"
+                                    name="roomCapacity"
+                                    onChange={(e) =>
+                                        setRoomData({
+                                            ...roomData,
+                                            capacity: e.target.value,
+                                        })
+                                    }
+                                    value={roomData.roomCapacity}
+                                    className="form-control"
+                                    required
+                                />
+                            </div>
+
+                            <div className="button-container d-flex justify-content-end gap-3">
+                                <Button color="yellow">Save</Button>
+                                <Button data-bs-dismiss="modal">Cancel</Button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
 
             <div
                 id="createRoomModal"

@@ -30,6 +30,29 @@ class RoomController extends Controller
         ]);
     }
 
+    public function getRoom($id)
+    {
+        $room = Room::find($id);
+        if ($room) {
+            return response()->json($room);
+        } else {
+            return response()->json(['message' => 'Room not found'], 404);
+        }
+    }
+
+    public function updateRoom(Request $request, $id)
+    {
+        $room = Room::find($id);
+        if ($room) {
+            $room->room_name = $request->input('roomName');
+            $room->capacity = $request->input('roomCapacity');
+            $room->save();
+            return response()->json(['message' => 'Room updated successfully']);
+        } else {
+            return response()->json(['message' => 'Room not found'], 404);
+        }
+    }
+
     public function deleteRoom($id)
     {
         $room = Room::find($id);
