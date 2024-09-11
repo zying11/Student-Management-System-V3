@@ -16,7 +16,7 @@ class AdminFactory extends Factory
     {
         return [
             'user_id' => null,  // This will be set later in the seeder
-            'phone_number' => $this->faker->numerify('012-#######'),
+            'phone_number' => $this->faker->numerify('012#######'),
             'gender' => $this->faker->randomElement(['male', 'female']),
             'age' => $this->faker->numberBetween(25, 60),
             'birth_date' => $this->faker->date(),
