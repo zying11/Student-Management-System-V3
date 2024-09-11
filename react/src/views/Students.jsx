@@ -349,7 +349,7 @@ export default function Students() {
             </div>
             <ContentContainer title="Student List">
                 {error && <div className="alert alert-danger">{error}</div>}
-                <Table header={tableHeader} data={tableData} />
+                <Table header={tableHeader} data={tableData} itemsPerPage={10} />
             </ContentContainer>
         </>
     );
