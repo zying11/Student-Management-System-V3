@@ -21,7 +21,6 @@ class DatabaseSeeder extends Seeder
         // ]);
         $this->call([
             UserSeeder::class,
-            TeacherSeeder::class,
             AdminSeeder::class,
             StudentDataSeeder::class,
             ParentsTableSeeder::class,
@@ -33,6 +32,7 @@ class DatabaseSeeder extends Seeder
                     // LessonSeeder::class,
                     // LessonDummyZy::class,
             // EnrollmentTableSeeder::class,
+            TeacherSeeder::class,
         ]);
     }
 }
