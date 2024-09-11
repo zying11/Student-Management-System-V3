@@ -7,10 +7,54 @@ import ConfirmationModal from "../components/Modal/ConfirmationModal";
 import "../css/Lesson.css";
 
 export default function Lesson() {
+    // Variable for fetching subject data
+    const [subjects, setSubject] = useState([]);
+
+    // Fetch subject data
+    useEffect(() => {
+        async function fetchSubjects() {
+            try {
+                const res = await axios.get(
+                    "http://127.0.0.1:8000/api/subjects"
+                );
+
+                // console.log(res.data.subjects);
+
+                setSubject(res.data.subjects);
+            } catch (error) {
+                console.error("Error fetching subjects:", error);
+            }
+        }
+
+        fetchSubjects();
+    }, []);
+
+    // Variable for fetching subject data
+    const [teachers, setTeacher] = useState([]);
+
+    // Fetch teacher data
+    useEffect(() => {
+        async function fetchTeachers() {
+            try {
+                const res = await axios.get(
+                    "http://127.0.0.1:8000/api/teachers"
+                );
+
+                // console.log(res.data.data); // Check data structure
+                setTeacher(res.data.data);
+                // console.log(teachers);
+            } catch (error) {
+                console.error("Error fetching teachers:", error);
+            }
+        }
+
+        fetchTeachers();
+    }, []);
+
     // Variable for posting lessons data
     const [lessonData, setLessonData] = useState({
         subjectId: "",
-        teacher: "",
+        teacherId: "",
         duration: "",
     });
 
@@ -44,8 +88,8 @@ export default function Lesson() {
         // Clear the form and error message
         setLessonData({
             subjectId: "",
+            teacherId: "",
             duration: "",
-            teacher: "",
         });
         setError("");
     };
@@ -118,22 +162,23 @@ export default function Lesson() {
                 (lesson) => lesson.id === selectedLessonId
             );
             setSelectedLesson(lesson);
+            console.log(lesson);
 
             // Initialize lesson current lesson with the son data
             setLessonData({
-                teacher: lesson.teacher_id || "",
+                teacherId: lesson.teacher_id || "",
             });
         }
     }, [selectedLessonId, displayLesson.lessons]);
 
     const editLesson = async (e) => {
         e.preventDefault();
-        console.log(lessonData.teacher);
+        // console.log(lessonData.teacher);
 
         try {
             const response = await axios.put(
                 `http://127.0.0.1:8000/api/edit-lesson/${selectedLesson.id}`,
-                { teacher: lessonData.teacher }
+                { teacher: lessonData.teacherId }
             );
 
             if (response.status === 200) {
@@ -150,36 +195,14 @@ export default function Lesson() {
         }
     };
 
-    // Variable for fetching subject data
-    const [subjects, setSubject] = useState([]);
-
-    // Fetch subject data
-    useEffect(() => {
-        async function fetchSubjects() {
-            try {
-                const res = await axios.get(
-                    "http://127.0.0.1:8000/api/subjects"
-                );
-
-                // console.log(res.data.subjects);
-
-                setSubject(res.data.subjects);
-            } catch (error) {
-                console.error("Error fetching lessons:", error);
-            }
-        }
-
-        fetchSubjects();
-    }, []);
-
     // Default values for add lesson
     useEffect(() => {
         setLessonData({
             subjectId: subjects[0]?.id || "", // Set the first subject's ID as the default
-            teacher: "Teacher Khajidah", // to be edited to fetch teacher data
+            teacherId: teachers[0]?.id || "", // Set the first teacher's ID as the default
             duration: "",
         });
-    }, [subjects]);
+    }, [subjects, teachers]);
 
     // Error handling
     const [error, setError] = useState("");
@@ -235,7 +258,7 @@ export default function Lesson() {
               lesson.id,
               lesson.subject?.subject_name || "-",
               lesson.subject.study_level.level_name || "-",
-              lesson.teacher_id || "-",
+              lesson.teacher.user.name || "-",
               daysOfWeek[lesson.day] || "-",
               lesson.start_time || "-",
               lesson.end_time || "-",
@@ -331,14 +354,20 @@ export default function Lesson() {
                             <div className="mb-3">
                                 <label className="form-label">Teacher</label>
                                 <select
-                                    name="teacher"
+                                    name="teacherId"
                                     onChange={handleInput}
-                                    value={lessonData.teacher}
+                                    value={lessonData.teacherId}
                                     className="form-control"
                                     required
                                 >
-                                    <option>Teacher Khajidah</option>
-                                    <option>Teacher Siti</option>
+                                    {teachers.map((teacher) => (
+                                        <option
+                                            key={teacher.id}
+                                            value={teacher.id}
+                                        >
+                                            {teacher.name}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
 
@@ -451,18 +480,24 @@ export default function Lesson() {
                                     ))}
                                 </select>
                             </div>
-
+                            {/* Teacher*/}
                             <div className="mb-3">
                                 <label className="form-label">Teacher</label>
                                 <select
-                                    name="teacher"
+                                    name="teacherId"
                                     onChange={handleInput}
-                                    value={lessonData.teacher}
+                                    value={lessonData.teacherId}
                                     className="form-control"
                                     required
                                 >
-                                    <option>Teacher Khajidah</option>
-                                    <option>Teacher Siti</option>
+                                    {teachers.map((teacher) => (
+                                        <option
+                                            key={teacher.id}
+                                            value={teacher.id}
+                                        >
+                                            {teacher.name}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
 

@@ -51,6 +51,7 @@ export default function Timetable() {
                     "http://127.0.0.1:8000/api/lessons"
                 );
                 const data = res.data;
+                console.log(data);
                 if (Array.isArray(data.lessons)) {
                     // Filter out lessons where day, start_time, or end_time is null
                     const filteredLessons = data.lessons.filter(
@@ -249,7 +250,7 @@ export default function Timetable() {
                     const res = await axios.get(
                         `http://127.0.0.1:8000/api/timetable-lessons?room_id=${selectedRoomId}`
                     );
-                    console.log(res.data); // To check data format
+                    // console.log(res.data); // To check data format
                     const formattedEvents = formatEventData(res.data.lessons);
                     setTimetableEvents(formattedEvents);
                 } catch (error) {
@@ -275,11 +276,11 @@ export default function Timetable() {
                             data-lesson-duration={lesson.duration}
                             key={lesson.id}
                         >
-                            <div className="subject-name mb-2">
+                            <div className="subject-name">
                                 {lesson.subject_name}
                             </div>
-                            <p>{lesson.level_name}</p>
-                            {/* <p>{lesson.teacher_name}</p> */}
+                            <p className="level-name">{lesson.level_name}</p>
+                            <p>{lesson.name}</p>
                         </div>
                     ))}
                 </div>

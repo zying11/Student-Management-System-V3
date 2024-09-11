@@ -16,7 +16,7 @@ class LessonSeeder extends Seeder
         // Lesson::factory()->count(3)->create();
         Lesson::create([
             'subject_id' => 1,
-            'teacher_id' => 1,
+            'teacher_id' => 2,
             'room_id' => 1,
             'duration' => 1.0,
             'day' => 1,
@@ -25,7 +25,7 @@ class LessonSeeder extends Seeder
         ]);
         Lesson::create([
             'subject_id' => 2,
-            'teacher_id' => 1,
+            'teacher_id' => 3,
             'room_id' => 2,
             'duration' => 1.0,
             'day' => 1,
@@ -35,7 +35,7 @@ class LessonSeeder extends Seeder
 
         Lesson::create([
             'subject_id' => 3,
-            'teacher_id' => 1,
+            'teacher_id' => 4,
             'room_id' => 3,
             'duration' => 1.5,
             'day' => 1,

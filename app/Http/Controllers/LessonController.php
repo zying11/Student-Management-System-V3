@@ -21,7 +21,7 @@ class LessonController extends Controller
         // Create a new Lesson instance and save to the database
         $lesson = new Lesson();
         $lesson->subject_id = $request->input('subjectId');
-        $lesson->teacher_id = $request->input('teacher');
+        $lesson->teacher_id = $request->input('teacherId');
         $lesson->duration = $request->input('duration');
         $lesson->save();
 
@@ -31,6 +31,7 @@ class LessonController extends Controller
         ]);
     }
 
+    // Method 1 to fetch data with foreign keys
     public function getLessons()
     {
         // Setting up the variable to hold the collection of Lesson objects
@@ -39,8 +40,12 @@ class LessonController extends Controller
             ->join('subjects', 'lessons.subject_id', '=', 'subjects.id')
             // Retrieve data from the study_level table related to each subject
             ->join('study_level', 'subjects.level_id', '=', 'study_level.id')
+            // Retrieve data from the teacher table related to each lesson
+            ->join('teachers', 'lessons.teacher_id', '=', 'teachers.id')
+            // Retrieve data from the user table related to each teacher
+            ->join('users', 'teachers.user_id', '=', 'users.id')
             // Specifies which columns should be retrieved 
-            ->select('lessons.*', 'subjects.subject_name', 'study_level.level_name')
+            ->select('lessons.*', 'subjects.subject_name', 'study_level.level_name', 'users.name')
             ->get();
 
         return response()->json([
@@ -49,21 +54,7 @@ class LessonController extends Controller
         ]);
     }
 
-    // public function getTimetableLessons()
-    // {
-    //     $lessons = Lesson::with(['subject', 'room'])
-    //         ->join('subjects', 'lessons.subject_id', '=', 'subjects.id')
-    //         ->join('study_level', 'subjects.level_id', '=', 'study_level.id')
-    //         ->join('rooms', 'lessons.room_id', '=', 'rooms.id')
-    //         ->select('lessons.*', 'subjects.subject_name', 'study_level.level_name', 'rooms.id as room_id', 'rooms.room_name')
-    //         ->get();
-
-    //     return response()->json([
-    //         'status' => 200,
-    //         'lessons' => $lessons
-    //     ]);
-    // }
-
+    // Method 2 to fetch data with foreign keys
     public function getTimetableLessons(Request $request)
     {
         // Extracts the value of the room_id query parameter from the URL
@@ -73,11 +64,12 @@ class LessonController extends Controller
         // If room_id is provided, filter lessons by room_id
         if ($roomId) {
             $lessons = Lesson::where('room_id', $roomId)
-                ->with(['subject.studyLevel', 'room'])
+                // each Subject has a related StudyLevel
+                ->with(['subject.studyLevel', 'room', 'teacher.user'])
                 ->get();
         } else {
             // Otherwise, return all lessons with their related data
-            $lessons = Lesson::with(['subject.studyLevel', 'room'])->get();
+            $lessons = Lesson::with(['subject.studyLevel', 'room', 'teacher.user'])->get();
         }
 
         return response()->json(['lessons' => $lessons]);
