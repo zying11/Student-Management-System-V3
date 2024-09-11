@@ -23,6 +23,12 @@ class Lesson extends Model
         return $this->belongsTo(StudyLevel::class);
     }
 
+    public function teacher()
+    {
+        return $this->belongsTo(Teacher::class);
+    }
+
+
     public function student()
     {
         return $this->belongsToMany(Student::class, 'student_enrollment');

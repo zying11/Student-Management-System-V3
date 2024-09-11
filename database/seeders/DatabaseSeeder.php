@@ -29,10 +29,10 @@ class DatabaseSeeder extends Seeder
             StudyLevelSeeder::class,
             SubjectSeeder::class,
             RoomSeeder::class,
-                    // LessonSeeder::class,
-                    // LessonDummyZy::class,
-            // EnrollmentTableSeeder::class,
             TeacherSeeder::class,
+            LessonSeeder::class,
+            // EnrollmentTableSeeder::class,
+
         ]);
     }
 }

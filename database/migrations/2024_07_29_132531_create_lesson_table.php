@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create('lessons', function (Blueprint $table) {
             $table->id()->autoIncrement();
             $table->unsignedBigInteger('subject_id');
-            $table->string('teacher_id')->nullable(); //to be change to unsignedBigInteger later when zy done the table
+            $table->unsignedBigInteger('teacher_id')->nullable();
             $table->unsignedBigInteger('room_id')->nullable();
             $table->float('duration');
             $table->string('day')->nullable();
@@ -24,6 +24,7 @@ return new class extends Migration {
             // Foreign key constraints
             $table->foreign('subject_id')->references('id')->on('subjects')->onDelete('cascade');
             $table->foreign('room_id')->references('id')->on('rooms')->onDelete('cascade');
+            $table->foreign('teacher_id')->references('id')->on('teachers')->onDelete('cascade');
         });
     }
 

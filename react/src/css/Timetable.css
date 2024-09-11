@@ -9,6 +9,10 @@
         font-weight: 600;
     }
 
+    .level-name {
+        font-size: 12px;
+    }
+
     p {
         font-size: 14px;
         color: #828282;
@@ -28,6 +32,7 @@
         border: none;
     }
 }
+
 /* Modal styling */
 #confirmationModal .modal-header {
     border-bottom: none;
