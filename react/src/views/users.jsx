@@ -188,7 +188,7 @@ export default function Users() {
             </div>
             <ContentContainer title="User List">
                 {error && <div className="alert alert-danger">{error}</div>}
-                <Table header={tableHeader} data={tableData}></Table>
+                <Table header={tableHeader} data={tableData} itemsPerPage={10}></Table>
             </ContentContainer>
         </>
     );

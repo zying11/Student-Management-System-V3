@@ -107,7 +107,7 @@ export default function Teacher() {
             </div>
             <ContentContainer title="Teacher List">
                 {error && <div className="alert alert-danger">{error}</div>}
-                <Table header={tableHeader} data={tableData} />
+                <Table header={tableHeader} data={tableData} itemsPerPage={10} />
             </ContentContainer>
         </>
     );
