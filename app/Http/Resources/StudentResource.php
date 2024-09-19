@@ -27,16 +27,13 @@ class StudentResource extends JsonResource
       'nationality' => $this->nationality,
       'address' => $this->address,
       'postal_code' => $this->postal_code,
-      'registration_date' => $this->registration_date,
-      // 'study_level' => $this->study_level,
-      // 'subject' => $this->subject,
+      'registration_date' => \Carbon\Carbon::parse($this->registration_date)->format('d-m-Y'),
 
-      // parent relationship
-      'parents' => $this->parent,
+      // Parent relationship
+      'parents' => $this->parents,
 
-      // lesson relationship
-      'enrollments' => $this->lesson,
-
+      // Lesson relationship
+      'enrollments' => EnrollmentResource::collection($this->enrollments),
     ];
   }
 }

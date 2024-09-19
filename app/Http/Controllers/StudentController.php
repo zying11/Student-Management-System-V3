@@ -65,6 +65,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Student;
 use App\Models\Parents;
+use App\Models\Enrollment;
 use App\Http\Resources\StudentResource;
 use App\Http\Requests\StoreStudentRequest;
 use App\Http\Requests\UpdateStudentRequest;
@@ -164,7 +165,7 @@ class StudentController extends Controller
         }
 
         if (is_array($parentIds)) {
-            $student->parent()->sync($parentIds);
+            $student->parents()->sync($parentIds);
             return response()->json(['message' => 'Parents updated successfully']);
         } else {
             return response()->json(['error' => 'Invalid parent IDs format'], 400);
@@ -174,7 +175,7 @@ class StudentController extends Controller
 
     public function removeParent(Student $student, Parents $parent)
     {
-        $student->parent()->detach($parent->id);
+        $student->parents()->detach($parent->id);
         return response()->json(['message' => 'Parent removed successfully']);
     }
 
@@ -186,7 +187,6 @@ class StudentController extends Controller
         }
 
         // Return parents associated with the student
-        return response()->json($student->parent);
+        return response()->json($student->parents);
     }
-
 }

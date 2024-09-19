@@ -103,7 +103,7 @@ const router = createBrowserRouter([
                 element: <InvoiceTemplate key="invoiceTemplate" />,
             },
             {
-                path: "/students",
+                path: "/student",
                 element: <Students />,
             },
             {

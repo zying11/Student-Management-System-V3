@@ -3,10 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Student extends Model
 {
-    // use HasFactory;
+    use HasFactory;
 
     protected $table = 'students';
 
@@ -28,33 +29,33 @@ class Student extends Model
         'registration_date'
     ];
 
-    // /**
-    //  * Define the relationship to the Enrollment model.
-    //  *
-    //  * @return \Illuminate\Database\Eloquent\Relations\HasMany
-    //  */
-    // public function enrollments()
-    // {
-    //     return $this->hasMany(Enrollment::class);
-    // }
-
     /**
      * Define the relationship to the Parent model.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function parent()
+    public function parents()
     {
         return $this->belongsToMany(Parents::class, 'student_parent', 'student_id', 'parent_id');
     }
 
     /**
-     * Define the relationship to the Lesson model.
+     * Define the relationship to the Enrollment model.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function lesson()
+    public function enrollments()
     {
-        return $this->belongsToMany(Lesson::class, 'student_enrollment');
+        return $this->hasMany(Enrollment::class, 'student_id');
+    }
+
+    /**
+     * Format the date of student registration.
+     * @param mixed $value
+     * @return string
+     */
+    public function getRegistrationDateAttribute($value)
+    {
+        return \Carbon\Carbon::parse($value)->format('d-m-Y');
     }
 }

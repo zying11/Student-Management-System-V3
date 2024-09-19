@@ -26,11 +26,17 @@ class UpdateParentsRequest extends FormRequest
             'name' => 'required|string|max:255',
             'relationship' => 'required|string|max:255',
             'email' => [
-                'nullable',
+                'required',
                 'email',
                 'max:255',
-                Rule::unique('parents')->ignore($this->route('parent')),
+                'unique:users,email,' . $this->id,
             ],
+            // 'email' => [
+            //     'nullable',
+            //     'email',
+            //     'max:255',
+            //     Rule::unique('parents')->ignore($this->route('parent')),
+            // ],
             'phone_number' => 'required|digits_between:10,15',
         ];
     }

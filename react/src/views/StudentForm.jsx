@@ -9,7 +9,7 @@ import ParentDetailsForm from "../components/Form/ParentDetailsForm";
 import EnrollmentDetailsForm from "../components/Form/EnrollmentDetailsForm";
 import Spinner from 'react-bootstrap/Spinner';
 
-export default function TeacherForm({ isEditing }) {
+export default function StudentForm({ isEditing }) {
     // Get the ID from the route parameters
     const { id } = useParams();
 
@@ -37,84 +37,46 @@ export default function TeacherForm({ isEditing }) {
         },
     ]);
 
-    const [enrollmentDetails, setEnrollmentDetails] = useState([{ lesson_id: '', study_level: '', class_time: '' }]);
+    const [enrollmentDetails, setEnrollmentDetails] = useState([
+        {
+            id: "",
+            subject_id: '',
+            study_level_id: '',
+            lesson_id: '',
+        }
+    ]);
+    const [enrollmentsToDelete, setEnrollmentsToDelete] = useState([]);
+
+    const [subjects, setSubjects] = useState([]);
     const [lessons, setLessons] = useState([]);
 
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
 
-    // useEffect(async () => {
-
-
-    //     if (isEditing && id) {
-    //         const fetchStudentData = async () => {
-    //             setLoading(true);
-    //             try {
-    //                 // Fetch student data using the ID
-    //                 const response = await axiosClient.get(`/students/${id}`);
-
-    //                 // Assume response.data is the student object
-    //                 const studentData = response.data;
-
-    //                 if (studentData) {
-    //                     setStudentDetails({
-    //                         name: studentData.name,
-    //                         gender: studentData.gender,
-    //                         birth_date: studentData.birth_date,
-    //                         age: calculateAge(studentData.birth_date),
-    //                         nationality: studentData.nationality,
-    //                         address: studentData.address,
-    //                         postal_code: studentData.postal_code,
-    //                     });
-
-    //                     // Set parent details from the student data
-    //                     setParentDetails(studentData.parents.map(parent => ({
-    //                         id: parent.id || "",
-    //                         name: parent.name || "",
-    //                         email: parent.email || "",
-    //                         phone_number: parent.phone_number || "",
-    //                         relationship: parent.relationship || "",
-    //                     })));
-
-    //                          // Fetch enrollment details
-    //      const enrollmentResponse = await axiosClient.get(`/students/${id}/enrollments`);
-    //      setEnrollmentDetails(enrollmentResponse.data);
-    //                 } else {
-    //                     console.error('Student not found');
-    //                 }
-    //                 const lessonsResponse = await axiosClient.get('/lessons');
-    //                 setLessons(lessonsResponse.data);
-
-    //             } catch (error) {
-    //                 console.error('Error fetching student data:', error);
-    //             } finally {
-    //                 setLoading(false);
-    //             }
-    //         };
-
-    //         fetchStudentData();
-    //     }
-    // }, [isEditing, id]);
-
     useEffect(() => {
-        const fetchLessons = async () => {
-            try {
-                const response = await axiosClient.get('/lessons');
-                setLessons(response.data.lessons);
-            } catch (error) {
-                console.error('Error fetching lessons:', error);
-            }
+        // Fetch subjects and lessons to populate the dropdowns
+        const fetchSubjectsAndLessons = async () => {
+            const subjectsResponse = await axiosClient.get('/subjects');
+            const subjectsData = subjectsResponse.data;
+
+            const lessonsResponse = await axiosClient.get('/lessons');
+            const lessonsData = lessonsResponse.data;
+
+            setSubjects(subjectsData);
+            setLessons(lessonsData);
         };
+        fetchSubjectsAndLessons();
 
-        fetchLessons();
-
+        // Fetch student data if editing
         const fetchStudentData = async () => {
             setLoading(true);
             try {
                 if (isEditing && id) {
+                    // Fetch student details
                     const studentResponse = await axiosClient.get(`/students/${id}`);
                     const studentData = studentResponse.data;
 
+                    // Set student details
                     setStudentDetails({
                         name: studentData.name,
                         gender: studentData.gender,
@@ -125,6 +87,7 @@ export default function TeacherForm({ isEditing }) {
                         postal_code: studentData.postal_code,
                     });
 
+                    // Set parent details
                     setParentDetails(studentData.parents.map(parent => ({
                         id: parent.id || "",
                         name: parent.name || "",
@@ -133,17 +96,20 @@ export default function TeacherForm({ isEditing }) {
                         relationship: parent.relationship || "",
                     })));
 
-                    const enrollmentResponse = await axiosClient.get(`/students/${id}/enrollments`);
-                    setEnrollmentDetails(enrollmentResponse.data || []);
+                    // Set enrollment details
+                    setEnrollmentDetails(studentData.enrollments.map(enrollment => ({
+                        id: enrollment.id,
+                        subject_id: enrollment.subject ? enrollment.subject.id : "", 
+                        study_level_id: enrollment.study_level ? enrollment.study_level.id : "",
+                        lesson_id: enrollment.lesson ? enrollment.lesson.id : "",
+                    })));
                 }
-
             } catch (error) {
                 console.error('Error fetching data:', error);
             } finally {
                 setLoading(false);
             }
         };
-
 
         fetchStudentData();
     }, [isEditing, id]);
@@ -195,6 +161,7 @@ export default function TeacherForm({ isEditing }) {
         }
     };
 
+    // Function to handle changes in the parent details
     const handleParentDetailsChange = (e, index, field) => {
         const newParentDetails = [...parentDetails];
         newParentDetails[index][field] = e.target.value;
@@ -209,113 +176,53 @@ export default function TeacherForm({ isEditing }) {
         }
     };
 
-
+    // Function to add a new parent
     const handleAddParent = () => {
         setParentDetails([...parentDetails, { id: "", name: "", email: "", phone_number: "", relationship: "" }]);
     };
 
+    // Function to remove a parent
     const handleRemoveParent = (index) => {
         const newParentDetails = parentDetails.filter((_, i) => i !== index);
         setParentDetails(newParentDetails);
     };
 
-    const handleLessonChange = (e, index, field) => {
+    // Function to handle changes in the enrollment details
+    const handleEnrollmentChange = (e, index, field) => {
         const newEnrollmentDetails = [...enrollmentDetails];
         newEnrollmentDetails[index][field] = e.target.value;
         setEnrollmentDetails(newEnrollmentDetails);
+
+        console.log(`Updated enrollment ${index}:`, newEnrollmentDetails[index]);
+
+        // Clear the specific error when the user starts typing
+        const errorKey = `enrollment_${field}_${index}`;
+        if (errors[errorKey]) {
+            setErrors({ ...errors, [errorKey]: "" });
+        }
     };
 
+    // Add a new enrollment 
     const addLesson = () => {
-        setEnrollmentDetails([...enrollmentDetails, { lesson_id: '', study_level: '', class_time: '' }]);
+        setEnrollmentDetails([...enrollmentDetails, { id: "", subject_id: "", study_level_id: "", lesson_id: "" }]);
     };
 
+    // Remove an enrollment
     const removeLesson = (index) => {
+        // Get the enrollment to remove
+        const enrollmentToRemove = enrollmentDetails[index];
+
+        // Add the enrollment ID to the list of enrollments to delete
+        if (enrollmentToRemove.id) {
+            setEnrollmentsToDelete([...enrollmentsToDelete, enrollmentToRemove.id]);
+        }
+
+        // Remove from the state
         const newEnrollmentDetails = enrollmentDetails.filter((_, i) => i !== index);
         setEnrollmentDetails(newEnrollmentDetails);
     };
 
-
-
-    // // Function to handle form submission
-    // const handleSubmit = async (e) => {
-    //     e.preventDefault();
-
-    //     // Validate input fields
-    //     const validationErrors = validate();
-    //     if (Object.keys(validationErrors).length > 0) {
-    //         setErrors(validationErrors);
-    //         return;
-    //     }
-
-    //     // Set loading to true while saving data
-    //     setLoading(true);
-    //     try {
-    //         // If editing, update the teacher details
-    //         if (isEditing && id) {
-    //             // Update the student details
-    //             await axiosClient.put(`/students/${id}`, studentDetails);
-
-
-    //             // Update each parent detail associated with the student
-    //         await Promise.all(
-    //             parentDetails.map(async parent => {
-
-    //                 if (parent.id) {
-    //                     console.log("parent.id", parent.id);
-    //                     // Update existing parent details
-    //                     return axiosClient.put(`/parents/${parent.id}`, parent);
-    //                 } else {
-    //                     // Create new parent, only if the email is unique
-    //                     try {
-    //                         await axiosClient.post(`/parents`, parent);
-    //                     } catch (error) {
-    //                         if (error.response && error.response.data.errors.email) {
-    //                             // Email already exists, add to the error state
-    //                             console.log("Email already exists");
-    //                             setErrors({
-    //                                 ...errors,
-    //                                 [`parent_email_${parentDetails.indexOf(parent)}`]: "Email already exists",
-    //                             });
-    //                             throw new Error("Validation failed");
-    //                         }
-    //                     }
-    //                 }
-    //             })
-    //         );
-
-
-
-    //             // If creating a new teacher
-    //         } else {
-    //             // Create the student
-    //             const studentResponse = await axiosClient.post(`/students`, studentDetails);
-    //             const studentId = studentResponse.data.id;
-
-    //             // Create parent details and associate with student
-    //             const parentResponses = await Promise.all(
-    //                 parentDetails.map(parent => axiosClient.post('/parents', parent))
-    //             );
-
-    //             const parentIds = parentResponses.map(response => response.data.id);
-    //             await axiosClient.post(`/students/${studentId}/parents`, { parent_ids: parentIds, student_id: studentId });
-    //         }
-
-    //         alert(`Student ${isEditing ? 'updated' : 'created'} successfully`);
-
-    //         // Redirect to the student list page
-    //         navigate('/students');
-    //     } catch (error) {
-    //         if (error.response && error.response.data) {
-    //             setErrors(error.response.data.errors);
-    //         } else {
-    //             alert('Error saving student: ' + error.message);
-    //         }
-    //     } finally {
-    //         // Set loading to false after saving data
-    //         setLoading(false);
-    //     }
-    // };
-
+    // Function to handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -333,11 +240,10 @@ export default function TeacherForm({ isEditing }) {
             if (isEditing && id) {
                 // Update existing student details
                 studentResponse = await axiosClient.put(`/students/${id}`, studentDetails);
+                const studentId = studentResponse.data.id;
 
-                // Create a map to store new parent IDs
+                // Handle parent updates or creation
                 const newParentIds = new Map();
-
-                // First, update existing parents and create new parents
                 await Promise.all(
                     parentDetails.map(async (parent, index) => {
                         if (parent.id) {
@@ -364,14 +270,46 @@ export default function TeacherForm({ isEditing }) {
                         }
                     })
                 );
-
                 // Collect all parent IDs (existing + new)
                 const allParentIds = parentDetails.map((parent, index) =>
                     newParentIds.get(index) || parent.id
                 );
-
                 // Sync student with parent records via pivot table
                 await axiosClient.post(`/students/${id}/parents`, { parent_ids: allParentIds, student_id: studentId });
+
+                // Handle enrollment updates or creation
+                const existingEnrollmentIds = studentResponse.data.enrollments.map(enrollment => enrollment.id);
+                await Promise.all(
+                    enrollmentDetails.map(async (enrollment, index) => {
+                        // Check if the enrollment is an existing enrollment
+                        if (existingEnrollmentIds[index]) {
+                            // Update existing enrollment
+                            return axiosClient.put(`/enrollments/${existingEnrollmentIds[index]}`, {
+                                student_id: id,
+                                subject_id: enrollment.subject_id,
+                                study_level_id: enrollment.study_level_id,
+                                lesson_id: enrollment.lesson_id,
+                            });
+                        } else {
+                            // Create new enrollment
+                            return axiosClient.post(`/enrollments`, {
+                                student_id: id,
+                                subject_id: enrollment.subject_id,
+                                study_level_id: enrollment.study_level_id,
+                                lesson_id: enrollment.lesson_id,
+                            });
+                        }
+                    })
+                );
+
+                // Handle enrollment deletions
+                if (enrollmentsToDelete.length > 0) {
+                    await Promise.all(
+                        enrollmentsToDelete.map(id =>
+                            axiosClient.delete(`/enrollments/${id}`)
+                        )
+                    );
+                }
 
             } else {
                 // Create new student
@@ -388,10 +326,16 @@ export default function TeacherForm({ isEditing }) {
                 // Link new parents to the student via the pivot table
                 await axiosClient.post(`/students/${studentId}/parents`, { parent_ids: parentIds, student_id: studentId });
 
+                // Create enrollments
+                await Promise.all(
+                    enrollmentDetails.map(enrollment =>
+                        axiosClient.post(`/enrollments`, { student_id: studentId, ...enrollment })
+                    )
+                );
             }
 
             alert(`Student ${isEditing ? 'updated' : 'created'} successfully`);
-            navigate('/students');
+            navigate('/student');
         } catch (error) {
             if (error.response && error.response.data) {
                 setErrors(error.response.data.errors);
@@ -439,14 +383,17 @@ export default function TeacherForm({ isEditing }) {
             if (!parent.name) {
                 errors[`parent_name_${index}`] = "Name is required";
             }
+
             if (!parent.relationship) {
                 errors[`parent_relationship_${index}`] = "Relationship is required";
             }
+
             if (!parent.email) {
                 errors[`parent_email_${index}`] = "Email is required";
             } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(parent.email)) {
                 errors[`parent_email_${index}`] = "Email is invalid";
             }
+
             if (!parent.phone_number) {
                 errors[`parent_phone_${index}`] = "Phone number is required";
             } else if (!/^\d{10,15}$/.test(parent.phone_number)) {
@@ -454,10 +401,20 @@ export default function TeacherForm({ isEditing }) {
             }
         });
 
-        // // Validate subject teaching details
-        // if (selectedSubjects.includes('')) {
-        //     errors.subject_ids = "At least one subject must be selected, and no fields can be empty";
-        // }
+        // // Validate enrollment details
+        // enrollmentDetails.forEach((enrollment, index) => {
+        //     if (!enrollment.subject_id) {
+        //         errors[`enrollment_subject_id_${index}`] = "Subject is required";
+        //     }
+
+        //     if (!enrollment.study_level_id) {
+        //         errors[`enrollment_study_level_id_${index}`] = "Study level is required";
+        //     }
+
+        //     if (!enrollment.lesson_id) {
+        //         errors[`enrollment_lesson_id_${index}`] = "Class time is required";
+        //     }
+        // });
 
         return errors;
     };
@@ -491,14 +448,15 @@ export default function TeacherForm({ isEditing }) {
                         />
                     </ContentContainer>
 
-                    <ContentContainer title="Subject Enrollment Details">
+                    <ContentContainer title="Enrollment Details">
                         <EnrollmentDetailsForm
                             enrollmentDetails={enrollmentDetails}
-                            lessons={lessons}
-                            handleChange={handleLessonChange}
-                            handleAddLesson={addLesson}
-                            handleRemoveLesson={removeLesson}
+                            handleEnrollmentChange={handleEnrollmentChange}
+                            addLesson={addLesson}
+                            removeLesson={removeLesson}
                             errors={errors}
+                            subjects={subjects}
+                            lessons={lessons}
                         />
                     </ContentContainer>
 
