@@ -24,14 +24,12 @@ class StudentFactory extends Factory
         return [
             'name' => $this->faker->name,
             'gender' => $this->faker->randomElement(['male', 'female']),
-            'birth_date' => $this->faker->date,
-            'age' => $this->faker->numberBetween(18, 25),
-            'nationality' => 'Malaysia',
+            'birth_date' => $this->faker->date('Y-m-d', '2005-12-31'),
+            'age' => $this->faker->numberBetween(5, 18),
+            'nationality' => $this->faker->country,
             'address' => $this->faker->address,
             'postal_code' => $this->faker->postcode,
-            'study_level' => $this->faker->randomElement(['Pre & Lower Primary', 'Upper Primary']),
-            'subject' => $this->faker->randomElement(['Math', 'English']),
-            'registration_date' => $this->faker->date,
+            'registration_date' => $this->faker->dateTimeBetween('-5 years', 'now'),
         ];
     }
 }

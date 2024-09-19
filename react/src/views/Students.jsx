@@ -1,224 +1,3 @@
-// import { useEffect } from "react";
-// import { useState } from "react";
-// import { Link } from "react-router-dom";
-// import axiosClient from "../axiosClient";
-
-// export default function Students() {
-//     const [students, setStudents] = useState([]);
-//     const [loading, setLoading] = useState(false);
-
-//     useEffect(() => {
-//         getStudents();
-//     }, []);
-
-//     const onDeleteClick = (student) => {
-//         if (!window.confirm("Are you sure you want to delete this student?")) {
-//             return;
-//         }
-//         axiosClient.delete(`/students/${student.id}`).then(() => {
-//             getStudents();
-//         });
-//     };
-
-//     const getStudents = () => {
-//         setLoading(true);
-//         axiosClient
-//             .get("/students")
-//             .then(({ data }) => {
-//                 setLoading(false);
-//                 setStudents(data.data);
-//             })
-//             .catch(() => {
-//                 setLoading(false);
-//             });
-//     };
-
-//     return (
-//         <>
-//             <div className="container">
-//                 <div className="d-flex justify-content-between align-items-center">
-//                     <h1>Student List</h1>
-//                     <Link className="btn btn-primary" to="/students/new">
-//                         Add new student
-//                     </Link>
-//                 </div>
-//                 <div className="card mt-3">
-//                     <table className="table">
-//                         <thead>
-//                             <tr>
-//                                 <th>ID</th>
-//                                 <th>Student Name</th>
-//                                 {/* <th>Gender</th>
-//                                 <th>Birth Date</th>
-//                                 <th>Age</th>
-//                                 <th>Nationality</th>
-//                                 <th>Address</th>
-//                                 <th>Postal Code</th> */}
-//                                 <th>Study Level</th>
-//                                 <th>Subject</th>
-//                                 <th>Registration Date</th>
-//                                 <th>Actions</th>
-//                             </tr>
-//                         </thead>
-//                         <tbody>
-//                             {loading ? (
-//                                 <tr>
-//                                     <td colSpan="4" className="text-center">
-//                                         Loading...
-//                                     </td>
-//                                 </tr>
-//                             ) : (
-//                                 students.map((s) => (
-//                                     <tr key={s.id}>
-//                                         <td>{s.id}</td>
-//                                         <td>{s.name}</td>
-//                                         {/* <td>{s.gender}</td>
-//                                         <td>{s.birth_date}</td>
-//                                         <td>{s.age}</td>
-//                                         <td>{s.nationality}</td>
-//                                         <td>{s.address}</td>
-//                                         <td>{s.postal_code}</td> */}
-//                                         <td>{s.study_level}</td>
-//                                         <td>{s.subject}</td>
-//                                         <td>{s.registration_date}</td>
-//                                         <td>
-//                                             <Link
-//                                                 className="btn btn-primary"
-//                                                 to={"/students/" + s.id}
-//                                             >
-//                                                 Edit
-//                                             </Link>
-//                                             <button
-//                                                 className="btn btn-danger ms-2"
-//                                                 onClick={() => onDeleteClick(s)}
-//                                             >
-//                                                 Delete
-//                                             </button>
-//                                             <Link
-
-//                                                 className="icon btn btn-light"
-//                                                 // to={"/students/" + s.id}
-//                                                   to={"/students/profile"}
-//                                             >
-//                                                 <i class="bi bi-person-lines-fill"></i> Profile
-//                                             </Link>
-//                                         </td>
-//                                     </tr>
-//                                 ))
-//                             )}
-//                         </tbody>
-//                     </table>
-//                 </div>
-//             </div>
-//         </>
-//     );
-// }
-
-
-// import { useEffect, useState } from "react";
-// import { Link } from "react-router-dom";
-// import axiosClient from "../axiosClient";
-
-// export default function Students() {
-//     const [students, setStudents] = useState([]);
-//     const [loading, setLoading] = useState(false);
-
-//     useEffect(() => {
-//         getStudents();
-//     }, []);
-
-//     const onDeleteClick = (student) => {
-//         if (!window.confirm("Are you sure you want to delete this student?")) {
-//             return;
-//         }
-//         axiosClient.delete(`/students/${student.id}`).then(() => {
-//             getStudents();
-//         });
-//     };
-
-//     const getStudents = () => {
-//         setLoading(true);
-//         axiosClient
-//             .get("/students")
-//             .then(({ data }) => {
-//                 setLoading(false);
-//                 setStudents(data.data);
-//             })
-//             .catch(() => {
-//                 setLoading(false);
-//             });
-//     };
-
-//     return (
-//         <>
-//             <div className="container">
-//                 <div className="d-flex justify-content-between align-items-center">
-//                     <h1>Student List</h1>
-//                     <Link className="btn btn-primary" to="/students/new">
-//                         Add new student
-//                     </Link>
-//                 </div>
-//                 <div className="card mt-3">
-//                     <table className="table">
-//                         <thead>
-//                             <tr>
-//                                 <th>ID</th>
-//                                 <th>Student Name</th>
-//                                 <th>Study Level</th>
-//                                 <th>Subject</th>
-//                                 <th>Registration Date</th>
-//                                 <th>Actions</th>
-//                             </tr>
-//                         </thead>
-//                         <tbody>
-//                             {loading ? (
-//                                 <tr>
-//                                     <td colSpan="6" className="text-center">
-//                                         Loading...
-//                                     </td>
-//                                 </tr>
-//                             ) : (
-//                                 students.map((s) => (
-//                                     <tr key={s.id}>
-//                                         <td>{s.id}</td>
-//                                         <td>{s.name}</td>
-//                                         {/* <td>{s.study_level}</td>
-//                                         <td>{s.subject}</td> */}
-//                                         <td>{s?.study_level ? s.study_level : 'Not Yet Enrolled'}</td>
-//                                         <td>{s?.subject ? s.subject : 'Not Yet Enrolled'}</td>
-//                                         <td>{s.registration_date}</td>
-//                                         <td>
-//                                             <Link
-//                                                 className="btn btn-primary"
-//                                                 to={"/students/" + s.id }
-//                                             >
-//                                                 Edit
-//                                             </Link>
-//                                             <button
-//                                                 className="btn btn-danger ms-2"
-//                                                 onClick={() => onDeleteClick(s)}
-//                                             >
-//                                                 Delete
-//                                             </button>
-//                                             <Link
-//                                                 className="btn btn-light ms-2"
-//                                                 to={"/students/" + s.id + "/profile"}
-//                                             >
-//                                                 <i class="bi bi-person-lines-fill"></i> Profile
-//                                             </Link>
-//                                         </td>
-//                                     </tr>
-//                                 ))
-//                             )}
-//                         </tbody>
-//                     </table>
-//                 </div>
-//             </div>
-//         </>
-//     );
-// }
-
-
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axiosClient from "../axiosClient";
@@ -231,7 +10,6 @@ export default function Students() {
         students: [],
         loading: true,
     });
-    const [subjects, setSubjects] = useState([]);
 
     const [error, setError] = useState("");
 
@@ -255,29 +33,9 @@ export default function Students() {
             }
         }
 
-        async function fetchSubjects() {
-            try {
-                const res = await axiosClient.get("/subjects"); // Adjust the endpoint as needed
-                setSubjects(res.data.subjects); // Use the correct path to subjects
-            } catch (error) {
-                console.error("Error fetching subjects:", error);
-                setError("Error fetching subject data. Please try again later.");
-            }
-        }
-
-        fetchSubjects();
-
         // Call fetchStudents function
         fetchStudents();
     }, []);
-
-    const getSubjectDetails = (subjectId) => {
-        const subject = subjects.find(sub => sub.id === subjectId);
-        return subject ? {
-            name: subject.subject_name,
-            level: subject.level_name || '-'
-        } : { name: '-', level: '-' };
-    };
 
     // Handle deletion of a student
     const handleDelete = async (id) => {
@@ -298,7 +56,7 @@ export default function Students() {
         }
     };
 
-    const tableHeader = ["ID", "Student Name", "Study Level", "Subject", "Registration Date", "Actions"];
+    const tableHeader = ["ID", "Student Name", "Subject", "Study Level", "Registration Date", "Actions"];
 
     const tableData = studentData.loading
         ? [
@@ -311,10 +69,20 @@ export default function Students() {
         : studentData.students.map((student) => [
             student.id || "-",
             student.name || "-",
-            // student.study_level || "-",
-            // student.subject || "-",
-            student.enrollments.length > 0 ? getSubjectDetails(student.enrollments[0].subject_id).level : "-",
-            student.enrollments.length > 0 ? getSubjectDetails(student.enrollments[0].subject_id).name : "-",
+            student.enrollments.length > 0
+                ? student.enrollments.map((enrollment, index) => (
+                    <span key={index}>
+                        {enrollment.subject?.subject_name || "-"} <br />
+                    </span>
+                ))
+                : "-",
+            student.enrollments.length > 0
+                ? student.enrollments.map((enrollment, index) => (
+                    <span key={index}>
+                        {enrollment.study_level?.level_name || "-"} <br />
+                    </span>
+                ))
+                : "-",
             student.registration_date || "-",
             <div className="actions">
                 {/*Edit action*/}
@@ -354,5 +122,3 @@ export default function Students() {
         </>
     );
 }
-
-

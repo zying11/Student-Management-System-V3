@@ -23,19 +23,21 @@ class Lesson extends Model
         return $this->belongsTo(StudyLevel::class);
     }
 
+    /**
+     * Define the relationship to the Teacher model.
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function teacher()
     {
         return $this->belongsTo(Teacher::class);
     }
 
-
-    public function student()
+    /**
+     * Define the relationship to the Enrollment model.
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function enrollments()
     {
-        return $this->belongsToMany(Student::class, 'student_enrollment');
+        return $this->hasMany(Enrollment::class);
     }
-
 }
-
-
-
-

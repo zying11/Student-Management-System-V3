@@ -14,8 +14,8 @@ const menuItems = [
         icon: "students.png",
         title: "Students",
         subItems: [
-            { title: "All Students", link: "/students" },
-            { title: "Add New Student", link: "/students/new" },
+            { title: "All Students", link: "/student" },
+            { title: "Add New Student", link: "/student/create" },
             { title: "Edit Student", link: "" },
             { title: "Student Profile", link: "" },
         ],

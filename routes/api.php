@@ -14,7 +14,7 @@ use App\Http\Controllers\RoomController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\TeacherSubjectController;
-use App\Http\Controllers\ParentController;
+use App\Http\Controllers\ParentsController;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -79,7 +79,7 @@ Route::get('/users/{id}', [UserController::class, 'show']);
 Route::put('/users/{id}', [UserController::class, 'update']);
 
 Route::apiResource('/invoices', InvoiceController::class);
-Route::apiResource('/students/{student}/enrollments', EnrollmentController::class);
+
 
 // // Password Reset Routes
 // Route::get('password/reset/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
@@ -143,10 +143,22 @@ Route::get('students/{id}/parents', [StudentController::class, 'getParents']);
 
 // Route::apiResource('/parents', ParentController::class);
 // Route to fetch the list of all parents
-Route::get('/parents', [ParentController::class, 'index']);
+Route::get('/parents', [ParentsController::class, 'index']);
 // Route to store a new parent 
-Route::post('/parents', [ParentController::class, 'store']);
+Route::post('/parents', [ParentsController::class, 'store']);
 // Route to fetch specific parent details by ID
-Route::get('/parents/{id}', [ParentController::class, 'show']);
+Route::get('/parents/{id}', [ParentsController::class, 'show']);
 // Route to update specific parent details by ID
-Route::put('/parents/{id}', [ParentController::class, 'update']);
+Route::put('/parents/{id}', [ParentsController::class, 'update']);
+
+// Route::apiResource('/enrollments', EnrollmentController::class);
+// Route to fetch the list of all enrollments
+Route::get('/enrollments', [EnrollmentController::class, 'index']);
+// Route to store a new enrollment
+Route::post('/enrollments', [EnrollmentController::class, 'store']);
+// Route to retrieve specific enrollment details by ID
+Route::get('/enrollments/{id}', [EnrollmentController::class, 'show']);
+// Route to update specific enrollment details by ID
+Route::put('/enrollments/{id}', [EnrollmentController::class, 'update']);
+// Route to delete specific enrollment details by ID
+Route::delete('/enrollments/{id}', [EnrollmentController::class, 'destroy']);

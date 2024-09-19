@@ -65,7 +65,7 @@ export default function Lesson() {
         // Simple validation for required fields
         if (
             !lessonData.subjectId ||
-            !lessonData.teacher ||
+            !lessonData.teacherId ||
             !lessonData.duration
         ) {
             setError("Please fill in all fields");
