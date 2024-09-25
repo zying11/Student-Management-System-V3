@@ -40,13 +40,14 @@ class Teacher extends Model
     }
 
     /**
-     * Define the relationship to the Subject model.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * Define the relationship to the Lesson model.
+     * one-to-many relationship with lessons
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function subject()
+    public function lesson()
     {
-        // A teacher belongs to many subjects
-        return $this->belongsToMany(Subject::class, 'teacher_subject');
+        // 
+        // return $this->belongsTo(Lesson::class);
+        return $this->hasMany(Lesson::class, 'teacher_id');
     }
 }

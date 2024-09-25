@@ -29,7 +29,9 @@ export default function Students() {
                     students: [],
                     loading: false,
                 });
-                setError("Error fetching student data. Please try again later.");
+                setError(
+                    "Error fetching student data. Please try again later."
+                );
             }
         }
 
@@ -48,7 +50,9 @@ export default function Students() {
             // Update state to remove the deleted student
             setStudentData((prevState) => ({
                 ...prevState,
-                students: prevState.students.filter((student) => student.id !== id),
+                students: prevState.students.filter(
+                    (student) => student.id !== id
+                ),
             }));
         } catch (error) {
             console.error("Error deleting student:", error);
@@ -56,56 +60,74 @@ export default function Students() {
         }
     };
 
-    const tableHeader = ["ID", "Student Name", "Subject", "Study Level", "Registration Date", "Actions"];
+    const tableHeader = [
+        "ID",
+        "Student Name",
+        "Subject",
+        "Study Level",
+        "Registration Date",
+        "Actions",
+    ];
 
     const tableData = studentData.loading
         ? [
-            [
-                <td key="loading" colSpan="6" className="text-center">
-                    Loading...
-                </td>,
-            ],
-        ]
+              [
+                  <td key="loading" colSpan="6" className="text-center">
+                      Loading...
+                  </td>,
+              ],
+          ]
         : studentData.students.map((student) => [
-            student.id || "-",
-            student.name || "-",
-            student.enrollments.length > 0
-                ? student.enrollments.map((enrollment, index) => (
-                    <span key={index}>
-                        {enrollment.subject?.subject_name || "-"} <br />
-                    </span>
-                ))
-                : "-",
-            student.enrollments.length > 0
-                ? student.enrollments.map((enrollment, index) => (
-                    <span key={index}>
-                        {enrollment.study_level?.level_name || "-"} <br />
-                    </span>
-                ))
-                : "-",
-            student.registration_date || "-",
-            <div className="actions">
-                {/*Edit action*/}
-                <Link to={`/student/edit/${student.id}`} className="text-decoration-none">
-                    <img
-                        className="me-2"
-                        src="http://localhost:8000/icon/edit.png"
-                        alt="Edit" />
-                </Link>
-                {/*Delete action*/}
-                <img
-                    className="me-2"
-                    src="http://localhost:8000/icon/delete.png"
-                    alt="Delete"
-                    onClick={() => handleDelete(student.id)}
-                    style={{ cursor: "pointer" }}
-                />
-                {/*Profile action*/}
-                <img
-                    src="http://localhost:8000/icon/profile.png"
-                    alt="Profile" />
-            </div>,
-        ]);
+              student.id || "-",
+              student.name || "-",
+              student.enrollments.length > 0
+                  ? student.enrollments.map((enrollment, index) => (
+                        <span key={index}>
+                            {enrollment.subject?.subject_name || "-"} <br />
+                        </span>
+                    ))
+                  : "-",
+              student.enrollments.length > 0
+                  ? student.enrollments.map((enrollment, index) => (
+                        <span key={index}>
+                            {enrollment.study_level?.level_name || "-"} <br />
+                        </span>
+                    ))
+                  : "-",
+              student.registration_date || "-",
+              <div className="actions">
+                  {/*Edit action*/}
+                  <Link
+                      to={`/student/edit/${student.id}`}
+                      className="text-decoration-none"
+                  >
+                      <img
+                          className="me-2"
+                          src="http://localhost:8000/icon/edit.png"
+                          alt="Edit"
+                      />
+                  </Link>
+                  {/*Delete action*/}
+                  <img
+                      className="me-2"
+                      src="http://localhost:8000/icon/delete.png"
+                      alt="Delete"
+                      onClick={() => handleDelete(student.id)}
+                      style={{ cursor: "pointer" }}
+                  />
+                  {/*Profile action*/}
+                  <Link
+                      to={`/student/${student.id}/profile`}
+                      className="text-decoration-none"
+                  >
+                      <img
+                          className="me-2"
+                          src="http://localhost:8000/icon/profile.png"
+                          alt="Profile"
+                      />
+                  </Link>
+              </div>,
+          ]);
 
     return (
         <>
@@ -117,7 +139,11 @@ export default function Students() {
             </div>
             <ContentContainer title="Student List">
                 {error && <div className="alert alert-danger">{error}</div>}
-                <Table header={tableHeader} data={tableData} itemsPerPage={10} />
+                <Table
+                    header={tableHeader}
+                    data={tableData}
+                    itemsPerPage={10}
+                />
             </ContentContainer>
         </>
     );

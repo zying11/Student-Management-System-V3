@@ -25,6 +25,7 @@ class Lesson extends Model
 
     /**
      * Define the relationship to the Teacher model.
+     * inverse relationship to teacher
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function teacher()

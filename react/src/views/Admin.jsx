@@ -18,7 +18,7 @@ export default function Admin() {
         async function fetchAdmins() {
             try {
                 // Fetch data from /admins endpoint
-                const res = await axiosClient.get("/admins"); 
+                const res = await axiosClient.get("/admins");
                 setAdminData({
                     admins: res.data.data,
                     loading: false,
@@ -56,55 +56,81 @@ export default function Admin() {
         }
     };
 
-    const tableHeader = ["ID", "Admin Name", "Email", "Joining Date", "Actions"];
+    // Table header and data
+    const tableHeader = [
+        "ID",
+        "Admin Name",
+        "Email",
+        "Joining Date",
+        "Actions",
+    ];
 
     const tableData = adminData.loading
         ? [
-            [
-                <td key="loading" colSpan="5" className="text-center">
-                    Loading...
-                </td>,
-            ],
-        ]
-        : adminData.admins.map((admin) => [
-            admin.id || "-",
-            admin.name || "-",
-            admin.email || "-",
-            admin.joining_date || "-",
-            <div className="actions">
-                {/*Edit action*/}
-                <Link to={`/admin/edit/${admin.id}`} className="text-decoration-none">
-                    <img
-                        className="me-2"
-                        src="http://localhost:8000/icon/edit.png"
-                        alt="Edit" />
-                </Link>
-                {/*Delete action*/}
-                <img
-                    className="me-2"
-                    src="http://localhost:8000/icon/delete.png"
-                    alt="Delete"
-                    onClick={() => handleDelete(admin.id)}
-                    style={{ cursor: "pointer" }}
-                />
-                {/*Profile action*/}
-                <img
-                    src="http://localhost:8000/icon/profile.png"
-                    alt="Profile" />
-            </div>,
-        ]);
+              [
+                  <td key="loading" colSpan="5" className="text-center">
+                      Loading...
+                  </td>,
+              ],
+          ]
+        : // Map admin data to table rows
+          adminData.admins.map((admin) => [
+              admin.id || "-",
+              admin.name || "-",
+              admin.email || "-",
+              admin.joining_date || "-",
+              <div className="actions">
+                  {/*Edit action*/}
+                  <Link
+                      to={`/admin/edit/${admin.id}`}
+                      className="text-decoration-none"
+                  >
+                      <img
+                          className="me-2"
+                          src="http://localhost:8000/icon/edit.png"
+                          alt="Edit"
+                      />
+                  </Link>
+                  {/*Delete action*/}
+                  <img
+                      className="me-2"
+                      src="http://localhost:8000/icon/delete.png"
+                      alt="Delete"
+                      onClick={() => handleDelete(admin.id)}
+                      style={{ cursor: "pointer" }}
+                  />
+                  {/*Profile action*/}
+                  <Link
+                      to={`/admin/${admin.id}/profile`}
+                      className="text-decoration-none"
+                  >
+                      <img
+                          className="me-2"
+                          src="http://localhost:8000/icon/profile.png"
+                          alt="Profile"
+                      />
+                  </Link>
+              </div>,
+          ]);
 
     return (
         <>
             <div className="page-title">Admins</div>
+
             <div className="d-flex justify-content-end">
                 <Link to="/admin/create" className="text-decoration-none">
                     <Button>Add Admin</Button>
                 </Link>
             </div>
+
+            {/* Display admin list table */}
             <ContentContainer title="Admin List">
                 {error && <div className="alert alert-danger">{error}</div>}
-                <Table header={tableHeader} data={tableData} itemsPerPage={10} />
+                <Table
+                    header={tableHeader}
+                    data={tableData}
+                    itemsPerPage={10}
+                />
             </ContentContainer>
         </>
     );

@@ -13,7 +13,6 @@ use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\TeacherController;
-use App\Http\Controllers\TeacherSubjectController;
 use App\Http\Controllers\ParentsController;
 
 use Illuminate\Http\Request;
@@ -115,14 +114,6 @@ Route::get('/teachers/{id}', [TeacherController::class, 'show']);
 Route::put('/teachers/{id}', [TeacherController::class, 'update']);
 // Route to delete specific teacher details and the associated user account by ID
 Route::delete('/teachers/{id}', [TeacherController::class, 'destroy']);
-
-
-// Route to store subjects teaching for a teacher
-Route::post('/teachers/subjects', [TeacherSubjectController::class, 'store']);
-// Route to update subjects teaching for a specific teacher
-Route::put('/teachers/{id}/subjects', [TeacherSubjectController::class, 'update']);
-// Route to get subjects teaching assigned to a specific teacher
-Route::get('/teachers/{id}/subjects', [TeacherSubjectController::class, 'show']);
 
 // Route::apiResource('/students', StudentController::class);
 // Route to fetch the list of all students

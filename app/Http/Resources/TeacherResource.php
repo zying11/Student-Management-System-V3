@@ -34,9 +34,21 @@ class TeacherResource extends JsonResource
             'address' => $this->address,
             'postal_code' => $this->postal_code,
 
-            // Display the subject teaching details
-            'subject_teaching_ids' => $this->subject->pluck('id'),
-            'subject_teaching_names' => $this->subject->pluck('subject_name'),
+            // Teacher's subject teaching details, grouped by lesson
+            'subject_teaching' => $this->lesson->map(function ($lesson) {
+                return [
+                    'lesson_id' => $lesson->id,
+                    'day' => $lesson->day,
+                    'subject_name' => $lesson->subject->subject_name ?? null,
+                    'study_level_name' => $lesson->subject->studyLevel->level_name ?? null,
+                    'room_name' => $lesson->room->room_name ?? null,
+                    'start_time' => $lesson->start_time,
+                    'end_time' => $lesson->end_time,
+                ];
+            }),
+
+            // Display all the user data
+            'login_details' => $user = new UserResource($this->user),
         ];
     }
 }
