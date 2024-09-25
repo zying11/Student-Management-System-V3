@@ -15,13 +15,13 @@ class TeacherController extends Controller
      */
     public function index()
     {
-        // Retrieve all teachers with their associated user details,
-        // filtering only those users with the teacher role
-        $teachers = Teacher::with([
-            'user' => function ($query) {
-                $query->where('role_id', 2);
-            }
-        ])->orderBy('id', 'desc')->get();
+        // Retrieve all teachers with their associated user details, ensuring only those with the teacher role
+        $teachers = Teacher::whereHas('user', function ($query) {
+            $query->where('role_id', 2); // Only fetch users with role_id 2 (Teacher)
+        })
+            ->with('lesson.subject.studyLevel', 'lesson.room', 'user') // Eager load subject with study level, room and user relations
+            ->orderBy('id', 'desc')
+            ->get();
 
         // Return a collection of teachers as a resource
         return TeacherResource::collection($teachers);
@@ -44,9 +44,6 @@ class TeacherController extends Controller
 
         // Create a new teacher record using the validated data
         $teacher = Teacher::create($validatedData);
-
-        // Sync subjects teaching 
-        $teacher->subject()->sync($request->subject_ids);
 
         return new TeacherResource($teacher);
     }
@@ -79,9 +76,6 @@ class TeacherController extends Controller
 
         // Update the teacher record with the validated data
         $teacher->update($validatedData);
-
-        // Sync subjects teaching
-        $teacher->subject()->sync($request->subject_ids);
 
         return new TeacherResource($teacher);
     }

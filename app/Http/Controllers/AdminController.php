@@ -15,11 +15,13 @@ class AdminController extends Controller
      */
     public function index()
     {
-        // Retrieve all admins with their associated user details,
-        // filtering only those users with the admin role
-        $admins = Admin::with(['user' => function ($query) {
-            $query->where('role_id', 1);
-        }])->orderBy('id', 'desc')->get();
+        // Retrieve all admins with their associated user details, ensuring only those with the admin role
+        $admins = Admin::whereHas('user', function ($query) {
+            $query->where('role_id', 1); // Only fetch users with role_id 1 (Admin)
+        })
+            ->with('user') // Eager load user relations
+            ->orderBy('id', 'desc')
+            ->get();
 
         // Return a collection of admins as a resource
         return AdminResource::collection($admins);
@@ -37,13 +39,14 @@ class AdminController extends Controller
         $birthDate = Carbon::parse($validatedData['birth_date']);
         $age = $birthDate->age;
 
-         // Add the calculated age to the validated data
+        // Add the calculated age to the validated data
         $validatedData['age'] = $age;
 
         // Create a new admin record using the validated data
         $admin = Admin::create($validatedData);
 
-        return response()->json(['admin' => $admin], 201);
+        return new AdminResource($admin);
+        // return response()->json(['admin' => $admin], 201);
     }
 
     /**
@@ -54,7 +57,8 @@ class AdminController extends Controller
         // Find the admin by ID
         $admin = Admin::findOrFail($id);
 
-        return response()->json($admin);
+        // return response()->json($admin);
+        return new AdminResource($admin);
     }
 
     /**
@@ -68,14 +72,15 @@ class AdminController extends Controller
         // Validate the incoming request using update admin request class
         $validatedData = $request->validated();
 
-         // Parse the birth_date from the validated data and calculate the age
+        // Parse the birth_date from the validated data and calculate the age
         $birthDate = Carbon::parse($validatedData['birth_date']);
         $validatedData['age'] = $birthDate->age;
 
-         // Update the admin record with the validated data
+        // Update the admin record with the validated data
         $admin->update($validatedData);
 
-        return response()->json(['admin' => $admin], 200);
+        return new AdminResource($admin);
+        // return response()->json(['admin' => $admin], 200);
     }
 
     /**

@@ -20,7 +20,12 @@ class AdminResource extends JsonResource
     {
         return [
             // Display the admin's basic details
+            // Join the user login details with the admin details and display
             'id' => $this->id,
+            'user_id' => $this->user->id,
+            'name' => $this->user->name,
+            'email' => $this->user->email,
+            'joining_date' => $this->user->created_at->format('d-m-Y'),
             'phone_number' => $this->phone_number,
             'gender' => $this->gender,
             'age' => $this->age,
@@ -29,14 +34,8 @@ class AdminResource extends JsonResource
             'address' => $this->address,
             'postal_code' => $this->postal_code,
 
-            // Join the user login details with the admin details and display
-            'user_id' => $this->user->id,
-            'name' => $this->user->name,
-            'email' => $this->user->email,
-            'joining_date' => $this->user->created_at->format('d-m-Y'),
-
             // Display all the user data
-            'user' => new UserResource($this->whenLoaded('user')),
+            'login_details' => $user = new UserResource($this->user),
         ];
     }
 }

@@ -11,31 +11,20 @@ import InvoiceForm from "./views/InvoiceForm.jsx";
 import InvoiceTemplate from "./views/InvoiceTemplate.jsx";
 import Students from "./views/Students.jsx";
 import StudentForm from "./views/StudentForm.jsx";
+import StudentProfileView from "./views/StudentProfileView.jsx";
 import AdminDashboard from "./views/AdminDashboard.jsx";
 import AdminProfile from "./views/AdminProfile.jsx";
-import StudentProfile from "./views/StudentProfile.jsx";
 import Attendance from "./views/Attendance.jsx";
 import ForgotPassword from "./views/ForgotPassword.jsx";
 import ResetPassword from "./views/ResetPassword.jsx";
 import Timetable from "./views/Timetable.jsx";
 import Admin from "./views/Admin.jsx";
 import AdminForm from "./views/AdminForm.jsx";
+import AdminProfileView from "./views/AdminProfileView.jsx";
 import Teacher from "./views/Teacher.jsx";
 import TeacherForm from "./views/TeacherForm.jsx";
+import TeacherProfileView from "./views/TeacherProfileView.jsx";
 import Room from "./views/Room.jsx";
-
-// const exampleInvoice = {
-//     id: "1234",
-//     date: "2024-05-02",
-//     customerName: "John Doe",
-//     address: "123 Main St, Anytown, USA",
-//     email: "john@example.com",
-//     items: [
-//         { name: "Subject Math", quantity: 2, price: 100 },
-//         { name: "Subject English", quantity: 1, price: 300 },
-//     ],
-//     total: 95, // Calculated based on the items
-// };
 
 const router = createBrowserRouter([
     {
@@ -104,7 +93,7 @@ const router = createBrowserRouter([
             },
             {
                 path: "/student",
-                element: <Students />,
+                element: <Students key="studentList" />,
             },
             {
                 path: "/student/create",
@@ -122,13 +111,13 @@ const router = createBrowserRouter([
             //     path: "/students/:id",
             //     element: <StudentForm key="studentUpdate" />,
             // },
-            // {
-            //     path: "/students/:id/profile",
-            //     element: <StudentProfile key="studentProfile" />,
-            // },
+            {
+                path: "/student/:id/profile",
+                element: <StudentProfileView key="studentProfile" />,
+            },
             {
                 path: "/admin",
-                element: <Admin key="admin" />,
+                element: <Admin key="adminList" />,
             },
             {
                 path: "/admin/create",
@@ -139,8 +128,12 @@ const router = createBrowserRouter([
                 element: <AdminForm isEditing={true} key="adminEdit" />,
             },
             {
+                path: "/admin/:id/profile",
+                element: <AdminProfileView key="adminProfile" />,
+            },
+            {
                 path: "/teacher",
-                element: <Teacher key="teacher" />,
+                element: <Teacher key="teacherList" />,
             },
             {
                 path: "/teacher/create",
@@ -149,6 +142,10 @@ const router = createBrowserRouter([
             {
                 path: "/teacher/edit/:id",
                 element: <TeacherForm isEditing={true} key="teacherEdit" />,
+            },
+            {
+                path: "/teacher/:id/profile",
+                element: <TeacherProfileView key="teacherProfile" />,
             },
         ],
     },
