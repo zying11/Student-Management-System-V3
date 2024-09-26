@@ -48,8 +48,8 @@ export default function Login() {
                     setUser(data.user);
                     setToken(data.token);
 
-                    // Redirect to admin page
-                    navigate("/admin");
+                    // Redirect to dashboard based on user role
+                    navigate("/dashboard");
                 })
                 .catch((err) => {
                     // Handle login error
@@ -121,7 +121,11 @@ export default function Login() {
                             <Alert variant="danger">{errors.server}</Alert>
                         )}
 
-                        <Form.Group className="mb-3" as={Col} controlId="formEmail">
+                        <Form.Group
+                            className="mb-3"
+                            as={Col}
+                            controlId="formEmail"
+                        >
                             <Form.Label>Email address</Form.Label>
                             <Form.Control
                                 ref={emailRef}
@@ -139,7 +143,11 @@ export default function Login() {
                             </Form.Control.Feedback>
                         </Form.Group>
 
-                        <Form.Group className="mb-3" as={Col} controlId="formPassword">
+                        <Form.Group
+                            className="mb-3"
+                            as={Col}
+                            controlId="formPassword"
+                        >
                             <Form.Label>Password</Form.Label>
                             <Form.Control
                                 ref={passwordRef}
@@ -157,7 +165,11 @@ export default function Login() {
                             </Form.Control.Feedback>
                         </Form.Group>
 
-                        <Form.Group className="mb-4" as={Col} controlId="formRole">
+                        <Form.Group
+                            className="mb-4"
+                            as={Col}
+                            controlId="formRole"
+                        >
                             <Form.Label>Role</Form.Label>
                             <Form.Select
                                 ref={roleBasedRef}

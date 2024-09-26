@@ -35,11 +35,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
-
     // Route::apiResource('/users', UserController::class);
-
 });
-
 
 Route::post('login', [AuthController::class, 'login']);
 // Route::post('register', [AuthController::class, 'register']);
@@ -153,3 +150,102 @@ Route::get('/enrollments/{id}', [EnrollmentController::class, 'show']);
 Route::put('/enrollments/{id}', [EnrollmentController::class, 'update']);
 // Route to delete specific enrollment details by ID
 Route::delete('/enrollments/{id}', [EnrollmentController::class, 'destroy']);
+
+
+
+// based on user role to access the api routes, will be implemented later
+
+// use Illuminate\Http\Request;
+// use App\Http\Controllers\AuthController;
+// use App\Http\Controllers\AdminController;
+// use App\Http\Controllers\TeacherController;
+// use App\Http\Controllers\LessonController;
+// use App\Http\Controllers\RoomController;
+// use App\Http\Controllers\SubjectController;
+// use App\Http\Controllers\InvoiceController;
+// use App\Http\Controllers\EnrollmentController;
+// use App\Http\Controllers\AttendanceController;
+// use App\Http\Controllers\CenterProfileController;
+// use App\Http\Controllers\PasswordResetController;
+// use App\Http\Controllers\StudentController;
+
+// // Auth routes (accessible by both admin and teacher)
+// Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+// Route::post('login', [AuthController::class, 'login']);
+// Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLinkEmail']);
+// Route::post('/reset-password', [PasswordResetController::class, 'reset']);
+
+// // Route::get('/students', [StudentController::class, 'index']);
+
+// // Routes that require authentication via Sanctum
+// Route::middleware('auth:sanctum')->group(function () {
+//     // Route::get('/students', [StudentController::class, 'index']);
+
+//     // Admin Routes (accessible only by admins)
+//     Route::group(['middleware' => 'role:admin'], function () {
+//         // Admin-specific routes
+//         // Route to fetch the list of all admins
+//         Route::get('/admins', [AdminController::class, 'index']);
+//         // Route to store a new admin and associated user details
+//         Route::post('/admins', [AdminController::class, 'store']);
+//         // Route to fetch specific admin details by ID
+//         Route::get('/admins/{id}', [AdminController::class, 'show']);
+//         // Route to update specific admin details by ID
+//         Route::put('/admins/{id}', [AdminController::class, 'update']);
+//         // Route to delete specific admin details and the associated user account by ID
+//         Route::delete('/admins/{id}', [AdminController::class, 'destroy']);
+
+//         // Route to fetch the list of all teachers
+//         Route::get('/teachers', [TeacherController::class, 'index']);
+//         // Route to store a new teacher and associated user details
+//         Route::post('/teachers', [TeacherController::class, 'store']);
+//         // Route to delete specific teacher details and the associated user account by ID
+//         Route::delete('/teachers/{id}', [TeacherController::class, 'destroy']);
+
+//         // Route to fetch the list of all students
+//         Route::get('/students', [StudentController::class, 'index']);
+//         // Route to store a new student 
+//         Route::post('/students', [StudentController::class, 'store']);
+//         // Route to update specific student details by ID
+//         Route::put('/students/{id}', [StudentController::class, 'update']);
+//         // Route to delete specific student details by ID
+//         Route::delete('/students/{id}', [StudentController::class, 'destroy']);
+
+
+//         Route::apiResource('/rooms', RoomController::class);
+//         Route::apiResource('/subjects', SubjectController::class);
+//         Route::apiResource('/invoices', InvoiceController::class);
+//         Route::apiResource('/enrollments', EnrollmentController::class);
+//         Route::get('/center-profile', [CenterProfileController::class, 'index']);
+//         Route::post('/update-center-profile', [CenterProfileController::class, 'update']);
+
+//     });
+
+//     // Teacher Routes (accessible only by teachers)
+//     Route::group(['middleware' => 'role:teacher'], function () {
+//         // Teacher-specific routes
+//         Route::get('lessons', [LessonController::class, 'getLessons']);
+//         Route::get('/timetable-lessons', [LessonController::class, 'getTimetableLessons']);
+//         Route::get('students', [AttendanceController::class, 'getStudentsList']);
+//         Route::post('/mark-attendance', [AttendanceController::class, 'markAttendance']);
+
+//     });
+
+//     // Shared Routes (accessible by both admin and teacher)
+//     Route::get('/students', [StudentController::class, 'index']);
+//     Route::get('/students/{id}', [StudentController::class, 'show']);
+
+//     // Route to fetch specific teacher details by ID
+//     Route::get('/teachers/{id}', [TeacherController::class, 'show']);
+//     // Route to update specific teacher details by ID
+//     Route::put('/teachers/{id}', [TeacherController::class, 'update']);
+
+//     // Route to fetch specific student details by ID
+//     Route::get('/students/{id}', [StudentController::class, 'show']);
+
+
+//     Route::get('logout', [AuthController::class, 'logout']);
+//     Route::get('/user', function (Request $request) {
+//         return $request->user();
+//     });
+// });
