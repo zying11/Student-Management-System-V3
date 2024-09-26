@@ -59,7 +59,9 @@ export default function DefaultLayout() {
                 <aside id="sidebar" className={isCollapsed ? "collapsed" : ""}>
                     <div className="h-100">
                         <div className="sidebar-logo">LOGO</div>
-                        <Sidebar />
+                        <Sidebar
+                            userRole={user?.role_id === 1 ? "admin" : "teacher"}
+                        />
                     </div>
                 </aside>
 
