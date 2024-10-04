@@ -12,6 +12,7 @@ use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\TeacherSubjectController;
 use App\Http\Controllers\ParentController;
@@ -46,6 +47,7 @@ Route::post('login', [AuthController::class, 'login']);
 // Route::post('register', [AuthController::class, 'register']);
 // Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 
+// Lesson
 Route::post('/add-lesson', [LessonController::class, 'addNewLesson']);
 Route::post('/set-lesson-time', [LessonController::class, 'setLessonTime']);
 Route::put('/edit-lesson/{id}', [LessonController::class, 'updateLesson']);
@@ -53,18 +55,29 @@ Route::delete('/delete-lesson/{id}', [LessonController::class, 'deleteLesson']);
 Route::get('lessons', [LessonController::class, 'getLessons']);
 Route::get('/timetable-lessons', [LessonController::class, 'getTimetableLessons']);
 
+// Room 
 Route::get('rooms', [RoomController::class, 'index']);
 Route::get('/get-room/{id}', [RoomController::class, 'getRoom']);
 Route::put('/edit-room/{id}', [RoomController::class, 'updateRoom']);
 Route::post('/add-room', [RoomController::class, 'addNewRoom']);
 Route::delete('/rooms/{id}', [RoomController::class, 'deleteRoom']);
 
+// Dashboard
+Route::get('/student-count', [DashboardController::class, 'getStudentCount']);
+Route::get('/teacher-count', [DashboardController::class, 'getTeacherCount']);
+Route::get('/room-count', [DashboardController::class, 'getRoomCount']);
+Route::get('/subject-count', [DashboardController::class, 'getSubjectCount']);
+
+// Center Profile
 Route::get('center-profile', [CenterProfileController::class, 'index']);
 Route::post('/update-center-profile', [CenterProfileController::class, 'update']);
 
+// Subject
 Route::get('subjects', [SubjectController::class, 'index']);
 Route::post('add-subject', [SubjectController::class, 'addSubject']);
+Route::delete('/delete-subject/{id}', [SubjectController::class, 'deleteSubject']);
 
+// Attendance
 Route::get('students', [AttendanceController::class, 'getStudentsList']);
 Route::post('/mark-attendance', [AttendanceController::class, 'markAttendance']);
 

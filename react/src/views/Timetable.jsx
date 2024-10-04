@@ -7,6 +7,7 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin, { Draggable } from "@fullcalendar/interaction";
 import Button from "../components/Button/Button";
 import ConfirmationModal from "../components/Modal/ConfirmationModal";
+import LessonDetailsModal from "../components/Modal/LessonDetailsModal";
 import "../css/Timetable.css";
 
 export default function Timetable() {
@@ -51,7 +52,7 @@ export default function Timetable() {
                     "http://127.0.0.1:8000/api/lessons"
                 );
                 const data = res.data;
-                console.log(data);
+                // console.log(data);
                 if (Array.isArray(data.lessons)) {
                     // Filter out lessons where day, start_time, or end_time is null
                     const filteredLessons = data.lessons.filter(
@@ -145,10 +146,38 @@ export default function Timetable() {
     // Variable to catch multiple lesson times
     const [selectedEvents, setSelectedEvents] = useState([]);
 
+    // Variable to fetch all lesson data for clashing detection
+    const [lessonData, setLessonData] = useState([]);
+
+    // Fetch lessons data
+    useEffect(() => {
+        async function fetchLessons() {
+            try {
+                const res = await axios.get(
+                    "http://127.0.0.1:8000/api/timetable-lessons"
+                );
+                // console.log(res.data.lessons);
+
+                setLessonData(res.data.lessons);
+            } catch (error) {
+                console.error("Error fetching lessons:", error);
+            }
+        }
+
+        fetchLessons();
+    }, [isChange]); // Dependency array should be an array of dependencies
+
+    // Function to check if two time ranges overlap
+    const isTimeClashing = (start1, end1, start2, end2) => {
+        return start1 < end2 && start2 < end1;
+    };
+
     // Catch event start and end time
     const handleEventDrop = (eventInfo) => {
         // Get lesson ID from data attribute
         const lessonId = eventInfo.draggedEl.dataset.lessonId;
+        // Get teacher ID from data attribute
+        const teacherId = eventInfo.draggedEl.dataset.teacherId;
         // Get lesson duration from data attribute
         const lessonDuration = parseFloat(
             eventInfo.draggedEl.dataset.lessonDuration
@@ -184,8 +213,39 @@ export default function Timetable() {
             endTime: endTime,
         };
 
-        // Append the new event to the selectedEvents array
-        setSelectedEvents((prevEvents) => [...prevEvents, newEvent]);
+        // Fetch all lessons for the same teacher from the current lessons array
+        const teacherLessons = lessonData.filter(
+            (lesson) =>
+                lesson.teacher_id === parseInt(teacherId) &&
+                lesson.day == dayOfWeek
+        );
+
+        console.log(teacherLessons);
+
+        // Check for clashes with existing lessons
+        let isClash = false;
+        teacherLessons.forEach((lesson) => {
+            if (
+                isTimeClashing(
+                    newEvent.startTime,
+                    newEvent.endTime,
+                    lesson.start_time,
+                    lesson.end_time
+                )
+            ) {
+                isClash = true;
+            }
+        });
+
+        if (isClash) {
+            alert("Teacher's schedule is clashing with another lesson!");
+            // Revert the event drop to its original position
+            eventInfo.revert();
+        } else {
+            // If no clash, append the new event to the selectedEvents array
+            setSelectedEvents((prevEvents) => [...prevEvents, newEvent]);
+            // Proceed with updating the backend, if necessary
+        }
     };
 
     // Save timetable to the database
@@ -242,6 +302,41 @@ export default function Timetable() {
         });
     };
 
+    // State for controlling whether the modal is visible
+    const [showModal, setShowModal] = useState(false);
+
+    // State for storing the content of the modal (lesson details)
+    const [modalContent, setModalContent] = useState({
+        lessonId: "",
+        teacherName: "",
+        subjectName: "",
+        // roomName: "",
+        startTime: "",
+        endTime: "",
+    });
+
+    const handleEventClick = (info) => {
+        // Extract event data (lesson details)
+        const event = info.event;
+        const lessonId = event.id;
+        const teacherName = event.extendedProps.teacher;
+        const subjectName = event.extendedProps.subject;
+        // const roomName = event.extendedProps.room_name;
+        const startTime = event.startStr;
+        const endTime = event.endStr;
+
+        // Populate the modal or info box with lesson details
+        setModalContent({
+            lessonId,
+            teacherName,
+            subjectName,
+            // roomName,
+            startTime,
+            endTime,
+        });
+        setShowModal(true);
+    };
+
     // Fetch events based on the selected room
     useEffect(() => {
         if (selectedRoomId) {
@@ -273,6 +368,7 @@ export default function Timetable() {
                         <div
                             className="unassigned"
                             data-lesson-id={lesson.id}
+                            data-teacher-id={lesson.teacher_id}
                             data-lesson-duration={lesson.duration}
                             key={lesson.id}
                         >
@@ -280,7 +376,7 @@ export default function Timetable() {
                                 {lesson.subject_name}
                             </div>
                             <p className="level-name">{lesson.level_name}</p>
-                            <p>{lesson.name}</p>
+                            <p className="teacher-name">{lesson.name}</p>
                         </div>
                     ))}
                 </div>
@@ -330,6 +426,7 @@ export default function Timetable() {
                         }}
                         drop={handleEventDrop}
                         events={timetableEvents}
+                        eventClick={handleEventClick}
                         eventBackgroundColor="#E9FFEE"
                         eventBorderColor="#0CB631"
                         eventTextColor="#006A37"
@@ -350,6 +447,12 @@ export default function Timetable() {
                     </Button>
                 </div>
             </ContentContainer>
+
+            <LessonDetailsModal
+                showModal={showModal}
+                setShowModal={setShowModal}
+                modalContent={modalContent}
+            />
 
             <div
                 className="modal fade"

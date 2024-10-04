@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { ContentContainer } from "../components/ContentContainer/ContentContainer";
 
 export default function Attendance() {
     const [date, setDate] = useState("");
@@ -47,7 +48,7 @@ export default function Attendance() {
                 "http://127.0.0.1:8000/api/subjects"
             );
             setSubjects(response.data.subjects);
-            console.log(response.data);
+            // console.log(response.data);
         } catch (error) {
             console.error("Error fetching subjects:", error);
         }
@@ -108,131 +109,136 @@ export default function Attendance() {
     };
 
     return (
-        <div className="p-4">
-            <h2>Student Attendance</h2>
-            <form onSubmit={handleSubmit}>
-                <div className="mb-3">
-                    <label htmlFor="attendance-date" className="form-label">
-                        Date
-                    </label>
-                    <input
-                        type="date"
-                        id="attendance-date"
-                        value={date}
-                        onChange={(e) => setDate(e.target.value)}
-                        className="form-control"
-                        required
-                    />
-                </div>
-                <div className="mb-3">
-                    <label htmlFor="lesson" className="form-label">
-                        Lesson
-                    </label>
-                    <select
-                        id="lesson"
-                        value={lesson}
-                        onChange={(e) => setLesson(e.target.value)}
-                        className="form-control"
-                        required
-                    >
-                        <option value="">Select a lesson</option>
-                        {lessons
-                            // Filter lessons where day, start_time, and end_time are not null
-                            .filter(
-                                (lesson) =>
-                                    lesson.day !== null &&
-                                    lesson.start_time !== null &&
-                                    lesson.end_time !== null
-                            )
-                            .map((lesson) => (
-                                <option key={lesson.id} value={lesson.id}>
-                                    {/* Display subject name and study level based on subject ID */}
-                                    {
-                                        subjects.find(
-                                            (subject) =>
-                                                subject.id === lesson.subject_id
-                                        )?.subject_name
-                                    }
-                                    ,{" "}
-                                    {
-                                        subjects.find(
-                                            (subject) =>
-                                                subject.id === lesson.subject_id
-                                        )?.study_level
-                                    }
-                                    , {dayMapping[lesson.day]},{" "}
-                                    {lesson.start_time} to {lesson.end_time}
-                                </option>
-                            ))}
-                    </select>
-                </div>
-                <table className="table table-striped">
-                    <thead>
-                        <tr>
-                            <th scope="col">Student ID</th>
-                            <th scope="col">Student Name</th>
-                            <th scope="col">Attendance Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {students.map((student) => (
-                            <tr key={student.id}>
-                                <td>{student.id}</td>
-                                <td>{student.name}</td>
-                                <td>
-                                    <div className="form-check form-check-inline">
-                                        <input
-                                            className="form-check-input"
-                                            type="radio"
-                                            name={`attendance-${student.id}`}
-                                            id={`present-${student.id}`}
-                                            value="present"
-                                            onChange={() =>
-                                                handleAttendanceChange(
-                                                    student.id,
-                                                    "present"
-                                                )
-                                            }
-                                            required
-                                        />
-                                        <label
-                                            className="form-check-label"
-                                            htmlFor={`present-${student.id}`}
-                                        >
-                                            Present
-                                        </label>
-                                    </div>
-                                    <div className="form-check form-check-inline">
-                                        <input
-                                            className="form-check-input"
-                                            type="radio"
-                                            name={`attendance-${student.id}`}
-                                            id={`absent-${student.id}`}
-                                            value="absent"
-                                            onChange={() =>
-                                                handleAttendanceChange(
-                                                    student.id,
-                                                    "absent"
-                                                )
-                                            }
-                                            required
-                                        />
-                                        <label
-                                            className="form-check-label"
-                                            htmlFor={`absent-${student.id}`}
-                                        >
-                                            Absent
-                                        </label>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-                <button type="submit" className="btn btn-primary">
-                    Save Attendance
-                </button>
-            </form>
-        </div>
+        // <div className="p-4">
+        //     <h2>Student Attendance</h2>
+        //     <form onSubmit={handleSubmit}>
+        //         <div className="mb-3">
+        //             <label htmlFor="attendance-date" className="form-label">
+        //                 Date
+        //             </label>
+        //             <input
+        //                 type="date"
+        //                 id="attendance-date"
+        //                 value={date}
+        //                 onChange={(e) => setDate(e.target.value)}
+        //                 className="form-control"
+        //                 required
+        //             />
+        //         </div>
+        //         <div className="mb-3">
+        //             <label htmlFor="lesson" className="form-label">
+        //                 Lesson
+        //             </label>
+        //             <select
+        //                 id="lesson"
+        //                 value={lesson}
+        //                 onChange={(e) => setLesson(e.target.value)}
+        //                 className="form-control"
+        //                 required
+        //             >
+        //                 <option value="">Select a lesson</option>
+        //                 {lessons
+        //                     // Filter lessons where day, start_time, and end_time are not null
+        //                     .filter(
+        //                         (lesson) =>
+        //                             lesson.day !== null &&
+        //                             lesson.start_time !== null &&
+        //                             lesson.end_time !== null
+        //                     )
+        //                     .map((lesson) => (
+        //                         <option key={lesson.id} value={lesson.id}>
+        //                             {/* Display subject name and study level based on subject ID */}
+        //                             {
+        //                                 subjects.find(
+        //                                     (subject) =>
+        //                                         subject.id === lesson.subject_id
+        //                                 )?.subject_name
+        //                             }
+        //                             ,{" "}
+        //                             {
+        //                                 subjects.find(
+        //                                     (subject) =>
+        //                                         subject.id === lesson.subject_id
+        //                                 )?.study_level
+        //                             }
+        //                             , {dayMapping[lesson.day]},{" "}
+        //                             {lesson.start_time} to {lesson.end_time}
+        //                         </option>
+        //                     ))}
+        //             </select>
+        //         </div>
+        //         <table className="table table-striped">
+        //             <thead>
+        //                 <tr>
+        //                     <th scope="col">Student ID</th>
+        //                     <th scope="col">Student Name</th>
+        //                     <th scope="col">Attendance Status</th>
+        //                 </tr>
+        //             </thead>
+        //             <tbody>
+        //                 {students.map((student) => (
+        //                     <tr key={student.id}>
+        //                         <td>{student.id}</td>
+        //                         <td>{student.name}</td>
+        //                         <td>
+        //                             <div className="form-check form-check-inline">
+        //                                 <input
+        //                                     className="form-check-input"
+        //                                     type="radio"
+        //                                     name={`attendance-${student.id}`}
+        //                                     id={`present-${student.id}`}
+        //                                     value="present"
+        //                                     onChange={() =>
+        //                                         handleAttendanceChange(
+        //                                             student.id,
+        //                                             "present"
+        //                                         )
+        //                                     }
+        //                                     required
+        //                                 />
+        //                                 <label
+        //                                     className="form-check-label"
+        //                                     htmlFor={`present-${student.id}`}
+        //                                 >
+        //                                     Present
+        //                                 </label>
+        //                             </div>
+        //                             <div className="form-check form-check-inline">
+        //                                 <input
+        //                                     className="form-check-input"
+        //                                     type="radio"
+        //                                     name={`attendance-${student.id}`}
+        //                                     id={`absent-${student.id}`}
+        //                                     value="absent"
+        //                                     onChange={() =>
+        //                                         handleAttendanceChange(
+        //                                             student.id,
+        //                                             "absent"
+        //                                         )
+        //                                     }
+        //                                     required
+        //                                 />
+        //                                 <label
+        //                                     className="form-check-label"
+        //                                     htmlFor={`absent-${student.id}`}
+        //                                 >
+        //                                     Absent
+        //                                 </label>
+        //                             </div>
+        //                         </td>
+        //                     </tr>
+        //                 ))}
+        //             </tbody>
+        //         </table>
+        //         <button type="submit" className="btn btn-primary">
+        //             Save Attendance
+        //         </button>
+        //     </form>
+        // </div>
+
+        <>
+            <div className="page-title">Attendance</div>
+            <ContentContainer title="Mark Attendance"></ContentContainer>
+        </>
     );
 }

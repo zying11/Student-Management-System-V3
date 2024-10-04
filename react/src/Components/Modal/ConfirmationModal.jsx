@@ -41,7 +41,7 @@ const ConfirmationModal = ({ id, icon, headerText, bodyText, onConfirm }) => {
                             data-bs-dismiss="modal"
                             onClick={() => {
                                 if (onConfirm) onConfirm();
-                                document.querySelector(`#${id}`).modal("hide"); //not working due to bootstrap js
+                                // document.querySelector(`#${id}`).modal("hide"); //not working due to bootstrap js
                             }}
                         >
                             Yes, confirm
