@@ -31,4 +31,16 @@ class SubjectController extends Controller
             'message' => 'Subject added successfully'
         ]);
     }
+
+    public function deleteSubject($id)
+    {
+        $subject = Subject::find($id);
+
+        if ($subject) {
+            $subject->delete();
+            return response()->json(['status' => 200, 'message' => 'Subject deleted successfully.']);
+        }
+
+        return response()->json(['status' => 404, 'message' => 'Subject not found.'], 404);
+    }
 }

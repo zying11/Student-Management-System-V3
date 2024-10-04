@@ -1,0 +1,20 @@
+.overview {
+    border-radius: 10px;
+    background: white;
+    /* width: 260px; */
+}
+
+.overview {
+    .right {
+        position: relative;
+    }
+
+    h6 {
+        color: #a3a3a3;
+        font-size: 12px;
+    }
+
+    p {
+        font-weight: bold;
+    }
+}

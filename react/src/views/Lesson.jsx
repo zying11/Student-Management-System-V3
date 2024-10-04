@@ -18,7 +18,7 @@ export default function Lesson() {
                     "http://127.0.0.1:8000/api/subjects"
                 );
 
-                // console.log(res.data.subjects);
+                console.log(res.data.subjects);
 
                 setSubject(res.data.subjects);
             } catch (error) {
@@ -131,7 +131,7 @@ export default function Lesson() {
     const handleDelete = async (id) => {
         try {
             const res = await axios.delete(
-                `http://127.0.0.1:8000/api/lessons/${id}`
+                `http://127.0.0.1:8000/api/delete-lesson/${id}`
             );
             console.log(res.data);
             setDisplayLesson((prevData) => {
@@ -166,7 +166,7 @@ export default function Lesson() {
 
             // Initialize lesson current lesson with the son data
             setLessonData({
-                teacherId: lesson.teacher_id || "",
+                teacherId: lesson.teacherId || "",
             });
         }
     }, [selectedLessonId, displayLesson.lessons]);
@@ -442,11 +442,11 @@ export default function Lesson() {
             >
                 <div className="modal-dialog">
                     <div className="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Create a Lesson</h5>
+                        <div className="modal-header">
+                            <h5 className="modal-title">Create a Lesson</h5>
                             <button
                                 type="button"
-                                class="btn-close"
+                                className="btn-close"
                                 data-bs-dismiss="modal"
                                 aria-label="Close"
                             ></button>
