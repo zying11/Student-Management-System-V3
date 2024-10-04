@@ -11,14 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('student_enrollment', function (Blueprint $table) {
+        Schema::create('enrollments', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('student_id'); // Foreign key for students table
-            $table->unsignedBigInteger('lesson_id'); // Foreign key for lessons table
+            $table->unsignedBigInteger('student_id'); 
+            $table->unsignedBigInteger('subject_id');
+            $table->unsignedBigInteger('study_level_id');
+            $table->unsignedBigInteger('lesson_id');
             $table->timestamps();
-
-            // Foreign key constraint
+    
+            // Foreign key constraints
             $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
+            $table->foreign('subject_id')->references('id')->on('subjects')->onDelete('cascade');
+            $table->foreign('study_level_id')->references('id')->on('study_level')->onDelete('cascade');
             $table->foreign('lesson_id')->references('id')->on('lessons')->onDelete('cascade');
         });
     }
@@ -28,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('student_enrollment');
+        Schema::dropIfExists('enrollments');
     }
 };

@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreTeacherSubjectRequest extends FormRequest
+class StoreEnrollmentRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -16,15 +16,14 @@ class StoreTeacherSubjectRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
-            'teacher_id' => 'required|exists:teachers,id',
-            'subject_ids' => 'required|array',
-            'subject_ids.*' => 'exists:subjects,id',
+            'student_id' => 'required|exists:students,id',
+            'subject_id' => 'required|exists:subjects,id',
+            'study_level_id' => 'required|exists:study_level,id',
+            'lesson_id' => 'required|exists:lessons,id',
         ];
     }
 }

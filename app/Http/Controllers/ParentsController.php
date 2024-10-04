@@ -6,9 +6,8 @@ use App\Http\Requests\StoreParentsRequest;
 use App\Http\Requests\UpdateParentsRequest;
 use App\Http\Resources\ParentsResource;
 use App\Models\Parents;
-use Illuminate\Http\Request;
 
-class ParentController extends Controller
+class ParentsController extends Controller
 {
     /**
      * Display a listing of the parents.

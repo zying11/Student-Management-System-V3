@@ -2,80 +2,194 @@
 
 // namespace App\Http\Controllers;
 
-// use App\Models\Enrollment;
-// use App\Models\Student;
+// use App\Http\Requests\StoreEnrollmentRequest;
 // use Illuminate\Http\Request;
+// use App\Models\Enrollment;
+// use App\Models\Subject;
 
 // class EnrollmentController extends Controller
 // {
-//     public function index(Student $student)
+//     /**
+//      * Display a listing of enrollments.
+//      */
+//     public function index()
 //     {
-//         return response()->json($student->enrollments);
+//         $enrollments = Enrollment::all();
+//         return response()->json($enrollments);
 //     }
 
-//     // public function store(Request $request, Student $student)
-//     // {
-//     //     $request->validate([
-//     //         'subject' => 'required|string|max:255',
-//     //         'study_level' => 'required|string|max:255',
-//     //     ]);
-
-//     //     $enrollment = new Enrollment([
-//     //         'subject' => $request->input('subject'),
-//     //         'study_level' => $request->input('study_level'),
-//     //     ]);
-
-//     //     $student->enrollments()->save($enrollment);
-
-//     //     return response()->json($enrollment, 201);
-//     // }
-//     public function store(Request $request, Student $student)
+//     /**
+//      * Store a newly created enrollment details in storage.
+//      */
+//     public function store(StoreEnrollmentRequest $request)
 //     {
-//         $request->validate([
-//             'subject' => 'required|string|max:255',
-//             'study_level' => 'required|string|max:255',
-//             'class_time' => 'required|string|max:255', // Add validation for class_time
+//         $validatedData = $request->validate([
+//             'student_id' => 'required|exists:students,id',
+//             'subject_id' => 'required|exists:subjects,id',
+//             'study_level_id' => 'required|exists:study_level,id',
+//             'lesson_id' => 'required|exists:lessons,id',
 //         ]);
-    
-//         $enrollment = new Enrollment([
-//             'subject' => $request->input('subject'),
-//             'study_level' => $request->input('study_level'),
-//             'class_time' => $request->input('class_time'), // Add class_time to the enrollment
-//         ]);
-    
-//         $student->enrollments()->save($enrollment);
-    
-//         return response()->json($enrollment, 201);
-//     }
-    
 
+//         // Check if the study level is valid for the subject
+//         $subject = Subject::find($request->subject_id);
+//         if (!$subject) {
+//             return response()->json(['error' => 'Subject not found.'], 404);
+//         }
+
+//         $validStudyLevels = $subject->studyLevel()->pluck('id')->toArray();
+
+//         if (!in_array($request->study_level_id, $validStudyLevels)) {
+//             return response()->json(['error' => 'The selected study level is not valid for this subject.'], 422);
+//         }
+
+//         // Create the enrollment
+//         Enrollment::create($validatedData);
+
+//         return response()->json(['success' => 'Enrollment created successfully.']);
+//     }
+
+//      /**
+//      * Update the specified student's enrollment details in storage.
+//      */
+//     public function update(Request $request, $id)
+//     {
+//         $validatedData = $request->validate([
+//             'student_id' => 'required|exists:students,id',
+//             'subject_id' => 'required|exists:subjects,id',
+//             'study_level_id' => 'required|exists:study_level,id',
+//             'lesson_id' => 'required|exists:lessons,id',
+//         ]);
+
+//         // Check if the study level is valid for the subject
+//         $subject = Subject::find($request->subject_id);
+//         if (!$subject) {
+//             return response()->json(['error' => 'Subject not found.'], 404);
+//         }
+
+//         $validStudyLevels = $subject->studyLevel()->pluck('id')->toArray();
+
+//         if (!in_array($request->study_level_id, $validStudyLevels)) {
+//             return response()->json(['error' => 'The selected study level is not valid for this subject.'], 422);
+//         }
+
+//         // Update the enrollment
+//         $enrollment = Enrollment::findOrFail($id);
+//         $enrollment->update($validatedData);
+
+//         return response()->json(['success' => 'Enrollment updated successfully.']);
+//     }
+
+//     /**
+//      * Remove the specified resource from storage.
+//      */
+//     public function destroy($id)
+//     {
+//         $enrollment = Enrollment::find($id);
+
+//         if ($enrollment) {
+//             $enrollment->delete();
+//             return response()->json(['message' => 'Enrollment deleted successfully'], 200);
+//         } else {
+//             return response()->json(['message' => 'Enrollment not found'], 404);
+//         }
+//     }
 // }
-
 
 namespace App\Http\Controllers;
 
-use App\Models\Student;
-use App\Models\Lesson;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreEnrollmentRequest;
+use App\Http\Requests\UpdateEnrollmentRequest;
+use App\Http\Resources\EnrollmentResource;
+use App\Models\Enrollment;
+use App\Models\Subject;
 
 class EnrollmentController extends Controller
 {
-    public function store(Request $request)
+    /**
+     * Display a listing of enrollments.
+     */
+    public function index()
     {
-        $validated = $request->validate([
-            'student_id' => 'required|exists:students,id',
-            'lessons' => 'required|array',
-            'lessons.*.lesson_id' => 'required|exists:lessons,id',
-        ]);
+        // Retrieve all enrollments
+        $enrollments = Enrollment::all();
+        
+        return EnrollmentResource::collection($enrollments);
+    }
 
-        $student = Student::find($validated['student_id']);
-        $enrollments = collect($validated['lessons'])->map(function ($lesson) {
-            return [
-                'lesson_id' => $lesson['lesson_id'],
-            ];
-        });
+    /**
+     * Store a newly created enrollment details in storage.
+     */
+    public function store(StoreEnrollmentRequest $request)
+    {
+        // Validate the incoming request using store enrollment request class
+        $validatedData = $request->validated();
 
-        $student->lesson()->sync($enrollments->keyBy('lesson_id')->toArray(), false);
-        return response()->json(['message' => 'Student enrolled in lessons successfully.']);
+        // Check if the study level is valid for the subject
+        $subject = Subject::find($request->subject_id);
+        if (!$subject) {
+            return response()->json(['error' => 'Subject not found.'], 404);
+        }
+        $validStudyLevels = $subject->studyLevel()->pluck('id')->toArray();
+        if (!in_array($request->study_level_id, $validStudyLevels)) {
+            return response()->json(['error' => 'The selected study level is not valid for this subject.'], 422);
+        }
+
+        // Create enrollment
+        $enrollment = Enrollment::create($validatedData);
+
+        return new EnrollmentResource($enrollment);
+    }
+
+    /**
+     * Display the specified enrollment.
+     */
+    public function show($id)
+    {
+        // Find the enrollment by ID
+        $enrollment = Enrollment::findOrFail($id);
+
+        return new EnrollmentResource($enrollment);
+    }
+
+    /**
+     * Update the specified student's enrollment details in storage.
+     */
+    public function update(UpdateEnrollmentRequest $request, $id)
+    {
+        // Validate the incoming request using update enrollment request class
+        $validatedData = $request->validated();
+
+        // Check if the study level is valid for the subject
+        $subject = Subject::find($request->subject_id);
+        if (!$subject) {
+            return response()->json(['error' => 'Subject not found.'], 404);
+        }
+        $validStudyLevels = $subject->studyLevel()->pluck('id')->toArray();
+        if (!in_array($request->study_level_id, $validStudyLevels)) {
+            return response()->json(['error' => 'The selected study level is not valid for this subject.'], 422);
+        }
+
+        // Update the enrollment
+        $enrollment = Enrollment::findOrFail($id);
+        $enrollment->update($validatedData);
+
+        return new EnrollmentResource($enrollment);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy($id)
+    {
+        // Find the enrollment by ID
+        $enrollment = Enrollment::find($id);
+
+        // Delete the enrollment details
+        if ($enrollment) {
+            $enrollment->delete();
+            return response()->json(['message' => 'Enrollment deleted successfully'], 204);
+        } else {
+            return response()->json(['message' => 'Enrollment not found'], 404);
+        }
     }
 }

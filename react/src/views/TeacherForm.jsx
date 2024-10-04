@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axiosClient from "../axiosClient";
-import Form from 'react-bootstrap/Form';
+import Form from "react-bootstrap/Form";
 import Button from "../components/Button/Button";
 import { ContentContainer } from "../components/ContentContainer/ContentContainer";
 import LoginDetailsForm from "../components/Form/LoginDetailsForm";
 import BasicDetailsForm from "../components/Form/BasicDetailsForm";
-import SubjectForm from "../components/Form/SubjectForm";
-import Spinner from 'react-bootstrap/Spinner';
+import Spinner from "react-bootstrap/Spinner";
 
 export default function TeacherForm({ isEditing }) {
     // Get the ID from the route parameters
@@ -35,7 +34,6 @@ export default function TeacherForm({ isEditing }) {
         subject_ids: [], // Array to store multiple subject teaching id
     });
 
-    const [subjects, setSubjects] = useState([]);
     const [selectedSubjects, setSelectedSubjects] = useState([]);
     const [errors, setErrors] = useState({});
     const [userId, setUserId] = useState(null);
@@ -43,19 +41,6 @@ export default function TeacherForm({ isEditing }) {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        // Fetch subjects
-        const fetchSubjects = async () => {
-            try {
-                const response = await axiosClient.get('/subjects');
-                setSubjects(response.data.subjects);
-            } catch (error) {
-                console.error('Error fetching subjects:', error);
-            }
-        };
-
-        // Call the fetchSubjects function
-        fetchSubjects();
-
         // If editing and ID is available
         if (isEditing && id) {
             const fetchTeacherData = async () => {
@@ -63,7 +48,9 @@ export default function TeacherForm({ isEditing }) {
                 setLoading(true);
                 try {
                     // Fetch teacher data using the ID
-                    const teacherResponse = await axiosClient.get(`/teachers/${id}`);
+                    const teacherResponse = await axiosClient.get(
+                        `/teachers/${id}`
+                    );
 
                     // Get the user_id and teacher_id from the response
                     const fetchedUserId = teacherResponse.data.user_id;
@@ -72,7 +59,7 @@ export default function TeacherForm({ isEditing }) {
                     setUserId(fetchedUserId);
                     setTeacherId(fetchedTeacherId);
 
-                    // Set the login, teacher basic info and subject teaching details
+                    // Set the login, teacher basic info
                     setLoginDetails({
                         name: teacherResponse.data.name,
                         email: teacherResponse.data.email,
@@ -88,11 +75,8 @@ export default function TeacherForm({ isEditing }) {
                         address: teacherResponse.data.address,
                         postal_code: teacherResponse.data.postal_code,
                     });
-
-                    setSelectedSubjects(teacherResponse.data.subject_teaching_ids);
-
                 } catch (error) {
-                    console.error('Error fetching teacher data:', error);
+                    console.error("Error fetching teacher data:", error);
                 } finally {
                     // Set loading to false after fetching data
                     setLoading(false);
@@ -122,7 +106,10 @@ export default function TeacherForm({ isEditing }) {
         // or if the birth month is the same as the current month
         // but the birth date is greater than the current date
         // then subtract 1 from the age
-        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+        if (
+            monthDiff < 0 ||
+            (monthDiff === 0 && today.getDate() < birth.getDate())
+        ) {
             age--;
         }
         return age;
@@ -150,7 +137,7 @@ export default function TeacherForm({ isEditing }) {
         // Set the teacher details
         // Calculate the age if the birth_date is changed
         // and set the age in the teacher details
-        // Otherwise, set the teacher details as usual 
+        // Otherwise, set the teacher details as usual
         if (name === "birth_date") {
             const age = calculateAge(value);
             setTeacherDetails({ ...teacherDetails, [name]: value, age: age });
@@ -162,35 +149,6 @@ export default function TeacherForm({ isEditing }) {
         if (errors[name]) {
             setErrors({ ...errors, [name]: "" });
         }
-    };
-
-    // Function to handle changes in the subject teaching details
-    const handleSubjectChange = (e, index) => {
-        // Get the value from the input field
-        const updatedSubjects = [...selectedSubjects];
-
-        // Update the selected subjects
-        updatedSubjects[index] = e.target.value;
-
-        // Set the updated subjects
-        setSelectedSubjects(updatedSubjects);
-
-        // Clear the specific error when the user starts typing
-        if (errors.subject_ids) {
-            setErrors({ ...errors, subject_ids: "" });
-        }
-    };
-
-    // Helper function to add a new subject field
-    const handleAddSubject = () => {
-        // setSelectedSubjects([...selectedSubjects, { id: '' }]);
-        setSelectedSubjects([...selectedSubjects, '']);
-    };
-
-    // Helper function to remove a subject field
-    const handleRemoveSubject = (index) => {
-        const updatedSubjects = selectedSubjects.filter((_, i) => i !== index);
-        setSelectedSubjects(updatedSubjects);
     };
 
     // Function to handle form submission
@@ -219,19 +177,15 @@ export default function TeacherForm({ isEditing }) {
                     await axiosClient.put(`/teachers/${teacherId}`, {
                         ...teacherDetails,
                         user_id: userId,
-
-                    });
-
-                    // Update the subjects teaching details
-                    await axiosClient.put(`/teachers/${teacherId}/subjects`, {
-                        teacher_id: teacherId,
-                        subject_ids: selectedSubjects
                     });
                 }
                 // If creating a new teacher
             } else {
                 // Create the user
-                const userResponse = await axiosClient.post('/users', loginDetails);
+                const userResponse = await axiosClient.post(
+                    "/users",
+                    loginDetails
+                );
                 const newUserId = userResponse.data.id;
 
                 // Create the teacher using the user_id from the response
@@ -239,26 +193,18 @@ export default function TeacherForm({ isEditing }) {
                     ...teacherDetails,
                     // Associate teacher with the created user
                     user_id: newUserId,
-
-                });
-                const newTeacherId = teacherResponse.data.id;
-
-                // Create the subjects teaching details
-                await axiosClient.post(`/teachers/subjects`, {
-                    teacher_id: newTeacherId,
-                    subject_ids: selectedSubjects
                 });
             }
 
-            alert(`Teacher ${isEditing ? 'updated' : 'created'} successfully`);
+            alert(`Teacher ${isEditing ? "updated" : "created"} successfully`);
 
             // Redirect to the teacher list page
-            navigate('/teacher');
+            navigate("/teacher");
         } catch (error) {
             if (error.response && error.response.data) {
                 setErrors(error.response.data.errors);
             } else {
-                alert('Error saving teacher: ' + error.message);
+                alert("Error saving teacher: " + error.message);
             }
         } finally {
             // Set loading to false after saving data
@@ -288,8 +234,11 @@ export default function TeacherForm({ isEditing }) {
                 if (!loginDetails.password) {
                     errors.password = "Password is required when confirming";
                 } else if (loginDetails.password.length < 8) {
-                    errors.password = "Password length must be at least 8 characters";
-                } else if (loginDetails.password !== loginDetails.confirmPassword) {
+                    errors.password =
+                        "Password length must be at least 8 characters";
+                } else if (
+                    loginDetails.password !== loginDetails.confirmPassword
+                ) {
                     errors.confirmPassword = "Passwords do not match";
                 }
 
@@ -302,7 +251,8 @@ export default function TeacherForm({ isEditing }) {
             if (!loginDetails.password) {
                 errors.password = "Password is required";
             } else if (loginDetails.password.length < 8) {
-                errors.password = "Password length must be at least 8 characters";
+                errors.password =
+                    "Password length must be at least 8 characters";
             } else if (loginDetails.password !== loginDetails.confirmPassword) {
                 errors.confirmPassword = "Passwords do not match";
             }
@@ -316,7 +266,8 @@ export default function TeacherForm({ isEditing }) {
         if (!teacherDetails.phone_number) {
             errors.phone_number = "Phone number is required";
         } else if (!/^\d{10,15}$/.test(teacherDetails.phone_number)) {
-            errors.phone_number = "Phone number must be between 10 to 15 digits";
+            errors.phone_number =
+                "Phone number must be between 10 to 15 digits";
         }
 
         if (!teacherDetails.gender) {
@@ -341,11 +292,6 @@ export default function TeacherForm({ isEditing }) {
             errors.postal_code = "Postal code must be 5 or 6 digits";
         }
 
-        // Validate subject teaching details
-        if (selectedSubjects.includes('')) {
-            errors.subject_ids = "At least one subject must be selected, and no fields can be empty";
-        }
-
         return errors;
     };
 
@@ -354,11 +300,13 @@ export default function TeacherForm({ isEditing }) {
             {/* <div className="page-title">{isEditing ? 'Edit Teacher' : 'Create Teacher'}</div> */}
             <div className="page-title">Teachers</div>
             {loading ? (
-                <div className="d-flex justify-content-center align-items-center" style={{ height: "400px" }}>
+                <div
+                    className="d-flex justify-content-center align-items-center"
+                    style={{ height: "400px" }}
+                >
                     <Spinner animation="border" variant="primary" />
                 </div>
             ) : (
-
                 <Form onSubmit={handleSubmit}>
                     <ContentContainer title="Login Details">
                         <LoginDetailsForm
@@ -377,24 +325,13 @@ export default function TeacherForm({ isEditing }) {
                         />
                     </ContentContainer>
 
-                    <ContentContainer title="Subject Teaching Details">
-                        <SubjectForm
-                            availableSubjects={subjects}
-                            selectedSubjects={selectedSubjects}
-                            handleSubjectChange={handleSubjectChange}
-                            addSubject={handleAddSubject}
-                            removeSubject={handleRemoveSubject}
-                            errors={errors}
-                        />
-                    </ContentContainer>
-
                     <div className="d-flex justify-content-end mt-4 mb-4">
                         <Button
                             className="btn-create-yellow"
                             type="submit"
                             variant="primary"
                         >
-                            {isEditing ? 'Save' : 'Create'}
+                            {isEditing ? "Save" : "Create"}
                         </Button>
                     </div>
                 </Form>

@@ -8,88 +8,129 @@ const menuItems = [
         icon: "dashboard.png",
         title: "Dashboard",
         link: "/dashboard", // No sub-items
+        roles: ["admin", "teacher"],
     },
     {
         id: "students",
         icon: "students.png",
         title: "Students",
         subItems: [
-            { title: "All Students", link: "/students" },
-            { title: "Add New Student", link: "/students/new" },
-            { title: "Edit Student", link: "" },
-            { title: "Student Profile", link: "" },
+            {
+                title: "All Students",
+                link: "/student",
+                roles: ["admin", "teacher"],
+            },
+            {
+                title: "Add New Student",
+                link: "/student/create",
+                roles: ["admin"],
+            },
+            { title: "Edit Student", link: "", roles: ["admin"] },
+            { title: "Student Profile", link: "", roles: ["admin", "teacher"] },
         ],
+        roles: ["admin", "teacher"],
     },
     {
         id: "teachers",
         icon: "teachers.png",
         title: "Teachers",
         subItems: [
-            { title: "All Teachers", link: "/teacher" },
-            { title: "Add New Teacher", link: "/teacher/create" },
-            { title: "Edit Teacher", link: "" },
-            { title: "Teacher Profile", link: "" },
+            {
+                title: "All Teachers",
+                link: "/teacher",
+                roles: ["admin", "teacher"],
+            },
+            {
+                title: "Add New Teacher",
+                link: "/teacher/create",
+                roles: ["admin"],
+            },
+            { title: "Edit Teacher", link: "", roles: ["admin"] },
+            { title: "Teacher Profile", link: "", roles: ["admin", "teacher"] },
         ],
+        roles: ["admin", "teacher"],
     },
     {
         id: "admins",
         icon: "admins.png",
         title: "Admins",
         subItems: [
-            { title: "All Admins", link: "/admin" },
-            { title: "Add New Admin", link: "/admin/create" },
-            { title: "Edit Admin", link: "" },
-            { title: "Admin Profile", link: "" },
+            { title: "All Admins", link: "/admin", roles: ["admin"] },
+            { title: "Add New Admin", link: "/admin/create", roles: ["admin"] },
+            { title: "Edit Admin", link: "", roles: ["admin"] },
+            { title: "Admin Profile", link: "", roles: ["admin"] },
         ],
+        roles: ["admin"],
     },
     {
         id: "timetable",
         icon: "timetable.png",
         title: "Timetable",
         subItems: [
-            { title: "Add New Lesson", link: "/lesson" },
-            { title: "Room Timetable", link: "" },
-            { title: "Teacher Timetable", link: "" },
-            { title: "Schedule Timetable", link: "/timetable" },
+            { title: "Add New Lesson", link: "/lesson", roles: ["admin"] },
+            { title: "Room Timetable", link: "", roles: ["admin"] },
+            { title: "Teacher Timetable", link: "", roles: ["admin"] },
+            {
+                title: "Schedule Timetable",
+                link: "/timetable",
+                roles: ["admin", "teacher"],
+            },
         ],
+        roles: ["admin"],
     },
     {
         id: "payment",
         icon: "payment.png",
         title: "Payment",
         subItems: [
-            { title: "Student Fees Collection", link: "/invoices" },
-            { title: "Add Invoice", link: "/invoices/new" },
-            { title: "Edit Invoice", link: "" },
-            { title: "Record Payment", link: "" },
-            { title: "View Receipt", link: "" },
+            {
+                title: "Student Fees Collection",
+                link: "/invoices",
+                roles: ["admin"],
+            },
+            { title: "Add Invoice", link: "/invoices/new", roles: ["admin"] },
+            { title: "Edit Invoice", link: "", roles: ["admin"] },
+            { title: "Record Payment", link: "", roles: ["admin"] },
+            { title: "View Receipt", link: "", roles: ["admin"] },
         ],
+        roles: ["admin"],
     },
     {
         id: "feedback",
         icon: "feedback.png",
         title: "Feedback",
         subItems: [
-            { title: "Assessment Feedback", link: "" },
-            { title: "View Feedback Progress", link: "" },
-            { title: "Add Feedback", link: "" },
+            {
+                title: "Assessment Feedback",
+                link: "",
+                roles: ["admin", "teacher"],
+            },
+            {
+                title: "View Feedback Progress",
+                link: "",
+                roles: ["admin", "teacher"],
+            },
+            { title: "Add Feedback", link: "", roles: ["admin", "teacher"] },
         ],
+        roles: ["admin", "teacher"],
     },
     {
         id: "announcement",
         icon: "announcement.png",
         title: "Announcement",
         link: "",
+        roles: ["admin"],
     },
     {
         id: "settings",
         icon: "settings.png",
         title: "Settings",
         link: "/profile",
+        roles: ["admin"],
     },
 ];
 
-const SidebarItem = ({ item, activeItem, setActiveItem }) => {
+const SidebarItem = ({ item, activeItem, setActiveItem, userRole }) => {
     // State to track the active subItem
     const [activeSubItem, setActiveSubItem] = useState(null);
     // Check if the item has subItems
@@ -125,24 +166,26 @@ const SidebarItem = ({ item, activeItem, setActiveItem }) => {
                     // }`}
                     data-bs-parent="#sidebar"
                 >
-                    {item.subItems.map((subItem, subKey) => (
-                        <li
-                            key={subKey}
-                            className={`sidebar-inner ${
-                                activeSubItem === subKey ? "active" : ""
-                            }`}
-                        >
-                            <Link
-                                to={subItem.link}
-                                className="sidebar-inner-link"
-                                onClick={() => {
-                                    setActiveSubItem(subKey);
-                                }}
+                    {item.subItems
+                        .filter((subItem) => subItem.roles.includes(userRole)) // Filter sub-items based on role
+                        .map((subItem, subKey) => (
+                            <li
+                                key={subKey}
+                                className={`sidebar-inner ${
+                                    activeSubItem === subKey ? "active" : ""
+                                }`}
                             >
-                                {subItem.title}
-                            </Link>
-                        </li>
-                    ))}
+                                <Link
+                                    to={subItem.link}
+                                    className="sidebar-inner-link"
+                                    onClick={() => {
+                                        setActiveSubItem(subKey);
+                                    }}
+                                >
+                                    {subItem.title}
+                                </Link>
+                            </li>
+                        ))}
                 </ul>
             </li>
         );
@@ -170,19 +213,22 @@ const SidebarItem = ({ item, activeItem, setActiveItem }) => {
     }
 };
 
-const Sidebar = () => {
+const Sidebar = ({ userRole }) => {
     const [activeItem, setActiveItem] = useState(null);
 
     return (
         <ul id="sidebar" className="sidebar-nav mb-0 ps-0 ms-0">
-            {menuItems.map((item) => (
-                <SidebarItem
-                    key={item.id}
-                    item={item}
-                    activeItem={activeItem}
-                    setActiveItem={setActiveItem}
-                />
-            ))}
+            {menuItems
+                .filter((item) => item.roles.includes(userRole)) // Only display items accessible by the user role
+                .map((item) => (
+                    <SidebarItem
+                        key={item.id}
+                        item={item}
+                        activeItem={activeItem}
+                        setActiveItem={setActiveItem}
+                        userRole={userRole}
+                    />
+                ))}
         </ul>
     );
 };
