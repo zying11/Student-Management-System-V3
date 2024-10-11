@@ -4,6 +4,7 @@ import axiosClient from "../axiosClient";
 import Button from "../components/Button/Button";
 import { ContentContainer } from "../components/ContentContainer/ContentContainer";
 import { Table } from "../components/Table/Table";
+import SearchBar from "../components/SearchBar";
 
 export default function Admin() {
     const [adminData, setAdminData] = useState({
@@ -11,6 +12,7 @@ export default function Admin() {
         loading: true,
     });
 
+    const [searchQuery, setSearchQuery] = useState("");
     const [error, setError] = useState("");
 
     // Fetch admin data
@@ -56,6 +58,11 @@ export default function Admin() {
         }
     };
 
+    // Filter admins name by search query
+    const filteredAdmins = adminData.admins.filter((admin) =>
+        admin.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     // Table header and data
     const tableHeader = [
         "ID",
@@ -74,7 +81,8 @@ export default function Admin() {
               ],
           ]
         : // Map admin data to table rows
-          adminData.admins.map((admin) => [
+          filteredAdmins.map((admin) => [
+              //   adminData.admins.map((admin) => [
               admin.id || "-",
               admin.name || "-",
               admin.email || "-",
@@ -125,6 +133,13 @@ export default function Admin() {
 
             {/* Display admin list table */}
             <ContentContainer title="Admin List">
+                {/* Search by admin name */}
+                <SearchBar
+                    searchQuery={searchQuery}
+                    setSearchQuery={setSearchQuery}
+                    placeholder="Search admin by name"
+                />
+
                 {error && <div className="alert alert-danger">{error}</div>}
                 <Table
                     header={tableHeader}
