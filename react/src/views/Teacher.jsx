@@ -4,6 +4,7 @@ import axiosClient from "../axiosClient";
 import Button from "../components/Button/Button";
 import { ContentContainer } from "../components/ContentContainer/ContentContainer";
 import { Table } from "../components/Table/Table";
+import SearchBar from "../components/SearchBar";
 
 export default function Teacher() {
     const [teacherData, setTeacherData] = useState({
@@ -11,6 +12,7 @@ export default function Teacher() {
         loading: true,
     });
 
+    const [searchQuery, setSearchQuery] = useState("");
     const [error, setError] = useState("");
 
     // Fetch teacher data
@@ -60,6 +62,11 @@ export default function Teacher() {
         }
     };
 
+     // Filter teachers by search query
+     const filteredTeachers = teacherData.teachers.filter((teacher) =>
+        teacher.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     const tableHeader = [
         "ID",
         "Teacher Name",
@@ -77,7 +84,9 @@ export default function Teacher() {
                   </td>,
               ],
           ]
-        : teacherData.teachers.map((teacher) => [
+        : // Map teacher data to table rows
+        filteredTeachers.map((teacher) => [
+        // teacherData.teachers.map((teacher) => [
               teacher.id || "-",
               teacher.name || "-",
               // Array.isArray(teacher.subject_teaching_names) && teacher.subject_teaching_names.length > 0
@@ -136,6 +145,13 @@ export default function Teacher() {
                 </Link>
             </div>
             <ContentContainer title="Teacher List">
+                  {/* Search by teacher name */}
+                  <SearchBar
+                    searchQuery={searchQuery}
+                    setSearchQuery={setSearchQuery}
+                    placeholder="Search teacher by name"
+                />
+
                 {error && <div className="alert alert-danger">{error}</div>}
                 <Table
                     header={tableHeader}

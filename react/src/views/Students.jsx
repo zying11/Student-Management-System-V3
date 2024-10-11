@@ -4,6 +4,10 @@ import axiosClient from "../axiosClient";
 import Button from "../components/Button/Button";
 import { ContentContainer } from "../components/ContentContainer/ContentContainer";
 import { Table } from "../components/Table/Table";
+import Form from "react-bootstrap/Form";
+import { InputGroup, FormControl } from "react-bootstrap";
+import SearchBar from "../components/SearchBar";
+import { Row, Col } from "react-bootstrap";
 
 export default function Students() {
     const [studentData, setStudentData] = useState({
@@ -11,6 +15,8 @@ export default function Students() {
         loading: true,
     });
 
+    const [searchQuery, setSearchQuery] = useState("");
+    const [subjectQuery, setSubjectQuery] = useState("");
     const [error, setError] = useState("");
 
     // Fetch students data
@@ -60,6 +66,36 @@ export default function Students() {
         }
     };
 
+    // Filter students by name and subject
+    const filteredStudents = studentData.students.filter((student) => {
+        const matchesName = student.name
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase());
+
+        // Check if the student has enrollments and if any enrollment's subject matches the subjectQuery
+        const matchesSubject =
+            student.enrollments.length > 0 &&
+            student.enrollments.some((enrollment) =>
+                enrollment.subject?.subject_name
+                    .toLowerCase()
+                    .includes(subjectQuery.toLowerCase())
+            );
+
+        // if searchQuery is filled, filter by name;
+        // if subjectQuery is filled, filter by subject;
+        // if both are filled, both must match
+        if (searchQuery && subjectQuery) {
+            return matchesName && matchesSubject;
+        } else if (searchQuery) {
+            return matchesName;
+        } else if (subjectQuery) {
+            return matchesSubject;
+        } else {
+            // No filters applied, show all students
+            return true;
+        }
+    });
+
     const tableHeader = [
         "ID",
         "Student Name",
@@ -77,7 +113,9 @@ export default function Students() {
                   </td>,
               ],
           ]
-        : studentData.students.map((student) => [
+        : // Map student data to table rows
+          filteredStudents.map((student) => [
+              // studentData.students.map((student) => [
               student.id || "-",
               student.name || "-",
               student.enrollments.length > 0
@@ -138,6 +176,34 @@ export default function Students() {
                 </Link>
             </div>
             <ContentContainer title="Student List">
+                <Row className="mb-3">
+                    <Col md={4}>
+                        {/* Search by subject */}
+                        <Form>
+                            <InputGroup className="mb-3">
+                                <FormControl
+                                    value={subjectQuery}
+                                    onChange={(e) =>
+                                        setSubjectQuery(e.target.value)
+                                    }
+                                    placeholder="Search by subject"
+                                    aria-label="Search by subject"
+                                    aria-describedby="subject-search"
+                                />
+                            </InputGroup>
+                        </Form>
+                    </Col>
+
+                    <Col md={8}>
+                        {/* Search by student name */}
+                        <SearchBar
+                            searchQuery={searchQuery}
+                            setSearchQuery={setSearchQuery}
+                            placeholder="Search student by name"
+                        />
+                    </Col>
+                </Row>
+
                 {error && <div className="alert alert-danger">{error}</div>}
                 <Table
                     header={tableHeader}
