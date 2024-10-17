@@ -2,23 +2,50 @@ import React, { useState, useEffect } from "react";
 import OverviewItem from "../components/ContentContainer/OverviewItem";
 import { ContentContainer } from "../components/ContentContainer/ContentContainer";
 import { Table } from "../components/Table/Table";
+import Button from "../components/Button/Button";
 import ConfirmationModal from "../components/Modal/ConfirmationModal";
-import axios from "axios";
+import PieChart from "../components/Chart/PieChart";
+import axiosClient from "../axiosClient";
 import "../css/AdminDashboard.css";
 
 export default function AdminDashboard() {
+    // Error handling
+    const [error, setError] = useState("");
+
+    // Generalized handleInput function
+    const handleInput = (setterFunction) => (e) => {
+        // Destructure name and value from the event target (the input element that triggered the change)
+        const { name, value } = e.target;
+
+        // Update data state
+        setterFunction((prevData) => ({
+            // Spread the previous state to retain all existing values
+            ...prevData,
+            // Update the property that matches the input's name attribute
+            [name]: value,
+        }));
+    };
+
+    // Variable to update table instantly
+    const [isChange, setIsChange] = useState(false);
+
     // Overview Item Data
     // Get student record
     const [studentCount, setStudentCount] = useState(0);
+
+    const [maleCount, setMaleCount] = useState(0);
+    const [femaleCount, setFemaleCount] = useState(0);
 
     useEffect(() => {
         // Fetch the number of students
         const fetchStudentCount = async () => {
             try {
-                const res = await axios.get(
+                const res = await axiosClient.get(
                     "http://127.0.0.1:8000/api/student-count"
                 );
-                setStudentCount(res.data.count);
+                setStudentCount(res.data.total);
+                setMaleCount(res.data.male);
+                setFemaleCount(res.data.female);
             } catch (error) {
                 console.error("Error fetching student count:", error);
             }
@@ -34,7 +61,7 @@ export default function AdminDashboard() {
         // Fetch the number of teachers
         const fetchTeacherCount = async () => {
             try {
-                const res = await axios.get(
+                const res = await axiosClient.get(
                     "http://127.0.0.1:8000/api/teacher-count"
                 );
                 setTeacherCount(res.data.count);
@@ -53,7 +80,7 @@ export default function AdminDashboard() {
         // Fetch the number of rooms
         const fetchRoomCount = async () => {
             try {
-                const res = await axios.get(
+                const res = await axiosClient.get(
                     "http://127.0.0.1:8000/api/room-count"
                 );
                 setRoomCount(res.data.count);
@@ -72,7 +99,7 @@ export default function AdminDashboard() {
         // Fetch the number of rooms
         const fetchSubjectCount = async () => {
             try {
-                const res = await axios.get(
+                const res = await axiosClient.get(
                     "http://127.0.0.1:8000/api/subject-count"
                 );
                 setSubjectCount(res.data.count);
@@ -82,7 +109,133 @@ export default function AdminDashboard() {
         };
 
         fetchSubjectCount();
-    }, []);
+    }, [isChange]);
+
+    // Study Level Table
+    // Variable for fetching study level data
+    const [displayStudyLevel, setDisplayStudyLevel] = useState({
+        studyLevels: [],
+        loading: true,
+    });
+
+    // Fetch study level data
+    useEffect(() => {
+        async function fetchStudyLevels() {
+            try {
+                const res = await axiosClient.get(
+                    "http://127.0.0.1:8000/api/study-levels"
+                );
+
+                // console.log(res.data.studyLevels);
+
+                setDisplayStudyLevel({
+                    studyLevels: res.data.studyLevels,
+                    loading: false,
+                });
+            } catch (error) {
+                console.error("Error fetching subjects:", error);
+            }
+        }
+
+        fetchStudyLevels();
+    }, [isChange]);
+
+    // Variable for posting new study level data
+    const [studyLevelData, setStudyLevelData] = useState({
+        levelName: "",
+    });
+
+    // Post study level data
+    const addStudyLevel = async (e) => {
+        e.preventDefault();
+
+        // Simple validation for required fields
+        if (!studyLevelData.levelName) {
+            setError("Please fill in all fields");
+            return;
+        }
+
+        try {
+            const res = await axiosClient.post(
+                "http://127.0.0.1:8000/api/add-study-level",
+                studyLevelData
+            );
+            // console.log(res.data);
+            console.log("Study Level added successfully!");
+        } catch (error) {
+            console.error("Error:", error.response.data); //use err.response.data to display more info about the err
+        }
+
+        setIsChange(!isChange);
+
+        // Clear the form and error message
+        setStudyLevelData({
+            levelName: "",
+        });
+        setError("");
+    };
+
+    // Variable to catch selected subject id for edit and delete purposes
+    const [selectedStudyLevelId, setSelectedStudyLevelId] = useState(null);
+
+    // Delete study level data
+    const handleStudyLevelDelete = async (id) => {
+        try {
+            const res = await axiosClient.delete(`/delete-study-level/${id}`);
+            // console.log(res.data);
+            // Check if the status code is 200
+            if (res.status === 200) {
+                console.log("Study level deleted successfully");
+            }
+            setDisplayStudyLevel((prevData) => {
+                if (Array.isArray(prevData.studyLevels)) {
+                    return {
+                        ...prevData,
+                        // Creates a new array by including only those subjects for which the condition (subject.id !== id) is true.
+                        studyLevels: prevData.studyLevels.filter(
+                            (studyLevel) => studyLevel.id !== id
+                        ),
+                    };
+                }
+
+                return prevData; // Return the previous state if it's not an array
+            });
+        } catch (error) {
+            console.error("Error deleting study level:", error);
+        }
+    };
+
+    //Study level table data
+    const studyLevelHeader = ["Level Name", "Actions"];
+
+    const studyLevelTableData = displayStudyLevel.loading
+        ? [
+              [
+                  <td colSpan="8">
+                      <div className="d-flex justify-content-center align-items-center loader-container">
+                          <div>Loading</div>
+                      </div>
+                  </td>,
+              ],
+          ]
+        : displayStudyLevel.studyLevels.map((studyLevel) => [
+              studyLevel.level_name || "-",
+
+              <div className="actions">
+                  <img
+                      className="me-2"
+                      src="http://localhost:8000/icon/delete.png"
+                      alt="Delete"
+                      data-bs-toggle="modal"
+                      data-bs-target="#confirmationStudyLevel"
+                      onClick={() => {
+                          setSelectedStudyLevelId(studyLevel.id);
+                          setIsChange(!isChange);
+                      }}
+                      style={{ cursor: "pointer" }}
+                  />
+              </div>,
+          ]);
 
     // Subject Table
     // Variable for fetching subject data
@@ -95,11 +248,11 @@ export default function AdminDashboard() {
     useEffect(() => {
         async function fetchSubjects() {
             try {
-                const res = await axios.get(
+                const res = await axiosClient.get(
                     "http://127.0.0.1:8000/api/subjects"
                 );
 
-                // console.log(res.data.subjects);
+                console.log(res.data.subjects);
 
                 setDisplaySubject({
                     subjects: res.data.subjects,
@@ -111,11 +264,82 @@ export default function AdminDashboard() {
         }
 
         fetchSubjects();
-    }, []);
+    }, [isChange]);
 
-    const subjectHeader = ["Subject Name", "Study Year", "Action"];
+    // Variable to catch selected subject id for edit and delete purposes
+    const [selectedSubjectId, setSelectedSubjectId] = useState(null);
 
-    const subjectData = displaySubject.loading
+    // Delete subject data
+    const handleSubjectDelete = async (id) => {
+        try {
+            const res = await axiosClient.delete(
+                `http://127.0.0.1:8000/api/delete-subject/${id}`
+            );
+            // console.log(res.data);
+
+            setDisplaySubject((prevData) => {
+                if (Array.isArray(prevData.subjects)) {
+                    return {
+                        ...prevData,
+                        // Creates a new array by including only those subjects for which the condition (subject.id !== id) is true.
+                        subjects: prevData.subjects.filter(
+                            (subject) => subject.id !== id
+                        ),
+                    };
+                }
+
+                return prevData; // Return the previous state if it's not an array
+            });
+        } catch (error) {
+            console.error("Error deleting subject:", error);
+        }
+    };
+
+    // Variable for posting new subject data
+    const [subjectData, setSubjectData] = useState({
+        subjectName: "",
+        levelId: "",
+        subjectFee: "",
+    });
+
+    // Post subjects data
+    const addSubject = async (e) => {
+        e.preventDefault();
+
+        // Simple validation for required fields
+        if (
+            !subjectData.subjectName ||
+            !subjectData.levelId ||
+            !subjectData.subjectFee
+        ) {
+            setError("Please fill in all fields");
+            return;
+        }
+
+        try {
+            const res = await axiosClient.post(
+                "http://127.0.0.1:8000/api/add-subject",
+                subjectData
+            );
+            // console.log(res.data);
+            console.log("Subject added successfully!");
+        } catch (error) {
+            console.error("Error:", error.response.data); //use err.response.data to display more info about the err
+        }
+
+        setIsChange(!isChange);
+
+        // Clear the form and error message
+        setSubjectData({
+            subjectName: "",
+            levelId: "",
+        });
+        setError("");
+    };
+
+    const subjectHeader = ["Subject Name", "Study Year", "Fee", "Action"];
+
+    const subjectTableData = displaySubject.loading
         ? [
               [
                   <td colSpan="8">
@@ -128,6 +352,7 @@ export default function AdminDashboard() {
         : displaySubject.subjects.map((subject) => [
               subject.subject_name || "-",
               subject.level_name || "-",
+              subject.subject_fee || "-",
 
               <div className="actions">
                   <img
@@ -143,43 +368,15 @@ export default function AdminDashboard() {
                       src="http://localhost:8000/icon/delete.png"
                       alt="Delete"
                       data-bs-toggle="modal"
-                      data-bs-target="#confirmationModal"
+                      data-bs-target="#confirmationSubject"
                       onClick={() => {
                           setSelectedSubjectId(subject.id);
-                          // setIsChange(!isChange);
+                          setIsChange(!isChange);
                       }}
                       style={{ cursor: "pointer" }}
                   />
               </div>,
           ]);
-
-    // Variable to catch selected subject id for edit and delete purposes
-    const [selectedSubjectId, setSelectedSubjectId] = useState(null);
-
-    // Delete lesson data
-    const handleDelete = async (id) => {
-        try {
-            const res = await axios.delete(
-                `http://127.0.0.1:8000/api/delete-subject/${id}`
-            );
-            console.log(res.data);
-            setDisplaySubject((prevData) => {
-                if (Array.isArray(prevData.subjects)) {
-                    return {
-                        ...prevData,
-                        // Creates a new array by including only those subjects for which the condition (subject.id !== id) is true.
-                        subjects: prevData.subjects.filter(
-                            (subject) => subject.id !== id
-                        ),
-                    };
-                }
-
-                return prevData; // Return the previous state if it's not an array
-            });
-        } catch (error) {
-            console.error("Error deleting lesson:", error);
-        }
-    };
 
     return (
         <>
@@ -212,22 +409,201 @@ export default function AdminDashboard() {
                     ></OverviewItem>
                 </div>
                 <div className="second-row d-flex flex-wrap gap-3 mt-3">
-                    <ContentContainer title="Subjects Offered">
+                    <ContentContainer title="Students Gender">
+                        <PieChart
+                            maleCount={maleCount}
+                            femaleCount={femaleCount}
+                        />
+                    </ContentContainer>
+                    <ContentContainer title="Study Level" className="flex-fill">
+                        <div className="d-flex justify-content-end mb-3">
+                            <Button
+                                data-bs-toggle="modal"
+                                data-bs-target="#addStudyLevelModal"
+                                color="yellow"
+                            >
+                                Add Study Level
+                            </Button>
+                        </div>
                         <Table
-                            header={subjectHeader}
-                            data={subjectData}
+                            header={studyLevelHeader}
+                            data={studyLevelTableData}
                             itemsPerPage="5"
                         ></Table>
                     </ContentContainer>
-                    <ContentContainer title="Students Gender"></ContentContainer>
+                    <ContentContainer
+                        title="Subjects Offered"
+                        className="flex-fill"
+                    >
+                        <div className="d-flex justify-content-end mb-3">
+                            <Button
+                                data-bs-toggle="modal"
+                                data-bs-target="#addSubjectModal"
+                                color="yellow"
+                            >
+                                Add Subject
+                            </Button>
+                        </div>
+                        <Table
+                            header={subjectHeader}
+                            data={subjectTableData}
+                            itemsPerPage="5"
+                        ></Table>
+                    </ContentContainer>
                 </div>
             </div>
+
+            <div
+                id="addStudyLevelModal"
+                className="modal fade study-level-modal"
+                tabindex="-1"
+                data-bs-backdrop="static"
+                data-bs-keyboard="false"
+            >
+                <div className="modal-dialog">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title">Add a Study Level</h5>
+                            <button
+                                type="button"
+                                className="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                            ></button>
+                        </div>
+                        {error && (
+                            <div className="alert alert-danger m-2">
+                                {error}
+                            </div>
+                        )}
+                        <form
+                            className="p-3"
+                            method="post"
+                            onSubmit={addStudyLevel}
+                        >
+                            {/* Study Level Name */}
+                            <div className="mb-3">
+                                <label className="form-label">
+                                    Study Level
+                                </label>
+                                <input
+                                    type="text"
+                                    onChange={handleInput(setStudyLevelData)}
+                                    className="form-control"
+                                    name="levelName"
+                                    value={studyLevelData.levelName}
+                                ></input>
+                            </div>
+
+                            <div className="button-container d-flex justify-content-end gap-3">
+                                <Button color="yellow">Add</Button>
+                                <Button data-bs-dismiss="modal">Cancel</Button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                id="addSubjectModal"
+                className="modal fade subject-modal"
+                tabindex="-1"
+                data-bs-backdrop="static"
+                data-bs-keyboard="false"
+            >
+                <div className="modal-dialog">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title">Add a Subject</h5>
+                            <button
+                                type="button"
+                                className="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                            ></button>
+                        </div>
+                        {error && (
+                            <div className="alert alert-danger m-2">
+                                {error}
+                            </div>
+                        )}
+                        <form
+                            className="p-3"
+                            method="post"
+                            onSubmit={addSubject}
+                        >
+                            {/* Subject Name */}
+                            <div className="mb-3">
+                                <label className="form-label">Subject</label>
+                                <input
+                                    type="text"
+                                    onChange={handleInput(setSubjectData)}
+                                    className="form-control"
+                                    name="subjectName"
+                                    value={subjectData.subjectName}
+                                ></input>
+                            </div>
+                            {/* Study Level*/}
+                            <div className="mb-3">
+                                <label className="form-label">
+                                    Study Level
+                                </label>
+                                <select
+                                    name="levelId"
+                                    onChange={handleInput(setSubjectData)}
+                                    value={subjectData.levelId}
+                                    className="form-control"
+                                    required
+                                >
+                                    {displayStudyLevel.studyLevels.map(
+                                        (studyLevel) => (
+                                            <option
+                                                key={studyLevel.id}
+                                                value={studyLevel.id}
+                                            >
+                                                {studyLevel.level_name}
+                                            </option>
+                                        )
+                                    )}
+                                </select>
+                            </div>
+                            {/* Subject Fee */}
+                            <div className="mb-3">
+                                <label className="form-label">
+                                    Subject Fee
+                                </label>
+                                <input
+                                    type="number"
+                                    onChange={handleInput(setSubjectData)}
+                                    className="form-control"
+                                    name="subjectFee"
+                                    value={subjectData.subjectFee}
+                                ></input>
+                            </div>
+
+                            <div className="button-container d-flex justify-content-end gap-3">
+                                <Button color="yellow">Add</Button>
+                                <Button data-bs-dismiss="modal">Cancel</Button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
             <ConfirmationModal
-                id="confirmationModal"
+                id="confirmationStudyLevel"
+                icon="tick.png"
+                headerText="Delete Study Level?"
+                bodyText="Are you sure you want to delete this study level?"
+                onConfirm={() => handleStudyLevelDelete(selectedStudyLevelId)}
+            />
+
+            <ConfirmationModal
+                id="confirmationSubject"
                 icon="tick.png"
                 headerText="Delete Subject?"
                 bodyText="Are you sure you want to delete this subject?"
-                onConfirm={() => handleDelete(selectedSubjectId)}
+                onConfirm={() => handleSubjectDelete(selectedSubjectId)}
             />
         </>
     );

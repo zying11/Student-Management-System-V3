@@ -10,7 +10,7 @@ class SubjectController extends Controller
     public function index()
     {
         $subjects = Subject::join('study_level', 'subjects.level_id', '=', 'study_level.id')
-            ->select('subjects.id', 'subjects.subject_name', 'subjects.level_id', 'study_level.level_name')
+            ->select('subjects.id', 'subjects.subject_name', 'subjects.level_id', 'study_level.level_name', 'subjects.subject_fee')
             ->get();
 
         return response()->json([
@@ -22,8 +22,9 @@ class SubjectController extends Controller
     public function addSubject(Request $request)
     {
         $subject = new Subject();
-        $subject->study_level = $request->input('studyLevel');
         $subject->subject_name = $request->input('subjectName');
+        $subject->level_id = $request->input('levelId');
+        $subject->subject_fee = $request->input('subjectFee');
         $subject->save();
 
         return response()->json([
