@@ -14,9 +14,7 @@ export default function Lesson() {
     useEffect(() => {
         async function fetchSubjects() {
             try {
-                const res = await axiosClient.get(
-                    "http://127.0.0.1:8000/api/subjects"
-                );
+                const res = await axiosClient.get("/subjects");
 
                 console.log(res.data.subjects);
 
@@ -36,9 +34,7 @@ export default function Lesson() {
     useEffect(() => {
         async function fetchTeachers() {
             try {
-                const res = await axiosClient.get(
-                    "http://127.0.0.1:8000/api/teachers"
-                );
+                const res = await axiosClient.get("/teachers");
 
                 // console.log(res.data.data); // Check data structure
                 setTeacher(res.data.data);
@@ -73,10 +69,7 @@ export default function Lesson() {
         }
 
         try {
-            const res = await axiosClient.post(
-                "http://127.0.0.1:8000/api/add-lesson",
-                lessonData
-            );
+            const res = await axiosClient.post("/add-lesson", lessonData);
             // console.log(res.data);
             console.log("Lesson saved successfully!");
         } catch (error) {
@@ -107,9 +100,7 @@ export default function Lesson() {
     useEffect(() => {
         async function fetchLessons() {
             try {
-                const res = await axiosClient.get(
-                    "http://127.0.0.1:8000/api/timetable-lessons"
-                );
+                const res = await axiosClient.get("/timetable-lessons");
                 console.log(res.data.lessons);
 
                 setDisplayLesson({
@@ -130,9 +121,7 @@ export default function Lesson() {
     // Delete lesson data
     const handleDelete = async (id) => {
         try {
-            const res = await axiosClient.delete(
-                `http://127.0.0.1:8000/api/delete-lesson/${id}`
-            );
+            const res = await axiosClient.delete(`/delete-lesson/${id}`);
             console.log(res.data);
             setDisplayLesson((prevData) => {
                 if (Array.isArray(prevData.lessons)) {
@@ -177,7 +166,7 @@ export default function Lesson() {
 
         try {
             const response = await axiosClient.put(
-                `http://127.0.0.1:8000/api/edit-lesson/${selectedLesson.id}`,
+                `/edit-lesson/${selectedLesson.id}`,
                 { teacher: lessonData.teacherId }
             );
 
