@@ -21,5 +21,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Schema::defaultStringLength(191);
+
+        // Disable foreign key checks before migration
+        Schema::disableForeignKeyConstraints();
+
+        // Enable foreign key checks after migration
+        Schema::enableForeignKeyConstraints();
     }
 }

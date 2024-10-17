@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->id()->autoIncrement();
             $table->unsignedBigInteger('level_id');
             $table->string('subject_name');
+            $table->unsignedBigInteger('subject_fee');
             $table->timestamps();
 
             // Foreign key constraints

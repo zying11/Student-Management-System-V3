@@ -8,9 +8,23 @@ class DashboardController extends Controller
 {
     public function getStudentCount()
     {
+        // Total student count
         $studentCount = \App\Models\Student::count();
-        return response()->json(['count' => $studentCount]);
+
+        // Male student count
+        $maleCount = \App\Models\Student::where('gender', 'male')->count();
+
+        // Female student count
+        $femaleCount = \App\Models\Student::where('gender', 'female')->count();
+
+        // Return the data as a JSON response
+        return response()->json([
+            'total' => $studentCount,
+            'male' => $maleCount,
+            'female' => $femaleCount,
+        ]);
     }
+
 
     public function getTeacherCount()
     {

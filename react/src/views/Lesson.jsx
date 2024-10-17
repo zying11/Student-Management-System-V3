@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axiosClient from "../axiosClient";
 import Button from "../components/Button/Button";
 import { ContentContainer } from "../components/ContentContainer/ContentContainer";
 import { Table } from "../components/Table/Table";
@@ -14,7 +14,7 @@ export default function Lesson() {
     useEffect(() => {
         async function fetchSubjects() {
             try {
-                const res = await axios.get(
+                const res = await axiosClient.get(
                     "http://127.0.0.1:8000/api/subjects"
                 );
 
@@ -36,7 +36,7 @@ export default function Lesson() {
     useEffect(() => {
         async function fetchTeachers() {
             try {
-                const res = await axios.get(
+                const res = await axiosClient.get(
                     "http://127.0.0.1:8000/api/teachers"
                 );
 
@@ -73,7 +73,7 @@ export default function Lesson() {
         }
 
         try {
-            const res = await axios.post(
+            const res = await axiosClient.post(
                 "http://127.0.0.1:8000/api/add-lesson",
                 lessonData
             );
@@ -107,7 +107,7 @@ export default function Lesson() {
     useEffect(() => {
         async function fetchLessons() {
             try {
-                const res = await axios.get(
+                const res = await axiosClient.get(
                     "http://127.0.0.1:8000/api/timetable-lessons"
                 );
                 console.log(res.data.lessons);
@@ -130,7 +130,7 @@ export default function Lesson() {
     // Delete lesson data
     const handleDelete = async (id) => {
         try {
-            const res = await axios.delete(
+            const res = await axiosClient.delete(
                 `http://127.0.0.1:8000/api/delete-lesson/${id}`
             );
             console.log(res.data);
@@ -176,7 +176,7 @@ export default function Lesson() {
         // console.log(lessonData.teacher);
 
         try {
-            const response = await axios.put(
+            const response = await axiosClient.put(
                 `http://127.0.0.1:8000/api/edit-lesson/${selectedLesson.id}`,
                 { teacher: lessonData.teacherId }
             );

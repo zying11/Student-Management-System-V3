@@ -15,7 +15,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\ParentsController;
-
+use App\Http\Controllers\StudyLevelController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -72,6 +72,11 @@ Route::post('/update-center-profile', [CenterProfileController::class, 'update']
 Route::get('subjects', [SubjectController::class, 'index']);
 Route::post('add-subject', [SubjectController::class, 'addSubject']);
 Route::delete('/delete-subject/{id}', [SubjectController::class, 'deleteSubject']);
+
+//Study Level
+Route::get('study-levels', [StudyLevelController::class, 'index']);
+Route::post('add-study-level', [StudyLevelController::class, 'addStudyLevel']);
+Route::delete('/delete-study-level/{id}', [StudyLevelController::class, 'deleteStudyLevel']);
 
 // Attendance
 Route::get('students', [AttendanceController::class, 'getStudentsList']);
