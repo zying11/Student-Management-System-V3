@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axiosClient from "../axiosClient";
 import { ContentContainer } from "../components/ContentContainer/ContentContainer";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -24,7 +24,9 @@ export default function Timetable() {
     useEffect(() => {
         async function fetchRooms() {
             try {
-                const res = await axios.get("http://127.0.0.1:8000/api/rooms");
+                const res = await axiosClient.get(
+                    "http://127.0.0.1:8000/api/rooms"
+                );
                 const roomsData = res.data.rooms;
                 setRooms(roomsData);
                 if (roomsData.length > 0) {
@@ -48,7 +50,7 @@ export default function Timetable() {
     useEffect(() => {
         async function fetchUnassignedLessons() {
             try {
-                const res = await axios.get(
+                const res = await axiosClient.get(
                     "http://127.0.0.1:8000/api/lessons"
                 );
                 const data = res.data;
@@ -153,9 +155,7 @@ export default function Timetable() {
     useEffect(() => {
         async function fetchLessons() {
             try {
-                const res = await axios.get(
-                    "http://127.0.0.1:8000/api/timetable-lessons"
-                );
+                const res = await axiosClient.get("/timetable-lessons");
                 // console.log(res.data.lessons);
 
                 setLessonData(res.data.lessons);
@@ -264,7 +264,7 @@ export default function Timetable() {
                     roomId: selectedRoomId, // Include the selected room ID
                 };
 
-                const res = await axios.post(
+                const res = await axiosClient.post(
                     "http://127.0.0.1:8000/api/set-lesson-time",
                     eventData
                 );
@@ -342,8 +342,8 @@ export default function Timetable() {
         if (selectedRoomId) {
             async function fetchEvents() {
                 try {
-                    const res = await axios.get(
-                        `http://127.0.0.1:8000/api/timetable-lessons?room_id=${selectedRoomId}`
+                    const res = await axiosClient.get(
+                        `/timetable-lessons?room_id=${selectedRoomId}`
                     );
                     // console.log(res.data); // To check data format
                     const formattedEvents = formatEventData(res.data.lessons);

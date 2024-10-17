@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import axiosClient from "../axiosClient";
 import "../css/AdminProfile.css";
 
 export default function CenterProfile() {
@@ -17,7 +18,7 @@ export default function CenterProfile() {
     useEffect(() => {
         async function fetchProfile() {
             try {
-                const res = await axios.get(
+                const res = await axiosClient.get(
                     "http://127.0.0.1:8000/api/center-profile"
                 );
 

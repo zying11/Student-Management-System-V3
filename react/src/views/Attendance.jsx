@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axiosClient from "../axiosClient";
 import { ContentContainer } from "../components/ContentContainer/ContentContainer";
 
 export default function Attendance() {
@@ -14,9 +14,7 @@ export default function Attendance() {
     useEffect(() => {
         async function fetchStudents() {
             try {
-                const res = await axios.get(
-                    "http://127.0.0.1:8000/api/students"
-                );
+                const res = await axiosClient.get("/students");
                 setStudents(res.data.data);
             } catch (error) {
                 console.error("Error fetching students:", error);
@@ -30,7 +28,7 @@ export default function Attendance() {
     useEffect(() => {
         async function fetchLessons() {
             try {
-                const res = await axios.get(
+                const res = await axiosClient.get(
                     "http://127.0.0.1:8000/api/lessons"
                 );
                 setLessons(res.data.lessons);
@@ -44,9 +42,7 @@ export default function Attendance() {
 
     const fetchSubjects = async () => {
         try {
-            const response = await axios.get(
-                "http://127.0.0.1:8000/api/subjects"
-            );
+            const response = await axiosClient.get("/subjects");
             setSubjects(response.data.subjects);
             // console.log(response.data);
         } catch (error) {
@@ -93,7 +89,7 @@ export default function Attendance() {
         try {
             // Send each attendance record separately
             for (const record of attendanceData) {
-                await axios.post(
+                await axiosClient.post(
                     "http://127.0.0.1:8000/api/mark-attendance",
                     record
                 );

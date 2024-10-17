@@ -40,9 +40,7 @@ export default function AdminDashboard() {
         // Fetch the number of students
         const fetchStudentCount = async () => {
             try {
-                const res = await axiosClient.get(
-                    "http://127.0.0.1:8000/api/student-count"
-                );
+                const res = await axiosClient.get("/student-count");
                 setStudentCount(res.data.total);
                 setMaleCount(res.data.male);
                 setFemaleCount(res.data.female);
@@ -61,9 +59,7 @@ export default function AdminDashboard() {
         // Fetch the number of teachers
         const fetchTeacherCount = async () => {
             try {
-                const res = await axiosClient.get(
-                    "http://127.0.0.1:8000/api/teacher-count"
-                );
+                const res = await axiosClient.get("/teacher-count");
                 setTeacherCount(res.data.count);
             } catch (error) {
                 console.error("Error fetching teacher count:", error);
@@ -80,9 +76,7 @@ export default function AdminDashboard() {
         // Fetch the number of rooms
         const fetchRoomCount = async () => {
             try {
-                const res = await axiosClient.get(
-                    "http://127.0.0.1:8000/api/room-count"
-                );
+                const res = await axiosClient.get("/room-count");
                 setRoomCount(res.data.count);
             } catch (error) {
                 console.error("Error fetching room count:", error);
@@ -99,9 +93,7 @@ export default function AdminDashboard() {
         // Fetch the number of rooms
         const fetchSubjectCount = async () => {
             try {
-                const res = await axiosClient.get(
-                    "http://127.0.0.1:8000/api/subject-count"
-                );
+                const res = await axiosClient.get("/subject-count");
                 setSubjectCount(res.data.count);
             } catch (error) {
                 console.error("Error fetching student count:", error);
@@ -122,9 +114,7 @@ export default function AdminDashboard() {
     useEffect(() => {
         async function fetchStudyLevels() {
             try {
-                const res = await axiosClient.get(
-                    "http://127.0.0.1:8000/api/study-levels"
-                );
+                const res = await axiosClient.get("/study-levels");
 
                 // console.log(res.data.studyLevels);
 
@@ -157,7 +147,7 @@ export default function AdminDashboard() {
 
         try {
             const res = await axiosClient.post(
-                "http://127.0.0.1:8000/api/add-study-level",
+                "/add-study-level",
                 studyLevelData
             );
             // console.log(res.data);
