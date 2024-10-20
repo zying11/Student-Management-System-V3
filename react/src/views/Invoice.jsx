@@ -1,311 +1,173 @@
-// import React, { useState } from 'react';
-// import html2canvas from 'html2canvas';
-// import jsPDF from 'jspdf';
-
-// const Invoice = () => {
-//   const [subject1Fee, setSubject1Fee] = useState(0);
-//   const [subject2Fee, setSubject2Fee] = useState(0);
-
-//   const handleSubject1FeeChange = (e) => {
-//     setSubject1Fee(parseFloat(e.target.value));
-//   };
-
-//   const handleSubject2FeeChange = (e) => {
-//     setSubject2Fee(parseFloat(e.target.value));
-//   };
-
-//   const calculateTotal = () => {
-//     return subject1Fee + subject2Fee;
-//   };
-
-//   const generateInvoicePDF = () => {
-//     const invoiceContent = document.getElementById('invoice-content');
-
-//     html2canvas(invoiceContent).then((canvas) => {
-//       const imgData = canvas.toDataURL('image/png');
-//       const pdf = new jsPDF();
-//       const imgWidth = 210;
-//       const pageHeight = 297;
-//       const imgHeight = (canvas.height * imgWidth) / canvas.width;
-//       let heightLeft = imgHeight;
-//       let position = 0;
-
-//       pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-//       heightLeft -= pageHeight;
-
-//       while (heightLeft >= 0) {
-//         position = heightLeft - imgHeight;
-//         pdf.addPage();
-//         pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-//         heightLeft -= pageHeight;
-//       }
-
-//       pdf.save('invoice.pdf');
-//     });
-//   };
-
-//   return (
-//     <div>
-//       <h2>Invoice</h2>
-//       <div id="invoice-content">
-//         <div>
-//           <label>Subject 1 Fee: $</label>
-//           <input type="number" value={subject1Fee} onChange={handleSubject1FeeChange} />
-//         </div>
-//         <div>
-//           <label>Subject 2 Fee: $</label>
-//           <input type="number" value={subject2Fee} onChange={handleSubject2FeeChange} />
-//         </div>
-//         <div>
-//           <h3>Total: ${calculateTotal()}</h3>
-//         </div>
-//       </div>
-//       <button onClick={generateInvoicePDF}>Generate PDF</button>
-//     </div>
-//   );
-// };
-
-// export default Invoice;
-
-// import { useEffect } from "react";
-// import { useState } from "react";
-// import { Link } from "react-router-dom";
-// import axiosClient from "../axiosClient";
-
-// export default function Invoice() {
-
-
-//     return (
-//         <>
-//             <div className="container">
-//                 <div className="d-flex justify-content-between align-items-center">
-//                     <h1>Invoices</h1>
-//                     <Link className="btn btn-primary" to="">
-//                         New Invoice
-//                     </Link>
-//                 </div>
-//                 <div className="card mt-3">
-//                     <table className="table">
-//                         <thead>
-//                             <tr>
-//                                 <th>ID</th>
-//                                 <th>Name</th>
-//                                 <th>Total Payable</th>
-//                                 <th>Total Paid</th>
-//                                 <th>Balance</th>
-//                                 <th>Actions</th>
-//                             </tr>
-//                         </thead>
-//                     </table>
-//                 </div>
-//             </div>
-//         </>
-//     );
-// }
-
-// import React, { useState } from 'react';
-// import { Link } from 'react-router-dom';
-// import html2canvas from 'html2canvas';
-// import jsPDF from 'jspdf';
-
-// export default function Invoice() {
-//     const [subject1Fee, setSubject1Fee] = useState(0);
-//     const [subject2Fee, setSubject2Fee] = useState(0);
-
-//     const handleSubject1FeeChange = (e) => {
-//         setSubject1Fee(parseFloat(e.target.value));
-//     };
-
-//     const handleSubject2FeeChange = (e) => {
-//         setSubject2Fee(parseFloat(e.target.value));
-//     };
-
-//     const calculateTotal = () => {
-//         return subject1Fee + subject2Fee;
-//     };
-
-//     const generateInvoicePDF = () => {
-//         const invoiceContent = document.getElementById('invoice-content');
-
-//         html2canvas(invoiceContent).then((canvas) => {
-//             const imgData = canvas.toDataURL('image/png');
-//             const pdf = new jsPDF();
-//             const imgWidth = 210;
-//             const pageHeight = 297;
-//             const imgHeight = (canvas.height * imgWidth) / canvas.width;
-//             let heightLeft = imgHeight;
-//             let position = 0;
-
-//             pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-//             heightLeft -= pageHeight;
-
-//             while (heightLeft >= 0) {
-//                 position = heightLeft - imgHeight;
-//                 pdf.addPage();
-//                 pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-//                 heightLeft -= pageHeight;
-//             }
-
-//             pdf.save('invoice.pdf');
-//         });
-//     };
-
-//     return (
-//         <>
-//             <div className="container">
-//                 <div className="d-flex justify-content-between align-items-center">
-//                     <h1>Invoices</h1>
-//                     <Link className="btn btn-primary" to="">
-//                         New Invoice
-//                     </Link>
-//                 </div>
-//                 <div id="invoice-content">
-//                 <div className="card mt-3">
-//                     <table className="table">
-//                         <thead>
-//                             <tr>
-//                                 <th>ID</th>
-//                                 <th>Name</th>
-//                                 <th>Total Payable</th>
-//                                 <th>Total Paid</th>
-//                                 <th>Balance</th>
-//                                 <th>Actions</th>
-//                             </tr>
-//                         </thead>
-//                         <tbody>
-//                             <tr>
-//                                 <td>1</td>
-//                                 <td>John Doe</td>
-//                                 <td>${calculateTotal()}</td>
-//                                 <td>$0</td>
-//                                 <td>${calculateTotal()}</td>
-//                                 <td>
-//                                     <button className="btn btn-primary" onClick={generateInvoicePDF}>Generate PDF</button>
-//                                 </td>
-//                             </tr>
-//                         </tbody>
-//                     </table>
-//                 </div>
-//                 </div>
-//             </div>
-//         </>
-//     );
-// }
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axiosClient from "../axiosClient";
+import Button from "../components/Button/Button";
+import { ContentContainer } from "../components/ContentContainer/ContentContainer";
+import { Table } from "../components/Table/Table";
+import SearchBar from "../components/SearchBar";
+import Dropdown from "react-bootstrap/Dropdown";
+import "../css/Invoice.css";
 
 export default function Invoice() {
-    const [invoices, setInvoices] = useState([]);
-    const [loading, setLoading] = useState(false);
+    const [invoiceData, setInvoiceData] = useState({
+        invoices: [],
+        loading: true,
+    });
+    const [searchQuery, setSearchQuery] = useState("");
+    const [error, setError] = useState("");
 
+    // Fetch invoice data
     useEffect(() => {
-        getInvoices();
+        async function fetchInvoices() {
+            try {
+                // Fetch data from /invoices endpoint
+                const res = await axiosClient.get("/invoices");
+                setInvoiceData({
+                    invoices: res.data.data,
+                    loading: false,
+                });
+            } catch (error) {
+                console.error("Error fetching invoices:", error);
+                setInvoiceData({
+                    invoices: [],
+                    loading: false,
+                });
+                setError(
+                    "Error fetching invoice data. Please try again later."
+                );
+            }
+        }
+
+        // Call fetchInvoices function
+        fetchInvoices();
     }, []);
 
-    const onDeleteClick = (invoice) => {
+    // Handle deletion of an invoice
+    const handleDelete = async (id) => {
         if (!window.confirm("Are you sure you want to delete this invoice?")) {
             return;
         }
-        axiosClient.delete(`/invoices/${invoice.id}`).then(() => {
-            getInvoices();
-        });
+        try {
+            // Delete invoice with the given ID
+            await axiosClient.delete(`/invoices/${id}`);
+            // Update state to remove the deleted invoice
+            setInvoiceData((prevState) => ({
+                ...prevState,
+                invoices: prevState.invoices.filter(
+                    (invoice) => invoice.id !== id
+                ),
+            }));
+        } catch (error) {
+            console.error("Error deleting invoice:", error);
+            setError("Error deleting invoice. Please try again later.");
+        }
     };
 
-    const getInvoices = () => {
-        setLoading(true);
-        axiosClient
-            .get("/invoices")
-            .then(({ data }) => {
-                setLoading(false);
-                // Calculate total payable and balance for each invoice
-                const updatedInvoices = data.data.map(invoice => {
-                    const totalPayable = parseFloat(invoice.subject1Fee) + parseFloat(invoice.subject2Fee);
-                    const totalPaid = 0; // Set total paid to 0
-                    const balance = totalPayable - totalPaid;
+    // // Handle sending invoice
+    // const handleSendInvoice = (id) => {
+    //     // Add logic to send invoice here
+    //     console.log(`Sending invoice with ID: ${id}`);
+    // };
 
-                    return {
-                        ...invoice,
-                        totalPayable,
-                        totalPaid,
-                        balance
-                    };
-                });
-                setInvoices(updatedInvoices);
-            })
-            .catch(() => {
-                setLoading(false);
-            });
-    };
+    // Filter invoices name by search query
+    const filteredInvoices = invoiceData.invoices.filter((invoice) =>
+        invoice.student.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
+    // Table header and data
+    const tableHeader = [
+        "Invoice Number",
+        "Student Name",
+        "Total Payable (RM)",
+        "Issue Date",
+        "Due Date",
+        "Actions",
+    ];
+
+    const tableData = invoiceData.loading
+        ? [
+              [
+                  <td key="loading" colSpan="6" className="text-center">
+                      Loading...
+                  </td>,
+              ],
+          ]
+        : // Map admin data to table rows
+          filteredInvoices.map((invoice) => [
+              //   adminData.admins.map((admin) => [
+              invoice.invoice_number || "-",
+              invoice.student.name || "-",
+              invoice.total_payable || "-",
+              invoice.issue_date || "-",
+              invoice.due_date || "-",
+              <div className="actions" key={`actions-${invoice.id}`}>
+                  <Dropdown>
+                      <Dropdown.Toggle
+                          as="div"
+                          id={`dropdown-${invoice.id}`}
+                          className="p-0"
+                      >
+                          <img
+                              src="http://localhost:8000/icon/more.png"
+                              alt="More"
+                              style={{ cursor: "pointer" }}
+                          />
+                      </Dropdown.Toggle>
+
+                      <Dropdown.Menu>
+                          <Dropdown.Item
+                              as={Link}
+                              to={`/invoice/edit/${invoice.id}`}
+                          >
+                              Edit Invoice
+                          </Dropdown.Item>
+                          <Dropdown.Item
+                              as={Link}
+                              to={`/invoice/view/${invoice.id}`}
+                          >
+                              View Invoice
+                          </Dropdown.Item>
+                          <Dropdown.Item
+                              onClick={() => handleDelete(invoice.id)}
+                          >
+                              Delete Invoice
+                          </Dropdown.Item>
+                          <Dropdown.Item
+                              onClick={() => handleSendInvoice(invoice.id)}
+                          >
+                              Send Invoice
+                          </Dropdown.Item>
+                      </Dropdown.Menu>
+                  </Dropdown>
+              </div>,
+          ]);
 
     return (
         <>
-            <div className="container">
-                <div className="d-flex justify-content-between align-items-center">
-                    <h1>Invoices</h1>
-                    <Link className="btn btn-primary" to="/invoices/new">
-                        New Invoice
-                    </Link>
-                </div>
-                <div className="card mt-3">
-                    <table className="table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Student Name</th> {/* Change this heading to Student Name */}
-                                <th>Subject 1 Fee</th>
-                                <th>Subject 2 Fee</th>
-                                <th>Total Payable</th>
-                                <th>Total Paid</th>
-                                <th>Balance</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {loading ? (
-                                <tr>
-                                    <td colSpan="8" className="text-center">
-                                        Loading...
-                                    </td>
-                                </tr>
-                            ) : (
-                                invoices.map((invoice) => (
-                                    <tr key={invoice.id}>
-                                        <td>{invoice.id}</td>
-                                        <td>{invoice.name}</td> {/* Display student's name */}
-                                        <td>{invoice.subject1Fee}</td>
-                                        <td>{invoice.subject2Fee}</td>
-                                        <td>{invoice.totalPayable}</td>
-                                        <td>{invoice.totalPaid}</td>
-                                        <td>{invoice.balance}</td>
-                                        <td>
-                                            <Link
-                                                className="btn btn-primary"
-                                                to={`/invoices/${invoice.id}`}
-                                            >
-                                                Edit
-                                            </Link>
-                                            <button
-                                                className="btn btn-danger ms-2"
-                                                onClick={() => onDeleteClick(invoice)}
-                                            >
-                                                Delete
-                                            </button>
-                                            <Link
-                                                className="btn btn-light ms-2"
-                                                to={`/invoiceTemplate/${invoice.id}`} 
-                                            >
-                                                <i class="bi bi-eye"></i> View
-                                            </Link>
-                                        </td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
-                </div>
+            <div className="page-title">Fees</div>
+
+            <div className="d-flex justify-content-end">
+                <Link to="/invoice/create" className="text-decoration-none">
+                    <Button>Add Invoice</Button>
+                </Link>
             </div>
+
+            {/* Display invoice list table */}
+            <ContentContainer title="Student Fees Collection List">
+                {/* Search by student name */}
+                <SearchBar
+                    searchQuery={searchQuery}
+                    setSearchQuery={setSearchQuery}
+                    placeholder="Search student by name"
+                />
+
+                {error && <div className="alert alert-danger">{error}</div>}
+                <Table
+                    header={tableHeader}
+                    data={tableData}
+                    itemsPerPage={10}
+                />
+            </ContentContainer>
         </>
     );
 }

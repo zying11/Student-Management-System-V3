@@ -58,4 +58,14 @@ class Student extends Model
     {
         return \Carbon\Carbon::parse($value)->format('d-m-Y');
     }
+
+    /**
+     * Define the relationship to the Invoice model.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class);
+    }
 }
