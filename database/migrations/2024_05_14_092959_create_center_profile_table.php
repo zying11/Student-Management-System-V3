@@ -14,9 +14,11 @@ return new class extends Migration {
             $table->id();
             $table->string('center_name');
             $table->string('center_logo')->nullable();
-            $table->string('center_address');
+            $table->string('favicon')->nullable();
+            $table->string('address');
             $table->string('postcode');
-            $table->integer('num_rooms');
+            $table->string('city');
+            $table->string('state');
             $table->timestamps();
         });
     }

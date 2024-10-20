@@ -68,7 +68,7 @@ const menuItems = [
         title: "Timetable",
         subItems: [
             { title: "Add New Lesson", link: "/lesson", roles: ["admin"] },
-            { title: "Room Timetable", link: "", roles: ["admin"] },
+            { title: "Room Timetable", link: "/room", roles: ["admin"] },
             { title: "Teacher Timetable", link: "", roles: ["admin"] },
             {
                 title: "Schedule Timetable",
