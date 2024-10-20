@@ -33,6 +33,31 @@ class SubjectController extends Controller
         ]);
     }
 
+    public function updateSubject(Request $request, $id)
+    {
+        // Find the lesson by its ID 
+        $subject = Subject::find($id);
+
+        if (!$subject) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Subject not found',
+            ], 404);
+        }
+
+        // Update lesson attributes with request data
+        $subject->subject_name = $request->input('subjectName');
+        $subject->level_id = $request->input('levelId');
+        $subject->subject_fee = $request->input('subjectFee');
+        $subject->save();
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Subject updated successfully',
+            'lesson' => $subject,
+        ]);
+    }
+
     public function deleteSubject($id)
     {
         $subject = Subject::find($id);

@@ -72,6 +72,7 @@ Route::post('/update-center-profile', [CenterProfileController::class, 'update']
 Route::get('subjects', [SubjectController::class, 'index']);
 Route::post('add-subject', [SubjectController::class, 'addSubject']);
 Route::delete('/delete-subject/{id}', [SubjectController::class, 'deleteSubject']);
+Route::put('/edit-subject/{id}', [SubjectController::class, 'updateSubject']);
 
 //Study Level
 Route::get('study-levels', [StudyLevelController::class, 'index']);
