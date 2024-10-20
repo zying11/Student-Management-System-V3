@@ -17,7 +17,7 @@ const menuItems = [
         subItems: [
             {
                 title: "All Students",
-                link: "/student",
+                link: "/students",
                 roles: ["admin", "teacher"],
             },
             {
@@ -37,7 +37,7 @@ const menuItems = [
         subItems: [
             {
                 title: "All Teachers",
-                link: "/teacher",
+                link: "/teachers",
                 roles: ["admin", "teacher"],
             },
             {
@@ -55,7 +55,7 @@ const menuItems = [
         icon: "admins.png",
         title: "Admins",
         subItems: [
-            { title: "All Admins", link: "/admin", roles: ["admin"] },
+            { title: "All Admins", link: "/admins", roles: ["admin"] },
             { title: "Add New Admin", link: "/admin/create", roles: ["admin"] },
             { title: "Edit Admin", link: "", roles: ["admin"] },
             { title: "Admin Profile", link: "", roles: ["admin"] },
@@ -88,7 +88,7 @@ const menuItems = [
                 link: "/invoices",
                 roles: ["admin"],
             },
-            { title: "Add Invoice", link: "/invoices/new", roles: ["admin"] },
+            { title: "Add Invoice", link: "/invoice/create", roles: ["admin"] },
             { title: "Edit Invoice", link: "", roles: ["admin"] },
             { title: "Record Payment", link: "", roles: ["admin"] },
             { title: "View Receipt", link: "", roles: ["admin"] },

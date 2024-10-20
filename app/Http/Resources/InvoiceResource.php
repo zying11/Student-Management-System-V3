@@ -7,23 +7,29 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class InvoiceResource extends JsonResource
 {
-    public static $wrap = false;
+  // Disable wrapping of the resource in a wrapper object
+  public static $wrap = false;
 
-    
-    public function toArray(Request $request): array
-    {
-      return [
-        'id' => $this->id,
-        'name' => $this->name,
-        'subject1Fee' => $this->subject1Fee,
-        'subject2Fee' => $this->subject2Fee,
-        'totalPayable' => $this->totalPayable,
-        'totalPaid' => $this->totalPaid,
-        'balance' => $this->balance,
-        'created_at' => $this->created_at,
-        'updated_at' => $this->updated_at,
-        'student' => new StudentResource($this->whenLoaded('student')), 
+  /**
+   * Transform the resource into an array.
+   *
+   * @param  \Illuminate\Http\Request  $request
+   * @return array<string, mixed>
+   */
+  public function toArray(Request $request): array
+  {
+    return [
+      'id' => $this->id,
+      'invoice_number' => $this->invoice_number,
+      'issue_date' => $this->issue_date,
+      'due_date' => $this->due_date,
+      'student_id' => $this->student_id,
+      'student' => $this->student, // Include student details
+      'items' => json_decode($this->items), // Decode JSON string into an array
+      'payment_method' => $this->payment_method,
+      'add_notes' => $this->add_notes,
+      'total_payable' => $this->total_payable,
     ];
-    }
+  }
 }
 

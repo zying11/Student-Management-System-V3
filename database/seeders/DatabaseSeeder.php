@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             TeacherSeeder::class,
             LessonSeeder::class,
             EnrollmentSeeder::class,
+            InvoiceSeeder::class,
         ]);
     }
 }

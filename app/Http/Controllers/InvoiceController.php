@@ -2,72 +2,133 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreInvoiceRequest;
-use App\Http\Requests\UpdateInvoiceRequest;
+use Illuminate\Http\Request;
 use App\Http\Resources\InvoiceResource;
 use App\Models\Invoice;
 
 class InvoiceController extends Controller
 {
     /**
+     * Generate a new invoice number.
+     */
+    public function generateInvoiceNumber()
+    {
+        // Get the last invoice record and extract the last number
+        $lastInvoice = Invoice::orderBy('created_at', 'desc')->first();
+        $lastNumber = $lastInvoice ? intval(substr($lastInvoice->invoice_number, -3)) : 0;
+
+        // Generate a new invoice number based on the current date
+        $newInvoiceNumber = 'INV-' . date('Ymd') . '-' . str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
+
+        return response()->json(['invoice_number' => $newInvoiceNumber]);
+    }
+
+    /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return InvoiceResource::collection(
-            Invoice::query()->orderBy('id', 'desc')->get()
-        );
+        // Retrieve all invoices, along with the associated student data
+        $invoices = Invoice::with('student')->orderBy('id', 'desc')->get();
+
+        return InvoiceResource::collection($invoices);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreInvoiceRequest $request)
+    public function store(Request $request)
     {
-        $data = $request->validated();
+        // Validate the request data
+        $request->validate([
+            'invoice_number' => 'required|unique:invoices',
+            'issue_date' => 'required|date',
+            'due_date' => 'required|date',
+            'student_id' => 'required|exists:students,id',
+            'payment_method' => 'nullable|string',
+            'add_notes' => 'nullable|string',
+            'total_payable' => 'required|numeric',
+            'items' => 'required|array',
+            'items.*.item_name' => 'required|string',
+            'items.*.quantity' => 'required|integer|min:1',
+            'items.*.price' => 'required|numeric',
+            'items.*.discount' => 'nullable|numeric',
+            'items.*.total' => 'required|numeric',
+            'items.*.isManual' => 'required|boolean',
+        ]);
 
-        // Calculate total payable
-        $data['totalPayable'] = $data['subject1Fee'] + $data['subject2Fee'];
+        // Create the invoice
+        $invoice = Invoice::create($request->only(['invoice_number', 'issue_date', 'due_date', 'student_id', 'payment_method', 'add_notes', 'total_payable']));
 
-        // Initialize totalPaid and balance to 0
-        $data['totalPaid'] = 0;
-        $data['balance'] = $data['totalPayable'];
+        // Create invoice items
+        foreach ($request->items as $item) {
+            $invoice->items()->create($item);
+        }
 
-        $invoice = Invoice::create($data);
-        return response(new InvoiceResource($invoice), 201);
+        return response()->json(['message' => 'Invoice created successfully', 'invoice' => $invoice], 201);
     }
+
 
     /**
      * Display the specified resource.
      */
-    public function show(Invoice $invoice)
+    public function show($id)
     {
+        // Retrieve the invoice with the associated student and items
+        $invoice = Invoice::with('student')->findOrFail($id);
+
         return new InvoiceResource($invoice);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateInvoiceRequest $request, Invoice $invoice)
+    public function update(Request $request, $id)
     {
-        $data = $request->validated();
+        // Validate the request data
+        $request->validate([
+            'invoice_number' => 'required|unique:invoices,invoice_number,' . $id,
+            'issue_date' => 'required|date',
+            'due_date' => 'required|date',
+            'student_id' => 'required|exists:students,id',
+            'payment_method' => 'nullable|string',
+            'add_notes' => 'nullable|string',
+            'total_payable' => 'required|numeric',
+            'items' => 'required|array',
+            'items.*.item_name' => 'required|string',
+            'items.*.quantity' => 'required|integer|min:1',
+            'items.*.price' => 'required|numeric',
+            'items.*.discount' => 'nullable|numeric',
+            'items.*.total' => 'required|numeric',
+            'items.*.isManual' => 'required|boolean',
+        ]);
 
-        // Recalculate total payable
-        $data['totalPayable'] = $data['subject1Fee'] + $data['subject2Fee'];
+        // Find the invoice
+        $invoice = Invoice::findOrFail($id);
 
-        // Calculate balance by subtracting totalPaid from totalPayable
-        $data['balance'] = $data['totalPayable'] - $invoice->totalPaid;
+        // Update the invoice details
+        $invoice->update($request->only(['invoice_number', 'issue_date', 'due_date', 'student_id', 'payment_method', 'add_notes', 'total_payable']));
 
-        $invoice->update($data);
-        return new InvoiceResource($invoice);
+        // Clear existing items and add new items
+        $invoice->items()->delete();
+        foreach ($request->items as $item) {
+            $invoice->items()->create($item);
+        }
+
+        return response()->json(['message' => 'Invoice updated successfully', 'invoice' => $invoice], 200);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Invoice $invoice)
+    public function destroy($id)
     {
+        // Find the invoice by ID
+        $invoice = Invoice::findOrFail($id);
+
+        // Delete the invoice details
         $invoice->delete();
+
         return response('', 204);
     }
 }

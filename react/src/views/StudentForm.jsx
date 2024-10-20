@@ -476,7 +476,7 @@ export default function StudentForm({ isEditing }) {
             }
 
             alert(`Student ${isEditing ? "updated" : "created"} successfully`);
-            navigate("/student");
+            navigate("/students");
         } catch (error) {
             if (error.response && error.response.data) {
                 setErrors(error.response.data.errors);

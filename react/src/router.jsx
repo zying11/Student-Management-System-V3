@@ -316,21 +316,37 @@ const router = createBrowserRouter([
                 ),
             },
             {
-                path: "/invoices/new",
+                path: "/invoice/create",
                 element: (
                     <ProtectedRoute requiredRoles={["admin"]}>
-                        <InvoiceForm key="invoiceCreate" />
+                        <InvoiceForm isEditing={false} key="invoiceCreate" />
                     </ProtectedRoute>
                 ),
             },
             {
-                path: "/invoices/:id",
+                path: "/invoice/edit/:id",
                 element: (
                     <ProtectedRoute requiredRoles={["admin"]}>
-                        <InvoiceForm key="invoiceUpdate" />
+                        <InvoiceForm isEditing={true} key="invoiceEdit" />
                     </ProtectedRoute>
                 ),
             },
+            // {
+            //     path: "/invoices/new",
+            //     element: (
+            //         <ProtectedRoute requiredRoles={["admin"]}>
+            //             <InvoiceForm key="invoiceCreate" />
+            //         </ProtectedRoute>
+            //     ),
+            // },
+            // {
+            //     path: "/invoices/:id",
+            //     element: (
+            //         <ProtectedRoute requiredRoles={["admin"]}>
+            //             <InvoiceForm key="invoiceUpdate" />
+            //         </ProtectedRoute>
+            //     ),
+            // },
             // {
             //     path: "/invoiceTemplate",
             //     element: <InvoiceTemplate invoice={exampleInvoice} />,
@@ -344,7 +360,7 @@ const router = createBrowserRouter([
                 ),
             },
             {
-                path: "/student",
+                path: "/students",
                 element: (
                     <ProtectedRoute requiredRoles={["admin", "teacher"]}>
                         <Students key="studentList" />
@@ -384,7 +400,7 @@ const router = createBrowserRouter([
                 ),
             },
             {
-                path: "/admin",
+                path: "/admins",
                 element: (
                     <ProtectedRoute requiredRoles={["admin"]}>
                         <Admin key="adminList" />
@@ -416,7 +432,7 @@ const router = createBrowserRouter([
                 ),
             },
             {
-                path: "/teacher",
+                path: "/teachers",
                 element: (
                     <ProtectedRoute requiredRoles={["admin", "teacher"]}>
                         <Teacher key="teacherList" />

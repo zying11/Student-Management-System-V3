@@ -18,6 +18,7 @@ use App\Http\Controllers\ParentsController;
 use App\Http\Controllers\StudyLevelController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Models\Invoice;
 
 /*
 |--------------------------------------------------------------------------
@@ -82,6 +83,7 @@ Route::delete('/delete-study-level/{id}', [StudyLevelController::class, 'deleteS
 Route::get('students', [AttendanceController::class, 'getStudentsList']);
 Route::post('/mark-attendance', [AttendanceController::class, 'markAttendance']);
 
+// USER
 // Route::apiResource('/users', UserController::class);
 // Route to fetch the list of all users
 Route::get('/users', [UserController::class, 'index']);
@@ -92,7 +94,20 @@ Route::get('/users/{id}', [UserController::class, 'show']);
 // Route to update specific user details by ID
 Route::put('/users/{id}', [UserController::class, 'update']);
 
-Route::apiResource('/invoices', InvoiceController::class);
+// INVOICE
+// Route::apiResource('/invoices', InvoiceController::class);
+// Route to fetch the list of all invoices
+Route::get('/invoices', [InvoiceController::class, 'index']);
+// Route to store a new invoice details
+Route::post('/invoices', [InvoiceController::class, 'store']);
+// Route to fetch specific invoice details by ID
+Route::get('/invoices/{id}', [InvoiceController::class, 'show']);
+// Route to update specific invoice details by ID
+Route::put('/invoices/{id}', [InvoiceController::class, 'update']);
+// Route to delete specific invoice details by ID
+Route::delete('/invoices/{id}', [InvoiceController::class, 'destroy']);
+// Route to generate invoice number
+Route::get('/generate-invoice-number', [InvoiceController::class, 'generateInvoiceNumber']);
 
 
 // // Password Reset Routes
@@ -107,6 +122,7 @@ Route::get('/reset-password/{token}', function ($token) {
     return redirect()->to('http://localhost:3000/reset-password/' . $token);
 })->name('password.reset');
 
+// ADMIN
 // Route::apiResource('/admins', AdminController::class);
 // Route to fetch the list of all admins
 Route::get('/admins', [AdminController::class, 'index']);
@@ -119,6 +135,7 @@ Route::put('/admins/{id}', [AdminController::class, 'update']);
 // Route to delete specific admin details and the associated user account by ID
 Route::delete('/admins/{id}', [AdminController::class, 'destroy']);
 
+// TEACHER
 // Route to fetch the list of all teachers
 Route::get('/teachers', [TeacherController::class, 'index']);
 // Route to store a new teacher and associated user details
@@ -130,6 +147,7 @@ Route::put('/teachers/{id}', [TeacherController::class, 'update']);
 // Route to delete specific teacher details and the associated user account by ID
 Route::delete('/teachers/{id}', [TeacherController::class, 'destroy']);
 
+// STUDENT
 // Route::apiResource('/students', StudentController::class);
 // Route to fetch the list of all students
 Route::get('/students', [StudentController::class, 'index']);
@@ -147,6 +165,7 @@ Route::post('students/{id}/parents', [StudentController::class, 'addParents']);
 Route::delete('students/{id}/parents/{parent}', [StudentController::class, 'removeParent']);
 Route::get('students/{id}/parents', [StudentController::class, 'getParents']);
 
+// PARENTS
 // Route::apiResource('/parents', ParentController::class);
 // Route to fetch the list of all parents
 Route::get('/parents', [ParentsController::class, 'index']);
@@ -157,6 +176,7 @@ Route::get('/parents/{id}', [ParentsController::class, 'show']);
 // Route to update specific parent details by ID
 Route::put('/parents/{id}', [ParentsController::class, 'update']);
 
+// ENROLLMENT
 // Route::apiResource('/enrollments', EnrollmentController::class);
 // Route to fetch the list of all enrollments
 Route::get('/enrollments', [EnrollmentController::class, 'index']);
@@ -198,9 +218,10 @@ Route::delete('/enrollments/{id}', [EnrollmentController::class, 'destroy']);
 // // Routes that require authentication via Sanctum
 // Route::middleware('auth:sanctum')->group(function () {
 //     // Route::get('/students', [StudentController::class, 'index']);
-
+//     Route::get('lessons', [LessonController::class, 'getLessons']);
 //     // Admin Routes (accessible only by admins)
 //     Route::group(['middleware' => 'role:admin'], function () {
+
 //         // Admin-specific routes
 //         // Route to fetch the list of all admins
 //         Route::get('/admins', [AdminController::class, 'index']);
@@ -242,12 +263,14 @@ Route::delete('/enrollments/{id}', [EnrollmentController::class, 'destroy']);
 //     // Teacher Routes (accessible only by teachers)
 //     Route::group(['middleware' => 'role:teacher'], function () {
 //         // Teacher-specific routes
-//         Route::get('lessons', [LessonController::class, 'getLessons']);
+
 //         Route::get('/timetable-lessons', [LessonController::class, 'getTimetableLessons']);
 //         Route::get('students', [AttendanceController::class, 'getStudentsList']);
 //         Route::post('/mark-attendance', [AttendanceController::class, 'markAttendance']);
 
 //     });
+
+//     Route::get('/timetable-lessons', [LessonController::class, 'getTimetableLessons']);
 
 //     // Shared Routes (accessible by both admin and teacher)
 //     Route::get('/students', [StudentController::class, 'index']);
