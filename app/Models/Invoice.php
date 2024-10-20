@@ -11,31 +11,37 @@ class Invoice extends Model
 
     protected $table = 'invoices';
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
-        'name',
-        'subject1Fee',
-        'subject2Fee',
-        'totalPayable',
-        'totalPaid',
-        'balance',
+        'invoice_number',
+        'issue_date',
+        'due_date',
+        'student_id',
+        'payment_method',
+        'add_notes',
+        'total_payable',
     ];
 
-    // Accessor method for calculating totalPayable
-    public function getTotalPayableAttribute()
+    /**
+     * Define the relationship to the Student model.
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function student()
     {
-        return $this->subject1Fee + $this->subject2Fee;
+        return $this->belongsTo(Student::class, 'student_id');
     }
 
-    // Accessor method for calculating totalPaid (assuming it's not stored in the database)
-    public function getTotalPaidAttribute()
+    /**
+     * Define the relationship to the InvoiceItem model.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function items()
     {
-        
-        return 0; // Return the actual calculation based on payments
-    }
-
-    // Accessor method for calculating balance
-    public function getBalanceAttribute()
-    {
-        return $this->totalPayable - $this->totalPaid;
+        return $this->hasMany(InvoiceItem::class);
     }
 }

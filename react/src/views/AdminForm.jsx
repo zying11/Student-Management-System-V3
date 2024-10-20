@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axiosClient from "../axiosClient";
-import Form from 'react-bootstrap/Form';
+import Form from "react-bootstrap/Form";
 import Button from "../components/Button/Button";
 import { ContentContainer } from "../components/ContentContainer/ContentContainer";
 import LoginDetailsForm from "../components/Form/LoginDetailsForm";
 import BasicDetailsForm from "../components/Form/BasicDetailsForm";
-import Spinner from 'react-bootstrap/Spinner';
+import Spinner from "react-bootstrap/Spinner";
 
 export default function AdminForm({ isEditing }) {
     // Get the ID from the route parameters
@@ -46,7 +46,9 @@ export default function AdminForm({ isEditing }) {
                 setLoading(true);
                 try {
                     // Fetch admin data using the ID
-                    const adminResponse = await axiosClient.get(`/admins/${id}`);
+                    const adminResponse = await axiosClient.get(
+                        `/admins/${id}`
+                    );
 
                     // Get the user_id and admin_id from the response
                     const fetchedUserId = adminResponse.data.user_id;
@@ -56,7 +58,9 @@ export default function AdminForm({ isEditing }) {
                     setAdminId(fetchedAdminId);
 
                     // Fetch user data using the user_id
-                    const userResponse = await axiosClient.get(`/users/${fetchedUserId}`);
+                    const userResponse = await axiosClient.get(
+                        `/users/${fetchedUserId}`
+                    );
 
                     // Set the login and admin details
                     setLoginDetails({
@@ -75,7 +79,7 @@ export default function AdminForm({ isEditing }) {
                         postal_code: adminResponse.data.postal_code,
                     });
                 } catch (error) {
-                    console.error('Error fetching admin data:', error);
+                    console.error("Error fetching admin data:", error);
                 } finally {
                     // Set loading to false after fetching data
                     setLoading(false);
@@ -105,7 +109,10 @@ export default function AdminForm({ isEditing }) {
         // or if the birth month is the same as the current month
         // but the birth date is greater than the current date
         // then subtract 1 from the age
-        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+        if (
+            monthDiff < 0 ||
+            (monthDiff === 0 && today.getDate() < birth.getDate())
+        ) {
             age--;
         }
         return age;
@@ -178,27 +185,30 @@ export default function AdminForm({ isEditing }) {
                 // If creating a new admin
             } else {
                 // Create the user
-                const userResponse = await axiosClient.post('/users', loginDetails);
+                const userResponse = await axiosClient.post(
+                    "/users",
+                    loginDetails
+                );
                 const newUserId = userResponse.data.id;
 
                 // Create the admin using the user_id from the response
-                await axiosClient.post('/admins', {
+                await axiosClient.post("/admins", {
                     ...adminDetails,
                     // Associate admin with the created user
                     user_id: newUserId,
                 });
             }
 
-            alert(`Admin ${isEditing ? 'updated' : 'created'} successfully`);
+            alert(`Admin ${isEditing ? "updated" : "created"} successfully`);
 
             // Redirect to the admin list page
-            navigate('/admin');
+            navigate("/admins");
         } catch (error) {
             // Handle error when saving data
             if (error.response && error.response.data) {
                 setErrors(error.response.data.errors);
             } else {
-                alert('Error saving admin: ' + error.message);
+                alert("Error saving admin: " + error.message);
             }
         } finally {
             // Set loading to false after saving data
@@ -229,8 +239,11 @@ export default function AdminForm({ isEditing }) {
                 if (!loginDetails.password) {
                     errors.password = "Password is required when confirming";
                 } else if (loginDetails.password.length < 8) {
-                    errors.password = "Password length must be at least 8 characters";
-                } else if (loginDetails.password !== loginDetails.confirmPassword) {
+                    errors.password =
+                        "Password length must be at least 8 characters";
+                } else if (
+                    loginDetails.password !== loginDetails.confirmPassword
+                ) {
                     errors.confirmPassword = "Passwords do not match";
                 }
 
@@ -243,7 +256,8 @@ export default function AdminForm({ isEditing }) {
             if (!loginDetails.password) {
                 errors.password = "Password is required";
             } else if (loginDetails.password.length < 8) {
-                errors.password = "Password length must be at least 8 characters";
+                errors.password =
+                    "Password length must be at least 8 characters";
             } else if (loginDetails.password !== loginDetails.confirmPassword) {
                 errors.confirmPassword = "Passwords do not match";
             }
@@ -257,7 +271,8 @@ export default function AdminForm({ isEditing }) {
         if (!adminDetails.phone_number) {
             errors.phone_number = "Phone number is required";
         } else if (!/^\d{10,15}$/.test(adminDetails.phone_number)) {
-            errors.phone_number = "Phone number must be between 10 to 15 digits";
+            errors.phone_number =
+                "Phone number must be between 10 to 15 digits";
         }
 
         if (!adminDetails.gender) {
@@ -290,13 +305,15 @@ export default function AdminForm({ isEditing }) {
             {/* <div className="page-title">{isEditing ? 'Edit Admin' : 'Create Admin'}</div> */}
             <div className="page-title">Admins</div>
             {loading ? (
-                <div className="d-flex justify-content-center align-items-center" style={{ height: "400px" }}>
+                <div
+                    className="d-flex justify-content-center align-items-center"
+                    style={{ height: "400px" }}
+                >
                     <Spinner animation="border" variant="primary" />
                 </div>
             ) : (
                 <Form onSubmit={handleSubmit}>
                     <ContentContainer title="Login Details">
-
                         <LoginDetailsForm
                             loginDetails={loginDetails}
                             handleLoginChange={handleLoginChange}
@@ -319,7 +336,7 @@ export default function AdminForm({ isEditing }) {
                             type="submit"
                             variant="primary"
                         >
-                            {isEditing ? 'Save' : 'Create'}
+                            {isEditing ? "Save" : "Create"}
                         </Button>
                     </div>
                 </Form>

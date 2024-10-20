@@ -25,6 +25,7 @@ class EnrollmentResource extends JsonResource
             'subject' => $this->subject ? [
                 'id' => $this->subject->id,
                 'subject_name' => $this->subject->subject_name,
+                'subject_fee' => $this->subject->subject_fee,
             ] : null,
 
             // Include study level details if they exist
