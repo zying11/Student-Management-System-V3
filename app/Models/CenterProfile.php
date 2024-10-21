@@ -10,12 +10,4 @@ class CenterProfile extends Model
     use HasFactory;
 
     protected $table = 'center_profile';
-
-    protected $fillable = [
-        'centerName',
-        'centerLogo',
-        'centerAddress',
-        'postcode',
-        'numRooms',
-    ];
 }

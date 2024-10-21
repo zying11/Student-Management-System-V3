@@ -538,8 +538,12 @@ export default function AdminDashboard() {
                             </div>
 
                             <div className="button-container d-flex justify-content-end gap-3">
-                                <Button color="yellow">Add</Button>
-                                <Button data-bs-dismiss="modal">Cancel</Button>
+                                <Button type="submit" color="yellow">
+                                    Add
+                                </Button>
+                                <Button type="button" data-bs-dismiss="modal">
+                                    Cancel
+                                </Button>
                             </div>
                         </form>
                     </div>
@@ -624,8 +628,12 @@ export default function AdminDashboard() {
                             </div>
 
                             <div className="button-container d-flex justify-content-end gap-3">
-                                <Button color="yellow">Add</Button>
-                                <Button data-bs-dismiss="modal">Cancel</Button>
+                                <Button type="submit" color="yellow">
+                                    Add
+                                </Button>
+                                <Button type="button" data-bs-dismiss="modal">
+                                    Cancel
+                                </Button>
                             </div>
                         </form>
                     </div>
