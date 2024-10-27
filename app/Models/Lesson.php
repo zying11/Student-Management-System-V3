@@ -41,4 +41,9 @@ class Lesson extends Model
     {
         return $this->hasMany(Enrollment::class);
     }
+
+    public function students()
+    {
+        return $this->hasManyThrough(Student::class, Enrollment::class, 'lesson_id', 'id', 'id', 'student_id');
+    }
 }

@@ -145,6 +145,27 @@ class LessonController extends Controller
         return response()->json(['status' => 404, 'message' => 'Lesson not found.'], 404);
     }
 
+    // Attendance
+    public function getEnrolledStudents($lessonId)
+    {
+        $lesson = Lesson::with('students')->find($lessonId);
+
+        if (!$lesson) {
+            // If the lesson does not exist, return a 404 error
+            return response()->json(['message' => 'Lesson not found'], 404);
+        }
+
+        // If the lesson exists but has no students, return an empty array
+        return response()->json([
+            'students' => $lesson->students ?? []
+        ], 200);
+    }
+
+
+
 
 }
+
+
+
 

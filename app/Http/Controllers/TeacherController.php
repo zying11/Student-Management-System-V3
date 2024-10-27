@@ -96,4 +96,18 @@ class TeacherController extends Controller
 
         return response('', 204);
     }
+
+    // Fetch teacher by user id >> added by Regina for attendance
+    public function getTeacherByUserId($userId)
+    {
+        // Fetch the teacher record where user_id matches
+        $teacher = Teacher::where('user_id', $userId)->first();
+
+        // Check if the teacher was found
+        if ($teacher) {
+            return response()->json($teacher, 200); // Success response with teacher data
+        } else {
+            return response()->json(['message' => 'Teacher not found'], 404); // Not found response
+        }
+    }
 }

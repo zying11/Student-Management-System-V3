@@ -79,6 +79,20 @@ const menuItems = [
         roles: ["admin"],
     },
     {
+        id: "attendance",
+        icon: "attendance.png",
+        title: "Attendance",
+        subItems: [
+            {
+                title: "Mark Attendance",
+                link: "/attendance",
+                roles: ["teacher"],
+            },
+            { title: "Attendance Report", link: "", roles: ["teacher"] },
+        ],
+        roles: ["teacher"],
+    },
+    {
         id: "payment",
         icon: "payment.png",
         title: "Payment",
