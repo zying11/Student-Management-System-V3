@@ -54,6 +54,15 @@ export default function Lesson() {
         duration: "",
     });
 
+    // Default values for add lesson
+    useEffect(() => {
+        setLessonData({
+            subjectId: subjects[0]?.id || "", // Set the first subject's ID as the default
+            teacherId: teachers[0]?.id || "", // Set the first teacher's ID as the default
+            duration: "",
+        });
+    }, [subjects, teachers]);
+
     // Post lessons data
     const addLesson = async (e) => {
         e.preventDefault();
@@ -143,6 +152,13 @@ export default function Lesson() {
 
     // Variables for edit lesson
     const [selectedLesson, setSelectedLesson] = useState(null);
+    // Variable for displaying selected lessons data
+
+    const [editLessonData, setEditLessonData] = useState({
+        subjectId: "",
+        teacherId: "",
+        duration: "",
+    });
 
     // Update this effect to search for the lesson when selectedLessonId changes
     useEffect(() => {
@@ -150,13 +166,22 @@ export default function Lesson() {
             const lesson = displayLesson.lessons.find(
                 (lesson) => lesson.id === selectedLessonId
             );
-            setSelectedLesson(lesson);
-            console.log(lesson);
 
-            // Initialize lesson current lesson with the son data
-            setLessonData({
-                teacherId: lesson.teacherId || "",
-            });
+            // Check if lesson is found before setting the state
+            // else there will be prob after deleting the lesson
+            if (lesson) {
+                setSelectedLesson(lesson);
+
+                setEditLessonData({
+                    teacherId: lesson.teacher_id || "",
+                });
+            } else {
+                // Handle the case where the lesson is not found (optional)
+                console.warn("Lesson not found for the selectedLessonId");
+                setEditLessonData({
+                    teacherId: "",
+                });
+            }
         }
     }, [selectedLessonId, displayLesson.lessons]);
 
@@ -167,7 +192,7 @@ export default function Lesson() {
         try {
             const response = await axiosClient.put(
                 `/edit-lesson/${selectedLesson.id}`,
-                { teacher: lessonData.teacherId }
+                { teacher: editLessonData.teacherId }
             );
 
             if (response.status === 200) {
@@ -184,28 +209,18 @@ export default function Lesson() {
         }
     };
 
-    // Default values for add lesson
-    useEffect(() => {
-        setLessonData({
-            subjectId: subjects[0]?.id || "", // Set the first subject's ID as the default
-            teacherId: teachers[0]?.id || "", // Set the first teacher's ID as the default
-            duration: "",
-        });
-    }, [subjects, teachers]);
-
     // Error handling
     const [error, setError] = useState("");
 
-    // Handling input changes
-    const handleInput = (e) => {
+    // Generalized handleInput function
+    const handleInput = (setterFunction) => (e) => {
         // Destructure name and value from the event target (the input element that triggered the change)
         const { name, value } = e.target;
 
-        // Update the lessonData state
-        setLessonData((prevLessonData) => ({
+        // Update data state
+        setterFunction((prevData) => ({
             // Spread the previous state to retain all existing values
-            ...prevLessonData,
-
+            ...prevData,
             // Update the property that matches the input's name attribute
             [name]: value,
         }));
@@ -295,7 +310,7 @@ export default function Lesson() {
                 <Table
                     header={tableHeader}
                     data={tableData}
-                    itemsPerPage={5}
+                    itemsPerPage={10}
                 ></Table>
             </ContentContainer>
             <div
@@ -344,8 +359,8 @@ export default function Lesson() {
                                 <label className="form-label">Teacher</label>
                                 <select
                                     name="teacherId"
-                                    onChange={handleInput}
-                                    value={lessonData.teacherId}
+                                    onChange={handleInput(setEditLessonData)}
+                                    value={editLessonData.teacherId}
                                     className="form-control"
                                     required
                                 >
@@ -366,7 +381,7 @@ export default function Lesson() {
                                 <input
                                     type="number"
                                     name="duration"
-                                    onChange={handleInput}
+                                    onChange={handleInput(setEditLessonData)}
                                     value={selectedLesson?.duration}
                                     className="form-control"
                                     disabled
@@ -453,7 +468,7 @@ export default function Lesson() {
                                 <label className="form-label">Subject</label>
                                 <select
                                     name="subjectId"
-                                    onChange={handleInput}
+                                    onChange={handleInput(setLessonData)}
                                     value={lessonData.subjectId}
                                     className="form-control"
                                     required
@@ -474,7 +489,7 @@ export default function Lesson() {
                                 <label className="form-label">Teacher</label>
                                 <select
                                     name="teacherId"
-                                    onChange={handleInput}
+                                    onChange={handleInput(setLessonData)}
                                     value={lessonData.teacherId}
                                     className="form-control"
                                     required
@@ -496,7 +511,7 @@ export default function Lesson() {
                                 <input
                                     type="number"
                                     name="duration"
-                                    onChange={handleInput}
+                                    onChange={handleInput(setLessonData)}
                                     value={lessonData.duration}
                                     className="form-control"
                                     required

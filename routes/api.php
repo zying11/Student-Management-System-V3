@@ -82,7 +82,9 @@ Route::delete('/delete-study-level/{id}', [StudyLevelController::class, 'deleteS
 
 // Attendance
 Route::get('students', [AttendanceController::class, 'getStudentsList']);
-Route::post('/mark-attendance', [AttendanceController::class, 'markAttendance']);
+Route::post('/mark-attendance', [AttendanceController::class, 'store']);
+Route::get('/lessons/{lessonId}/students', [LessonController::class, 'getEnrolledStudents']);
+Route::get('/attendances/{lessonId}', [AttendanceController::class, 'checkAttendance']);
 
 // USER
 // Route::apiResource('/users', UserController::class);
@@ -147,6 +149,9 @@ Route::get('/teachers/{id}', [TeacherController::class, 'show']);
 Route::put('/teachers/{id}', [TeacherController::class, 'update']);
 // Route to delete specific teacher details and the associated user account by ID
 Route::delete('/teachers/{id}', [TeacherController::class, 'destroy']);
+// Route to fetch teacher by user id >> added by Regina for attendance
+Route::get('/teachers/users/{userId}', [TeacherController::class, 'getTeacherByUserId']);
+
 
 // STUDENT
 // Route::apiResource('/students', StudentController::class);
