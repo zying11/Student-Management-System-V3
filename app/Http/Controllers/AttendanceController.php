@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
 use App\Models\Student;
+use Illuminate\Support\Facades\DB;
+
 
 class AttendanceController extends Controller
 {
@@ -74,6 +76,23 @@ class AttendanceController extends Controller
             'attendanceMarked' => $attendance ? true : false,
         ]);
     }
+
+    public function getAttendancePercentage($studentId)
+    {
+        $attendanceRecords = Attendance::where('student_id', $studentId)
+            //DB::raw function is used to construct a raw SQL query that counts the present records and total records.
+            ->select(DB::raw('SUM(attendance_status = "present") as present_count, COUNT(*) as total_count'))
+            ->first();
+
+        if ($attendanceRecords->total_count > 0) {
+            $attendancePercentage = ($attendanceRecords->present_count / $attendanceRecords->total_count) * 100;
+        } else {
+            $attendancePercentage = 0; // No attendance records found
+        }
+
+        return response()->json(['attendance_percentage' => $attendancePercentage]);
+    }
+
 
 
 }

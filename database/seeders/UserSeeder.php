@@ -16,10 +16,10 @@
 //     {
 //          // Ensure the admin role exists
 //          $adminRole = Role::firstOrCreate(['name' => 'admin']);
-        
+
 //          // Ensure the teacher role exists
 //          $teacherRole = Role::firstOrCreate(['name' => 'teacher']);
- 
+
 //          // Create a user and assign the admin role
 //          $user1 = User::create([
 //              'name' => 'Test User',
@@ -27,7 +27,7 @@
 //              'password' => bcrypt('Test1234'), // Encrypt the password here
 //              'role_id' => $adminRole->id, // Assign the admin role ID
 //          ]);
- 
+
 //          // Create another user and assign the teacher role
 //          $user2 = User::create([
 //              'name' => 'zhiying',
@@ -68,7 +68,7 @@ class UserSeeder extends Seeder
 
         // Create another specific user and assign the teacher role
         $user2 = User::create([
-            'name' => 'Testing Teacher',
+            'name' => 'Khadijah',
             'email' => 'teacher@example.com',
             'password' => bcrypt('Test1234'), // Encrypt the password here
             'role_id' => $teacherRole->id, // Assign the teacher role ID
@@ -76,7 +76,7 @@ class UserSeeder extends Seeder
 
         // For gmail testing purpose's account
         $user3 = User::create([
-            'name' => 'zhiying',
+            'name' => 'Zhi Ying',
             'email' => 'yingying22226@gmail.com',
             'password' => bcrypt('zhiying1234'), // Encrypt the password here
             'role_id' => $teacherRole->id, // Assign the teacher role ID

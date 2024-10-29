@@ -88,7 +88,11 @@ const menuItems = [
                 link: "/attendance",
                 roles: ["teacher"],
             },
-            { title: "Attendance Report", link: "", roles: ["teacher"] },
+            {
+                title: "Attendance Report",
+                link: "/attendance-report",
+                roles: ["teacher"],
+            },
         ],
         roles: ["teacher"],
     },

@@ -85,6 +85,8 @@ Route::get('students', [AttendanceController::class, 'getStudentsList']);
 Route::post('/mark-attendance', [AttendanceController::class, 'store']);
 Route::get('/lessons/{lessonId}/students', [LessonController::class, 'getEnrolledStudents']);
 Route::get('/attendances/{lessonId}', [AttendanceController::class, 'checkAttendance']);
+Route::get('/teachers/{teacherId}/students', [LessonController::class, 'getStudentsForTeacher']);
+Route::get('/attendances/percentage/{id}', [AttendanceController::class, 'getAttendancePercentage']);
 
 // USER
 // Route::apiResource('/users', UserController::class);
