@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Lesson;
+use App\Models\Student;
 
 class LessonController extends Controller
 {
@@ -161,8 +162,19 @@ class LessonController extends Controller
         ], 200);
     }
 
+    public function getStudentsForTeacher($teacherId)
+    {
+        // Step 1: Fetch all lessons by the teacher
+        $lessonIds = Lesson::where('teacher_id', $teacherId)->pluck('id'); // Get lesson IDs only
 
+        // Step 2: Fetch students enrolled in any of these lessons
+        $students = Student::whereHas('enrollments', function ($query) use ($lessonIds) {
+            $query->whereIn('lesson_id', $lessonIds);
+        })->with('enrollments')->get();
 
+        // Return the data in JSON format
+        return response()->json(['students' => $students]);
+    }
 
 }
 
