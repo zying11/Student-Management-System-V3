@@ -88,6 +88,10 @@ Route::get('/attendances/{lessonId}', [AttendanceController::class, 'checkAttend
 Route::get('/teachers/{teacherId}/students', [LessonController::class, 'getStudentsForTeacher']);
 Route::get('/attendances/percentage/{id}', [AttendanceController::class, 'getAttendancePercentage']);
 
+// Attendance Report
+Route::get('/lessons/{lesson_id}/attendance/count', [LessonController::class, 'getTotalClassesHeld']);
+
+
 // USER
 // Route::apiResource('/users', UserController::class);
 // Route to fetch the list of all users
