@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Lesson;
 use App\Models\Student;
+use App\Models\Attendance;
 
 class LessonController extends Controller
 {
@@ -175,6 +176,20 @@ class LessonController extends Controller
         // Return the data in JSON format
         return response()->json(['students' => $students]);
     }
+
+    // Attendance Report
+    public function getTotalClassesHeld(Request $request, $lesson_id)
+{
+    $startDate = $request->query('start_date');
+    $endDate = $request->query('end_date');
+
+    $totalClasses = Attendance::where('lesson_id', $lesson_id)
+        ->whereBetween('attendance_date', [$startDate, $endDate])
+        ->distinct('attendance_date')
+        ->count('attendance_date');
+
+    return response()->json(['totalClasses' => $totalClasses]);
+}
 
 }
 

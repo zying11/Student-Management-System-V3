@@ -1,0 +1,15 @@
+.lesson-report{
+    .content-body{
+        margin-top: 0 !important;
+    }
+    .box-data{
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        border-radius: 5px;
+    
+    }
+    
+    .box-data > div{
+        color: #A3A3A3;
+    }
+
+}
