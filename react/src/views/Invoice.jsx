@@ -65,7 +65,6 @@ export default function Invoice() {
 
     // // Handle sending invoice
     // const handleSendInvoice = (id) => {
-    //     // Add logic to send invoice here
     //     console.log(`Sending invoice with ID: ${id}`);
     // };
 
@@ -92,9 +91,8 @@ export default function Invoice() {
                   </td>,
               ],
           ]
-        : // Map admin data to table rows
+        : // Map invoice data to table rows
           filteredInvoices.map((invoice) => [
-              //   adminData.admins.map((admin) => [
               invoice.invoice_number || "-",
               invoice.student.name || "-",
               invoice.total_payable || "-",
@@ -123,7 +121,8 @@ export default function Invoice() {
                           </Dropdown.Item>
                           <Dropdown.Item
                               as={Link}
-                              to={`/invoice/view/${invoice.id}`}
+                              //   to={`/invoice/view/${invoice.id}`}
+                              to={`/invoiceTemplate/${invoice.id}`}
                           >
                               View Invoice
                           </Dropdown.Item>
