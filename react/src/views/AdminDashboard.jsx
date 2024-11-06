@@ -242,7 +242,7 @@ export default function AdminDashboard() {
                     "http://127.0.0.1:8000/api/subjects"
                 );
 
-                console.log(res.data.subjects);
+                // console.log(res.data.subjects);
 
                 setDisplaySubject({
                     subjects: res.data.subjects,
@@ -285,7 +285,7 @@ export default function AdminDashboard() {
         }
     };
 
-    // Variable for posting new subject data
+    // Variable for posting subject data
     const [subjectData, setSubjectData] = useState({
         subjectName: "",
         levelId: "",
@@ -323,8 +323,56 @@ export default function AdminDashboard() {
         setSubjectData({
             subjectName: "",
             levelId: "",
+            subjectFee: "",
         });
         setError("");
+    };
+
+    // Variable for updating subject data
+    const [updateSubjectData, setUpdateSubjectData] = useState({
+        subjectName: "",
+        levelId: "",
+        subjectFee: "",
+    });
+
+    // Update this effect to search for the subject when selectedSubjectId changes
+    useEffect(() => {
+        console.log(selectedSubjectId);
+        if (selectedSubjectId) {
+            const subject = displaySubject.subjects.find(
+                (subject) => subject.id === selectedSubjectId
+            );
+
+            console.log(displaySubject.subjects);
+            console.log(subject);
+
+            // Set to current subject data for posting edited subject purposes
+            setUpdateSubjectData({
+                subjectName: subject.subject_name,
+                levelId: subject.level_id,
+                subjectFee: subject.subject_fee,
+            });
+        }
+    }, [selectedSubjectId]);
+
+    // Edit subject
+    const editSubject = async (e) => {
+        e.preventDefault();
+        // console.log(updateSubjectData);
+        // console.log(selectedSubjectId);
+        try {
+            const res = await axiosClient.put(
+                `/edit-subject/${selectedSubjectId}`,
+                updateSubjectData
+            );
+            if (res.status === 200) {
+                console.log("Subject updated successfully");
+            }
+            setIsChange(!isChange);
+        } catch (error) {
+            setError("Error updating subject");
+            console.error("Error:", error.response.data);
+        }
     };
 
     const subjectHeader = ["Subject Name", "Study Year", "Fee", "Action"];
@@ -350,7 +398,11 @@ export default function AdminDashboard() {
                       src="http://localhost:8000/icon/edit.png"
                       alt="Edit"
                       data-bs-toggle="modal"
-                      data-bs-target="#editLessonModal"
+                      data-bs-target="#editSubjectModal"
+                      onClick={() => {
+                          setSelectedSubjectId(subject.id);
+                          setIsChange(!isChange);
+                      }}
                       style={{ cursor: "pointer" }}
                   />
                   <img
@@ -486,8 +538,12 @@ export default function AdminDashboard() {
                             </div>
 
                             <div className="button-container d-flex justify-content-end gap-3">
-                                <Button color="yellow">Add</Button>
-                                <Button data-bs-dismiss="modal">Cancel</Button>
+                                <Button type="submit" color="yellow">
+                                    Add
+                                </Button>
+                                <Button type="button" data-bs-dismiss="modal">
+                                    Cancel
+                                </Button>
                             </div>
                         </form>
                     </div>
@@ -572,8 +628,107 @@ export default function AdminDashboard() {
                             </div>
 
                             <div className="button-container d-flex justify-content-end gap-3">
-                                <Button color="yellow">Add</Button>
-                                <Button data-bs-dismiss="modal">Cancel</Button>
+                                <Button type="submit" color="yellow">
+                                    Add
+                                </Button>
+                                <Button type="button" data-bs-dismiss="modal">
+                                    Cancel
+                                </Button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                id="editSubjectModal"
+                className="modal fade edit-subject-modal"
+                tabIndex="-1"
+                data-bs-backdrop="static"
+                data-bs-keyboard="false"
+            >
+                <div className="modal-dialog">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title">Edit a Subject</h5>
+                            <button
+                                type="button"
+                                className="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                            ></button>
+                        </div>
+                        {error && (
+                            <div className="alert alert-danger m-2">
+                                {error}
+                            </div>
+                        )}
+                        <form className="p-3" onSubmit={editSubject}>
+                            {/* Subject Name */}
+                            <div className="mb-3">
+                                <label className="form-label">Subject</label>
+                                <input
+                                    type="text"
+                                    onChange={handleInput(setUpdateSubjectData)}
+                                    className="form-control"
+                                    name="subjectName"
+                                    value={updateSubjectData.subjectName}
+                                ></input>
+                            </div>
+
+                            {/* Study Level */}
+                            <div className="mb-3">
+                                <label className="form-label">
+                                    Study Level
+                                </label>
+                                <select
+                                    name="levelId"
+                                    onChange={handleInput(setUpdateSubjectData)}
+                                    value={updateSubjectData.levelId} //use level id instead of level name
+                                    className="form-control"
+                                    required
+                                >
+                                    {displayStudyLevel.studyLevels.map(
+                                        (studyLevel) => (
+                                            <option
+                                                key={studyLevel.id}
+                                                value={studyLevel.id}
+                                            >
+                                                {studyLevel.level_name}
+                                            </option>
+                                        )
+                                    )}
+                                </select>
+                            </div>
+
+                            {/* Subject Fee */}
+                            <div className="mb-3">
+                                <label className="form-label">
+                                    Subject Fee
+                                </label>
+                                <input
+                                    type="number"
+                                    onChange={handleInput(setUpdateSubjectData)}
+                                    className="form-control"
+                                    name="subjectFee"
+                                    value={updateSubjectData.subjectFee}
+                                ></input>
+                            </div>
+
+                            <div className="button-container d-flex justify-content-end gap-3">
+                                <button
+                                    type="submit"
+                                    className="btn btn-primary"
+                                >
+                                    Save
+                                </button>
+                                <button
+                                    type="button"
+                                    className="btn btn-secondary"
+                                    data-bs-dismiss="modal"
+                                >
+                                    Cancel
+                                </button>
                             </div>
                         </form>
                     </div>

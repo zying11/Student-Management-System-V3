@@ -73,6 +73,7 @@ Route::post('/update-center-profile', [CenterProfileController::class, 'update']
 Route::get('subjects', [SubjectController::class, 'index']);
 Route::post('add-subject', [SubjectController::class, 'addSubject']);
 Route::delete('/delete-subject/{id}', [SubjectController::class, 'deleteSubject']);
+Route::put('/edit-subject/{id}', [SubjectController::class, 'updateSubject']);
 
 //Study Level
 Route::get('study-levels', [StudyLevelController::class, 'index']);
@@ -81,7 +82,15 @@ Route::delete('/delete-study-level/{id}', [StudyLevelController::class, 'deleteS
 
 // Attendance
 Route::get('students', [AttendanceController::class, 'getStudentsList']);
-Route::post('/mark-attendance', [AttendanceController::class, 'markAttendance']);
+Route::post('/mark-attendance', [AttendanceController::class, 'store']);
+Route::get('/lessons/{lessonId}/students', [LessonController::class, 'getEnrolledStudents']);
+Route::get('/attendances/{lessonId}', [AttendanceController::class, 'checkAttendance']);
+Route::get('/teachers/{teacherId}/students', [LessonController::class, 'getStudentsForTeacher']);
+Route::get('/attendances/percentage/{id}', [AttendanceController::class, 'getAttendancePercentage']);
+
+// Attendance Report
+Route::get('/lessons/{lesson_id}/attendance/count', [LessonController::class, 'getTotalClassesHeld']);
+
 
 // USER
 // Route::apiResource('/users', UserController::class);
@@ -146,6 +155,9 @@ Route::get('/teachers/{id}', [TeacherController::class, 'show']);
 Route::put('/teachers/{id}', [TeacherController::class, 'update']);
 // Route to delete specific teacher details and the associated user account by ID
 Route::delete('/teachers/{id}', [TeacherController::class, 'destroy']);
+// Route to fetch teacher by user id >> added by Regina for attendance
+Route::get('/teachers/users/{userId}', [TeacherController::class, 'getTeacherByUserId']);
+
 
 // STUDENT
 // Route::apiResource('/students', StudentController::class);

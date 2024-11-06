@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Lesson;
+use App\Models\Student;
+use App\Models\Attendance;
 
 class LessonController extends Controller
 {
@@ -145,6 +147,52 @@ class LessonController extends Controller
         return response()->json(['status' => 404, 'message' => 'Lesson not found.'], 404);
     }
 
+    // Attendance
+    public function getEnrolledStudents($lessonId)
+    {
+        $lesson = Lesson::with('students')->find($lessonId);
+
+        if (!$lesson) {
+            // If the lesson does not exist, return a 404 error
+            return response()->json(['message' => 'Lesson not found'], 404);
+        }
+
+        // If the lesson exists but has no students, return an empty array
+        return response()->json([
+            'students' => $lesson->students ?? []
+        ], 200);
+    }
+
+    public function getStudentsForTeacher($teacherId)
+    {
+        // Step 1: Fetch all lessons by the teacher
+        $lessonIds = Lesson::where('teacher_id', $teacherId)->pluck('id'); // Get lesson IDs only
+
+        // Step 2: Fetch students enrolled in any of these lessons
+        $students = Student::whereHas('enrollments', function ($query) use ($lessonIds) {
+            $query->whereIn('lesson_id', $lessonIds);
+        })->with('enrollments')->get();
+
+        // Return the data in JSON format
+        return response()->json(['students' => $students]);
+    }
+
+    // Attendance Report
+    public function getTotalClassesHeld(Request $request, $lesson_id)
+{
+    $startDate = $request->query('start_date');
+    $endDate = $request->query('end_date');
+
+    $totalClasses = Attendance::where('lesson_id', $lesson_id)
+        ->whereBetween('attendance_date', [$startDate, $endDate])
+        ->distinct('attendance_date')
+        ->count('attendance_date');
+
+    return response()->json(['totalClasses' => $totalClasses]);
+}
 
 }
+
+
+
 
