@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useStateContext } from "../contexts/ContextProvider";
 import axiosClient from "../axiosClient";
 import { ContentContainer } from "../components/ContentContainer/ContentContainer";
@@ -47,9 +48,9 @@ export default function AttendanceReport() {
                 // Set the teacher.id to state
                 setTeacherId(teacher.id);
 
-                if (teacher.id) {
-                    console.log(teacherId);
-                }
+                // if (teacher.id) {
+                //     console.log(teacherId);
+                // }
 
                 // Step 2: Fetch lessons after retrieving teacher.id
                 fetchLessons(teacher.id);
@@ -94,11 +95,12 @@ export default function AttendanceReport() {
                 const res = await axiosClient.get(
                     `/teachers/${teacherId}/students`
                 );
+
                 setStudents({
                     loading: false,
                     students: res.data.students,
                 });
-                console.log(res.data.students);
+                // console.log(res.data.students);
             } catch (error) {
                 console.error("Error fetching students:", error);
             }
@@ -177,16 +179,34 @@ export default function AttendanceReport() {
         : displayStudents.students.map((student, index) => [
               student.id || "-",
               student.name || "-",
-              studentAttendanceData[index]?.toFixed(2) + "%" || "N/A",
+              typeof studentAttendanceData[index] !== "undefined"
+                  ? `${studentAttendanceData[index].toFixed(2)}%`
+                  : "N/A",
               <div>
-                  <Button color="yellow">View Details</Button>
+                  <Link to={`/student/attendance/${student.id}`}>
+                      <button type="button" color="yellow">
+                          View Details
+                      </button>
+                  </Link>
               </div>,
           ]);
+
     return (
         <>
             <div className="page-title">Attendance Report</div>
             <div className="d-flex justify-content-end">
-                <Button type="button">Generate Report</Button>
+                {/* <Button type="button">
+                    <Link to="/lesson-report" />
+                    Generate Report
+                </Button> */}
+                <button type="button">
+                    <Link
+                        to="/lesson-report"
+                        style={{ textDecoration: "none", color: "inherit" }}
+                    >
+                        Generate Report
+                    </Link>
+                </button>
             </div>
             <ContentContainer title="My Classes">
                 <Table

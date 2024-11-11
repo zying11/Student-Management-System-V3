@@ -6,6 +6,7 @@ use App\Models\Attendance;
 use Illuminate\Http\Request;
 use App\Models\Student;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 
 class AttendanceController extends Controller
@@ -18,22 +19,6 @@ class AttendanceController extends Controller
             'students' => $students
         ]);
     }
-
-    // public function markAttendance(Request $request)
-    // {
-    //     $attendance = new Attendance();
-    //     $attendance->student_id = $request->input('student_id');
-    //     $attendance->lesson_id = $request->input('lesson_id');
-    //     $attendance->attendance_status = $request->input('attendance_status');
-    //     $attendance->attendance_date = $request->input('attendance_date');
-    //     $attendance->save();
-
-    //     return response()->json([
-    //         'status' => 200,
-    //         'message' => 'Attendance marked successfully!'
-    //     ]);
-
-    // }
 
     public function store(Request $request)
     {
@@ -91,6 +76,50 @@ class AttendanceController extends Controller
         }
 
         return response()->json(['attendance_percentage' => $attendancePercentage]);
+    }
+
+    public function getStudentAttendanceByDateRange(Request $request, $student_id)
+    {
+        // Validate and retrieve the start and end dates from the request
+        $request->validate([
+            'startDate' => 'required|date',
+            'endDate' => 'required|date|after_or_equal:startDate',
+        ]);
+
+        $startDate = Carbon::parse($request->input('startDate'));
+        $endDate = Carbon::parse($request->input('endDate'));
+
+        // Fetch attendance records for the specified student and date range
+        $attendanceRecords = Attendance::where('student_id', $student_id)
+            ->whereBetween('attendance_date', [$startDate, $endDate])
+            ->get();
+
+        // If no attendance records are found, return an empty response with a message
+        if ($attendanceRecords->isEmpty()) {
+            return response()->json([
+                'message' => 'No attendance records found for this date range.',
+                'data' => []
+            ], 200);
+        }
+
+        // Calculate total present, total absent, and attendance rate
+        $totalPresent = $attendanceRecords->where('attendance_status', 'present')->count();
+        $totalAbsent = $attendanceRecords->where('attendance_status', 'absent')->count();
+        $attendanceRate = ($totalPresent + $totalAbsent) > 0
+            ? round(($totalPresent / ($totalPresent + $totalAbsent)) * 100, 2)
+            : 0;
+
+        // Return the data in a structured format
+        return response()->json([
+            'totalPresent' => $totalPresent,
+            'totalAbsent' => $totalAbsent,
+            'attendanceRate' => $attendanceRate,
+            'attendanceRecords' => $attendanceRecords,
+            'dateRange' => [
+                'start' => $startDate->toDateString(),
+                'end' => $endDate->toDateString()
+            ]
+        ], 200);
     }
 
 
