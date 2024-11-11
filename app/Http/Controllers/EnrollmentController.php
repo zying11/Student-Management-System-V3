@@ -112,7 +112,7 @@ class EnrollmentController extends Controller
     {
         // Retrieve all enrollments
         $enrollments = Enrollment::all();
-        
+
         return EnrollmentResource::collection($enrollments);
     }
 
@@ -192,4 +192,19 @@ class EnrollmentController extends Controller
             return response()->json(['message' => 'Enrollment not found'], 404);
         }
     }
+
+    public function getEnrollmentsByStudent($student_id)
+    {
+        // Fetch enrollments with related student, subject with studyLevel, lesson, and teacher data
+        $enrollments = Enrollment::with([
+            'student',
+            'subject.studyLevel', // Use camel case to match the relationship method name
+            'lesson.teacher.user'
+        ])
+            ->where('student_id', $student_id)
+            ->get();
+
+        return response()->json($enrollments);
+    }
+
 }

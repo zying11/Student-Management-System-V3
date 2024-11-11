@@ -209,6 +209,7 @@ import { useStateContext } from "./contexts/ContextProvider.jsx";
 import ProtectedRoute from "./components/Route/ProtectedRoute.jsx";
 import AttendanceReport from "./views/AttendanceReport.jsx";
 import LessonReport from "./views/LessonReport.jsx";
+import StudentAttendance from "./views/StudentAttendance.jsx";
 
 // Check the user role and render the dashboard accordingly
 const DashboardWrapper = () => {
@@ -304,7 +305,7 @@ const router = createBrowserRouter([
             {
                 path: "/attendance",
                 element: (
-                    <ProtectedRoute requiredRoles={["admin", "teacher"]}>
+                    <ProtectedRoute requiredRoles={["teacher"]}>
                         <Attendance />
                     </ProtectedRoute>
                 ),
@@ -312,7 +313,7 @@ const router = createBrowserRouter([
             {
                 path: "/attendance-report",
                 element: (
-                    <ProtectedRoute requiredRoles={["admin", "teacher"]}>
+                    <ProtectedRoute requiredRoles={["teacher"]}>
                         <AttendanceReport />
                     </ProtectedRoute>
                 ),
@@ -320,8 +321,16 @@ const router = createBrowserRouter([
             {
                 path: "/lesson-report",
                 element: (
-                    <ProtectedRoute requiredRoles={["admin", "teacher"]}>
+                    <ProtectedRoute requiredRoles={["teacher"]}>
                         <LessonReport />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "/student/attendance/:id",
+                element: (
+                    <ProtectedRoute requiredRoles={["teacher"]}>
+                        <StudentAttendance />
                     </ProtectedRoute>
                 ),
             },

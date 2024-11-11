@@ -89,7 +89,17 @@ Route::get('/teachers/{teacherId}/students', [LessonController::class, 'getStude
 Route::get('/attendances/percentage/{id}', [AttendanceController::class, 'getAttendancePercentage']);
 
 // Attendance Report
-Route::get('/lessons/{lesson_id}/attendance/count', [LessonController::class, 'getTotalClassesHeld']);
+Route::get('/lessons/{lesson_id}/classes/count', [LessonController::class, 'getTotalClassesHeld']);
+Route::get('/lessons/{lesson_id}/students/count', [LessonController::class, 'getTotalStudents']);
+Route::get('/lessons/{lesson_id}/attendance/average-rate', [LessonController::class, 'getAverageAttendanceRate']);
+Route::get('/lessons/{lesson_id}/absences', [LessonController::class, 'getStudentAbsences']);
+Route::get('/lessons/{lesson_id}/students/attendance-details', [LessonController::class, 'getStudentAttendanceDetails']);
+Route::get('/lessons/{lesson_id}/debugging', [LessonController::class, 'getStudentAttendance']);
+
+// Student Attendance Report
+Route::get('/enrollments/{student_id}', [EnrollmentController::class, 'getEnrollmentsByStudent']);
+Route::get('/attendance/{student_id}', [AttendanceController::class, 'getStudentAttendanceByDateRange']);
+
 
 
 // USER

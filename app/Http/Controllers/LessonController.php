@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Lesson;
 use App\Models\Student;
 use App\Models\Attendance;
+use Illuminate\Support\Facades\DB;
 
 class LessonController extends Controller
 {
@@ -76,9 +77,6 @@ class LessonController extends Controller
 
         return response()->json(['lessons' => $lessons]);
     }
-
-
-
 
     public function setLessonTime(Request $request)
     {
@@ -179,17 +177,141 @@ class LessonController extends Controller
 
     // Attendance Report
     public function getTotalClassesHeld(Request $request, $lesson_id)
-{
-    $startDate = $request->query('start_date');
-    $endDate = $request->query('end_date');
+    {
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
 
-    $totalClasses = Attendance::where('lesson_id', $lesson_id)
-        ->whereBetween('attendance_date', [$startDate, $endDate])
-        ->distinct('attendance_date')
-        ->count('attendance_date');
+        $totalClasses = Attendance::where('lesson_id', $lesson_id)
+            ->whereBetween('attendance_date', [$startDate, $endDate])
+            ->distinct('attendance_date')
+            ->count('attendance_date');
 
-    return response()->json(['totalClasses' => $totalClasses]);
-}
+        return response()->json(['totalClasses' => $totalClasses]);
+    }
+
+    public function getTotalStudents($lesson_id)
+    {
+        $totalStudents = Attendance::where('lesson_id', $lesson_id)
+            ->distinct('student_id')
+            ->count('student_id');
+
+        return response()->json(['totalStudents' => $totalStudents]);
+    }
+
+    public function getAverageAttendanceRate(Request $request, $lesson_id)
+    {
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
+
+        // Fetch attendance data grouped by date
+        $attendanceData = Attendance::selectRaw('attendance_date, COUNT(*) as total_attendance, SUM(attendance_status = "present") as total_present')
+            ->where('lesson_id', $lesson_id)
+            ->whereBetween('attendance_date', [$startDate, $endDate])
+            ->groupBy('attendance_date')
+            ->get();
+
+        // Total students enrolled for the lesson
+        $totalStudents = Attendance::where('lesson_id', $lesson_id)
+            ->distinct('student_id')
+            ->count('student_id');
+
+        // Prepare response data with attendance rate per date
+        $data = $attendanceData->map(function ($item) use ($totalStudents) {
+            // Calculate daily attendance rate
+            $dailyAttendanceRate = $totalStudents > 0
+                ? ($item->total_present / ($totalStudents)) * 100
+                : 0;
+
+            return [
+                'date' => $item->attendance_date,
+                'attendanceRate' => $dailyAttendanceRate
+            ];
+        });
+
+        // Calculate average attendance rate over all dates in the range
+        $averageAttendanceRate = $data->avg('attendanceRate');
+
+        return response()->json([
+            'averageAttendanceRate' => $averageAttendanceRate,
+            'attendanceRatesByDate' => $data
+        ]);
+    }
+
+    public function getStudentAbsences(Request $request, $lesson_id)
+    {
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
+
+        // Validate that the date range and lesson ID are provided
+        if (!$startDate || !$endDate || !$lesson_id) {
+            return response()->json(['error' => 'Invalid request. Please provide a lesson ID and date range.'], 400);
+        }
+
+        // Fetch each student's absence count for the specified lesson and date range
+        $absences = Attendance::where('lesson_id', $lesson_id)
+            ->whereBetween('attendance_date', [$startDate, $endDate])
+            ->where('attendance_status', 'absent') // Assuming 'absent' marks absence
+            ->select('student_id', DB::raw('count(*) as absence_count'))
+            ->groupBy('student_id')
+            ->with('student') // Assuming 'student' is a defined relationship in the Attendance model
+            ->get();
+
+        // Format the absence data to include student names and absence counts
+        $absenceData = $absences->map(function ($record) {
+            return [
+                'student_name' => $record->student->name,
+                'absence_count' => $record->absence_count,
+            ];
+        });
+
+        return response()->json(['absenceData' => $absenceData]);
+    }
+
+    public function getStudentAttendanceDetails(Request $request, $lesson_id)
+    {
+        // Filter by date range if provided
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
+
+        // Get all students for the lesson
+        $students = DB::table('students')
+            ->join('attendance', 'students.id', '=', 'attendance.student_id')
+            ->where('attendance.lesson_id', $lesson_id)
+            ->select('students.id', 'students.name')
+            ->distinct()
+            ->get();
+
+
+        // Prepare student attendance details
+        $studentAttendanceDetails = $students->map(function ($student) use ($lesson_id, $startDate, $endDate) {
+            $totalPresentDays = Attendance::where('lesson_id', $lesson_id)
+                ->where('student_id', $student->id)
+                ->whereBetween('attendance_date', [$startDate, $endDate])
+                ->where('attendance_status', 'present')
+                ->count();
+
+            $totalAbsentDays = Attendance::where('lesson_id', $lesson_id)
+                ->where('student_id', $student->id)
+                ->whereBetween('attendance_date', [$startDate, $endDate])
+                ->where('attendance_status', 'absent')
+                ->count();
+
+            $totalDays = $totalPresentDays + $totalAbsentDays;
+            $averageAttendanceRate = $totalDays > 0 ? ($totalPresentDays / $totalDays) * 100 : 0;
+
+            return [
+                'id' => $student->id,
+                'name' => $student->name,
+                'totalPresentDays' => $totalPresentDays,
+                'totalAbsentDays' => $totalAbsentDays,
+                'averageAttendanceRate' => round($averageAttendanceRate, 2),
+            ];
+        });
+
+        return response()->json($studentAttendanceDetails);
+    }
+
+
 
 }
 
