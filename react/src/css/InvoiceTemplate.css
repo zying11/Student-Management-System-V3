@@ -1,0 +1,74 @@
+  .invoice-container {
+    margin: 10px 0px;
+  }
+  
+  .invoice-card {
+    border-radius: 10px;
+  }
+  
+  .invoice-header p {
+    color: #7e8d9f;
+    font-size: 20px;
+  }
+  
+  .invoice-center .invoice-icon {
+    color: #5d9fc5;
+  }
+  
+  .invoice-student-name {
+    color: #5d9fc5;
+  }
+  
+  .invoice-details .invoice-detail-icon {
+    color: #84b0ca;
+  }
+  
+  .invoice-table-header {
+    background-color: #84b0ca;
+    color: white;
+  }
+  
+  .invoice-summary {
+    margin-top: 10px;
+  }
+  
+  .invoice-total {
+    font-weight: bold;
+  }
+  
+  .invoice-total-amount {
+    font-size: 25px;
+    color: #000;
+  }
+  
+  @media (max-width: 768px) {
+    .invoice-header {
+      text-align: center;
+    }
+    
+    .invoice-center {
+      margin-top: 30px;
+    }
+  
+    .invoice-total-amount {
+      font-size: 20px;
+    }
+  
+    .invoice-card {
+      padding: 15px;
+    }
+    
+    .text-md-end {
+      text-align: center !important;
+    }
+  
+    .invoice-path {
+      font-size: 16px;
+    }
+  
+    .invoice-summary {
+      text-align: center;
+      margin-top: 20px;
+    }
+  }
+  
