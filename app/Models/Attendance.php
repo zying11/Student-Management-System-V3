@@ -11,16 +11,14 @@ class Attendance extends Model
 
     protected $table = 'attendance';
 
-    protected $fillable = [
-        'student_id',
-        'lesson_id',
-        'attendance_status',
-        'attendance_date',
-    ];
-
     public function student()
     {
         return $this->belongsTo(Student::class);
+    }
+
+    public function lesson()
+    {
+        return $this->belongsTo(Lesson::class, 'lesson_id');
     }
 
 }
