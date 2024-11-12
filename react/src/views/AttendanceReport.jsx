@@ -184,7 +184,10 @@ export default function AttendanceReport() {
                   : "N/A",
               <div>
                   <Link to={`/student/attendance/${student.id}`}>
-                      <button type="button" color="yellow">
+                      <button
+                          type="button"
+                          className="btn-create btn-create-yellow"
+                      >
                           View Details
                       </button>
                   </Link>
@@ -199,7 +202,7 @@ export default function AttendanceReport() {
                     <Link to="/lesson-report" />
                     Generate Report
                 </Button> */}
-                <button type="button">
+                <button type="button" className="btn-create btn-create-purple">
                     <Link
                         to="/lesson-report"
                         style={{ textDecoration: "none", color: "inherit" }}

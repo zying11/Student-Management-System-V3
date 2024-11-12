@@ -6,6 +6,7 @@ import axiosClient from "../axiosClient";
 import dayjs from "dayjs";
 import { ContentContainer } from "../components/ContentContainer/ContentContainer";
 import { Table } from "../components/Table/Table";
+import BarChart from "../components/Chart/BarChart";
 import Button from "../components/Button/Button";
 
 export default function StudentAttendance() {
@@ -78,6 +79,11 @@ export default function StudentAttendance() {
         dateRange: { start: "", end: "" },
     });
 
+    // For bar chart
+    const [subjectNames, setSubjectNames] = useState([]);
+    const [attendanceRates, setAttendanceRates] = useState([]);
+    const [absenceCounts, setAbsenceCounts] = useState([]);
+
     const handleFilter = async () => {
         let rangeStart = startDate;
         let rangeEnd = endDate;
@@ -103,6 +109,7 @@ export default function StudentAttendance() {
                     endDate: rangeEnd,
                 },
             });
+            console.log(response);
 
             if (
                 response.data &&
@@ -110,6 +117,7 @@ export default function StudentAttendance() {
                 response.data.attendanceRecords.length > 0
             ) {
                 setAttendanceData(response.data);
+
                 setNoDataFound(false);
                 setViewedDateRange(`${rangeStart} to ${rangeEnd}`);
             } else {
@@ -122,10 +130,61 @@ export default function StudentAttendance() {
                     dateRange: { start: rangeStart, end: rangeEnd },
                 });
             }
+
+            const res = await axiosClient.get(`/attendance/summary/${id}`, {
+                params: {
+                    startDate: rangeStart,
+                    endDate: rangeEnd,
+                },
+            });
+
+            const attendanceSummary = res.data;
+
+            // Process data for BarChart
+            const subjects = attendanceSummary.map((item) => item.subject_name);
+            const rates = attendanceSummary.map((item) => item.attendanceRate);
+            const absence = attendanceSummary.map((item) => item.totalAbsent);
+
+            setSubjectNames(subjects);
+            setAttendanceRates(rates);
+            setAbsenceCounts(absence);
         } catch (error) {
-            console.error("Error fetching attendance data:", error);
+            console.error("Error fetching attendance data:", error.response);
         }
     };
+
+    // useEffect(() => {
+    //     async function fetchAttendanceData() {
+    //         try {
+    //             const response = await axiosClient.get(
+    //                 `/attendance/summary/${id}`
+    //             );
+    //             const attendanceSummary = response.data;
+
+    //             // Process data for BarChart
+    //             const subjects = attendanceSummary.map(
+    //                 (item) => item.subject_name
+    //             );
+    //             const rates = attendanceSummary.map(
+    //                 (item) => item.attendanceRate
+    //             );
+    //             const absence = attendanceSummary.map(
+    //                 (item) => item.totalAbsent
+    //             );
+
+    //             setSubjectNames(subjects);
+    //             setAttendanceRates(rates);
+    //             setAbsenceCount(absence);
+    //         } catch (error) {
+    //             console.error(
+    //                 "Error fetching attendance summary:",
+    //                 error.response
+    //             );
+    //         }
+    //     }
+
+    //     fetchAttendanceData();
+    // }, [id]);
 
     const lessonData = displayEnrollments.loading
         ? [
@@ -226,6 +285,25 @@ export default function StudentAttendance() {
                         <div>Average Attendance Rate</div>
                         <p>{attendanceData.attendanceRate}%</p>
                     </div>
+                </div>
+
+                <div className="d-flex w-100 mt-5 gap-2">
+                    <BarChart
+                        chartTitle="Attendance Rate per Subject"
+                        xAxis="Subjects"
+                        yAxis="Attendance Rate (%)"
+                        xData={subjectNames}
+                        yData={attendanceRates}
+                        stepSize="10"
+                    />
+                    <BarChart
+                        chartTitle="Absence Count per Subject"
+                        xAxis="Subjects"
+                        yAxis="Absence Count"
+                        xData={subjectNames}
+                        yData={absenceCounts}
+                        stepSize="1"
+                    />
                 </div>
             </ContentContainer>
         </>

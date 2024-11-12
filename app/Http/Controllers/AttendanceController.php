@@ -122,6 +122,46 @@ class AttendanceController extends Controller
         ], 200);
     }
 
+    public function getStudentAttendanceSummary($student_id, Request $request)
+    {
+        // Filter by date range if provided
+        $startDate = $request->query('startDate');
+        $endDate = $request->query('endDate');
+
+        // Get attendance data grouped by lesson_id within the specified date range
+        $attendanceData = Attendance::with('lesson.subject')
+            ->where('student_id', $student_id)
+            ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('attendance_date', [$startDate, $endDate]);
+            })
+            ->selectRaw('
+            lesson_id,
+            SUM(CASE WHEN attendance_status = "present" THEN 1 ELSE 0 END) as totalPresent,
+            SUM(CASE WHEN attendance_status = "absent" THEN 1 ELSE 0 END) as totalAbsent,
+            COUNT(*) as totalClasses
+        ')
+            ->groupBy('lesson_id')
+            ->get();
+
+        $result = $attendanceData->map(function ($attendance) {
+            $attendanceRate = $attendance->totalClasses > 0 ? ($attendance->totalPresent / $attendance->totalClasses) * 100 : 0;
+
+            return [
+                'lesson_id' => $attendance->lesson_id,
+                'subject_name' => $attendance->lesson->subject->subject_name ?? 'Unknown',
+                'totalPresent' => $attendance->totalPresent,
+                'totalAbsent' => $attendance->totalAbsent,
+                'totalClasses' => $attendance->totalClasses,
+                'attendanceRate' => $attendanceRate,
+            ];
+        });
+
+        return response()->json($result);
+    }
+
+
+
+
 
 
 }

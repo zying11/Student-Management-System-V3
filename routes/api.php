@@ -99,7 +99,7 @@ Route::get('/lessons/{lesson_id}/debugging', [LessonController::class, 'getStude
 // Student Attendance Report
 Route::get('/enrollments/{student_id}', [EnrollmentController::class, 'getEnrollmentsByStudent']);
 Route::get('/attendance/{student_id}', [AttendanceController::class, 'getStudentAttendanceByDateRange']);
-
+Route::get('/attendance/summary/{student_id}', [AttendanceController::class, 'getStudentAttendanceSummary']);
 
 
 // USER
