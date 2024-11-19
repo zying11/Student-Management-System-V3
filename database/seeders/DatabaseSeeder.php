@@ -26,6 +26,8 @@ class DatabaseSeeder extends Seeder
             LessonSeeder::class,
             EnrollmentSeeder::class,
             InvoiceSeeder::class,
+            AnnouncementSeeder::class,
+            RecipientSeeder::class,
         ]);
     }
 }

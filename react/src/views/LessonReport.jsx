@@ -95,6 +95,7 @@ export default function LessonReport() {
     const [viewedDateRange, setViewedDateRange] = useState("");
     // State for "no data found" message
     const [noDataFound, setNoDataFound] = useState(false);
+
     // For bar chart
     const [lessonDates, setLessonDates] = useState([]);
     const [attendanceRates, setAttendanceRates] = useState([]);
@@ -106,6 +107,17 @@ export default function LessonReport() {
     const [attendanceData, setAttendanceData] = useState([]);
 
     const handleFilter = async () => {
+        // Reset the values when the filter button is clicked
+        setTotalClasses(0);
+        setTotalStudents(0);
+        setAverageAttendanceRate(0);
+        setLessonDates([]);
+        setAttendanceRates([]);
+        setStudentNames([]);
+        setAbsenceCounts([]);
+        setAttendanceData([]);
+        setNoDataFound(false); // Reset no data found state initially
+
         // Determine date range based on dateRangeOption
         let rangeStart = startDate;
         let rangeEnd = endDate;
@@ -162,7 +174,6 @@ export default function LessonReport() {
                             (item) => item.attendanceRate
                         )
                     );
-                    setNoDataFound(false);
 
                     const selectedLessonDetails = lessons.find(
                         (lesson) => lesson.id === selectedLesson
@@ -172,18 +183,23 @@ export default function LessonReport() {
                             `${selectedLessonDetails.level_name} - ${selectedLessonDetails.subject_name}`
                         );
                         setViewedDateRange(`${rangeStart} to ${rangeEnd}`);
-                        setNoDataFound(false); // Clear the no data found message
                     } else {
-                        setNoDataFound(true); // Set no data found message
+                        setNoDataFound(true);
                         setViewedLesson(null);
                         setViewedDateRange("");
                     }
+                } else {
+                    setNoDataFound(true);
                 }
 
+                // Fetch absences data
                 const absencesResponse = await axiosClient.get(
                     `/lessons/${selectedLesson}/absences`,
                     {
-                        params: { start_date: rangeStart, end_date: rangeEnd },
+                        params: {
+                            start_date: rangeStart,
+                            end_date: rangeEnd,
+                        },
                     }
                 );
 
@@ -204,12 +220,8 @@ export default function LessonReport() {
                 // Fetch students data
                 const studentResponse = await axiosClient.get(
                     `/lessons/${selectedLesson}/students/attendance-details`,
-                    { params: { start_date: startDate, end_date: endDate } }
+                    { params: { start_date: rangeStart, end_date: rangeEnd } }
                 );
-
-                if (studentResponse) {
-                    console.log(studentResponse);
-                }
 
                 if (studentResponse.data && studentResponse.data.length > 0) {
                     const formattedData = studentResponse.data.map((item) => [
@@ -219,12 +231,11 @@ export default function LessonReport() {
                         item.totalAbsentDays,
                         `${item.averageAttendanceRate}%`,
                     ]);
-                    console.log(studentResponse);
-                    setAttendanceData(formattedData);
 
-                    // setNoDataFound(false);
+                    setAttendanceData(formattedData);
                 } else {
                     setNoDataFound(true);
+                    setAttendanceData([]);
                 }
             } catch (error) {
                 console.error(
@@ -235,6 +246,8 @@ export default function LessonReport() {
                 setViewedLesson(null);
                 setViewedDateRange("");
             }
+        } else {
+            setNoDataFound(true); // Set no data found when no lesson is selected
         }
     };
 

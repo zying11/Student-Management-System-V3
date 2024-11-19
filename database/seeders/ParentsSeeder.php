@@ -16,5 +16,21 @@ class ParentsSeeder extends Seeder
     {
         // Generate 10 parent records using the ParentsFactory
         Parents::factory()->count(15)->create();
+
+        Parents::create([
+            'name' => "Regina Tang",
+            'relationship' => "Mother",
+            'email' => "reginatang306@gmail.com",
+            'phone_number' => "01110603023"
+
+        ]);
+
+        Parents::create([
+            'name' => "Ham Zhi Ying",
+            'relationship' => "Mother",
+            'email' => "yingying22226@gmail.com",
+            'phone_number' => "0126326885"
+
+        ]);
     }
 }

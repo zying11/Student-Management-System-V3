@@ -11,6 +11,12 @@ class Attendance extends Model
 
     protected $table = 'attendance';
 
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class);
+    }
+
+
     public function student()
     {
         return $this->belongsTo(Student::class);
