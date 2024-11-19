@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
 use App\Models\Student;
+use App\Models\Enrollment;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
@@ -121,6 +122,8 @@ class AttendanceController extends Controller
             ]
         ], 200);
     }
+
+
 
     public function getStudentAttendanceSummary($student_id, Request $request)
     {
