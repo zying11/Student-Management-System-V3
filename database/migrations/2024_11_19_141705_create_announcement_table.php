@@ -15,6 +15,9 @@ return new class extends Migration {
             $table->unsignedBigInteger('admin_id');
             $table->string('message');
             $table->timestamps();
+
+            // Foreign key constraints
+            $table->foreign('admin_id')->references('id')->on('admins')->onDelete('cascade');
         });
     }
 

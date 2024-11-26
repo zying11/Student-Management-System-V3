@@ -153,39 +153,6 @@ export default function StudentAttendance() {
         }
     };
 
-    // useEffect(() => {
-    //     async function fetchAttendanceData() {
-    //         try {
-    //             const response = await axiosClient.get(
-    //                 `/attendance/summary/${id}`
-    //             );
-    //             const attendanceSummary = response.data;
-
-    //             // Process data for BarChart
-    //             const subjects = attendanceSummary.map(
-    //                 (item) => item.subject_name
-    //             );
-    //             const rates = attendanceSummary.map(
-    //                 (item) => item.attendanceRate
-    //             );
-    //             const absence = attendanceSummary.map(
-    //                 (item) => item.totalAbsent
-    //             );
-
-    //             setSubjectNames(subjects);
-    //             setAttendanceRates(rates);
-    //             setAbsenceCount(absence);
-    //         } catch (error) {
-    //             console.error(
-    //                 "Error fetching attendance summary:",
-    //                 error.response
-    //             );
-    //         }
-    //     }
-
-    //     fetchAttendanceData();
-    // }, [id]);
-
     const lessonData = displayEnrollments.loading
         ? [
               [

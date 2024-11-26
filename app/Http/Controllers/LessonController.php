@@ -379,8 +379,24 @@ class LessonController extends Controller
         return response()->json($studentAttendanceDetails);
     }
 
+    // Announcement
+    public function getLessonsByAnnouncement($id)
+    {
+        $lessons = Lesson::with('subject')
+            ->join('subjects', 'lessons.subject_id', '=', 'subjects.id')
+            ->join('study_level', 'subjects.level_id', '=', 'study_level.id')
+            ->join('teachers', 'lessons.teacher_id', '=', 'teachers.id')
+            ->join('users', 'teachers.user_id', '=', 'users.id')
+            ->join('recipients', 'lessons.id', '=', 'recipients.lesson_id')
+            ->where('recipients.announcement_id', $id)
+            ->select('lessons.*', 'subjects.subject_name', 'study_level.level_name', 'users.name')
+            ->get();
 
-
+        return response()->json([
+            'status' => 200,
+            'lessons' => $lessons,
+        ]);
+    }
 
 
 }

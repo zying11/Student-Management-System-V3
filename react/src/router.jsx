@@ -210,6 +210,8 @@ import ProtectedRoute from "./components/Route/ProtectedRoute.jsx";
 import AttendanceReport from "./views/AttendanceReport.jsx";
 import LessonReport from "./views/LessonReport.jsx";
 import StudentAttendance from "./views/StudentAttendance.jsx";
+import Announcement from "./views/Announcement.jsx";
+import AnnouncementDetail from "./views/AnnouncementDetail.jsx";
 
 // Check the user role and render the dashboard accordingly
 const DashboardWrapper = () => {
@@ -331,6 +333,22 @@ const router = createBrowserRouter([
                 element: (
                     <ProtectedRoute requiredRoles={["teacher"]}>
                         <StudentAttendance />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "/announcement",
+                element: (
+                    <ProtectedRoute requiredRoles={["admin"]}>
+                        <Announcement />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "/announcement/:id",
+                element: (
+                    <ProtectedRoute requiredRoles={["admin"]}>
+                        <AnnouncementDetail />
                     </ProtectedRoute>
                 ),
             },
