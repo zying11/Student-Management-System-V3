@@ -1,0 +1,37 @@
+#announcement {
+    .item {
+        border-bottom: #c4c4c4 1px solid;
+    }
+    .date {
+        background: #f5aa39;
+        font-size: 13px;
+        padding: 6px 20px;
+        color: white;
+        border-radius: 18px;
+    }
+
+    .message {
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .credits {
+        font-size: 11px;
+        color: #828282;
+    }
+}
+
+#announcement-detail {
+    .parents {
+        font-size: 12px;
+        color: #828282;
+    }
+
+    .message-content {
+        color: #757576;
+    }
+
+    .details-container {
+        font-size: 12px;
+    }
+}

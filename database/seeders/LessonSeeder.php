@@ -49,8 +49,8 @@ class LessonSeeder extends Seeder
             'room_id' => 1,
             'duration' => 1.0,
             'day' => 3,
-            'start_time' => "15:00:00",
-            'end_time' => "14:00:00",
+            'start_time' => "14:00:00",
+            'end_time' => "15:00:00",
         ]);
 
 

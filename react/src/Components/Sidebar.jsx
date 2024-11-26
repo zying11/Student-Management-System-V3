@@ -136,7 +136,7 @@ const menuItems = [
         id: "announcement",
         icon: "announcement.png",
         title: "Announcement",
-        link: "",
+        link: "/announcement",
         roles: ["admin"],
     },
     {

@@ -12,6 +12,7 @@ use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\ParentsController;
@@ -100,6 +101,11 @@ Route::get('/lessons/{lesson_id}/debugging', [LessonController::class, 'getStude
 Route::get('/enrollments/{student_id}', [EnrollmentController::class, 'getEnrollmentsByStudent']);
 Route::get('/attendance/{student_id}', [AttendanceController::class, 'getStudentAttendanceByDateRange']);
 Route::get('/attendance/summary/{student_id}', [AttendanceController::class, 'getStudentAttendanceSummary']);
+
+//Announcement
+Route::get('/announcement/{id?}', [AnnouncementController::class, 'index']);
+Route::get('/announcement/lessons/{id}', [LessonController::class, 'getLessonsByAnnouncement']);
+Route::get('/announcement/parents/{announcementId}/{lessonId}', [AnnouncementController::class, 'getParentCount']);
 
 
 // USER

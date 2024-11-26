@@ -348,6 +348,7 @@ export default function Timetable() {
                     // console.log(res.data); // To check data format
                     const formattedEvents = formatEventData(res.data.lessons);
                     setTimetableEvents(formattedEvents);
+                    console.log(timetableEvents);
                 } catch (error) {
                     console.error("Error fetching events:", error);
                 }
