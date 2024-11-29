@@ -84,6 +84,31 @@ export default function Announcement() {
                     )}
                 </div>
             </ContentContainer>
+            <ContentContainer
+                id="make-announcement"
+                title="Make an Announcement"
+            >
+                <div className="row">
+                    <div className="col-6">
+                        <h6>Recipients</h6>
+                        <div className="d-flex gap-2">
+                            <select className="form-control">
+                                <option>Select a Subject</option>
+                            </select>
+                            <select className="form-control">
+                                <option>Select a Level</option>
+                            </select>
+                            <select className="form-control">
+                                <option>Day</option>
+                            </select>
+                            <Button color="yellow">Filter</Button>
+                        </div>
+                    </div>
+                    <div className="col-6">
+                        <h6>Message</h6>
+                    </div>
+                </div>
+            </ContentContainer>
         </>
     );
 }
