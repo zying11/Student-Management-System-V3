@@ -30,7 +30,7 @@ class StudentResource extends JsonResource
       'registration_date' => \Carbon\Carbon::parse($this->registration_date)->format('d-m-Y'),
 
       // Parent relationship
-      'parents' => $this->parents,
+      'parents' => ParentsResource::collection($this->parents),
 
       // Lesson relationship
       'enrollments' => EnrollmentResource::collection($this->enrollments),

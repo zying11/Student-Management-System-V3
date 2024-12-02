@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class InvoiceResource extends JsonResource
+class RecordPaymentResource extends JsonResource
 {
   // Disable wrapping of the resource in a wrapper object
   public static $wrap = false;
@@ -20,15 +20,14 @@ class InvoiceResource extends JsonResource
   {
     return [
       'id' => $this->id,
-      'invoice_number' => $this->invoice_number,
-      'issue_date' => $this->issue_date,
-      'due_date' => $this->due_date,
-      'student_id' => $this->student_id,
-      'student' => $this->student ? new StudentResource($this->student) : null, // Include student details
-      'items' => json_decode($this->items), // Decode JSON string into an array
+      'receipt_number' => $this->receipt_number,
+      'invoice_id' => $this->invoice_id,
+      'amount' => $this->amount,
+      'payment_date' => $this->payment_date,
+      'payment_status' => $this->payment_status,
       'payment_method' => $this->payment_method,
       'add_notes' => $this->add_notes,
-      'total_payable' => $this->total_payable,
+      'invoice' => $this->invoice ? new InvoiceResource($this->invoice) : null,
     ];
   }
 }

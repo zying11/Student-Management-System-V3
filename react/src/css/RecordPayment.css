@@ -1,0 +1,36 @@
+/* Center the badge within the cell */
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 4px;
+    color: #fff;
+    text-transform: uppercase;
+    /* font-weight: bold; */
+    display: inline-block;
+    text-align: center;
+    min-width: 90px;
+    width: 90px;
+}
+
+/* Background colors for different statuses */
+.status-paid {
+    /* Green for Paid */
+    background-color: #28a745;
+}
+
+.status-pending {
+    /* Blue for Pending */
+    background-color: #007bff;
+}
+
+.status-overdue {
+    /* Red for Overdue */
+    background-color: #dc3545;
+}
+
+/* Centering the badge within the table cell */
+.table-cell-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}

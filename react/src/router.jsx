@@ -212,6 +212,9 @@ import LessonReport from "./views/LessonReport.jsx";
 import StudentAttendance from "./views/StudentAttendance.jsx";
 import Announcement from "./views/Announcement.jsx";
 import AnnouncementDetail from "./views/AnnouncementDetail.jsx";
+import RecordPayment from "./views/RecordPayment.jsx";
+import RecordPaymentForm from "./views/RecordPaymentForm.jsx";
+import ReceiptTemplate from "./views/ReceiptTemplate.jsx";
 
 // Check the user role and render the dashboard accordingly
 const DashboardWrapper = () => {
@@ -376,31 +379,35 @@ const router = createBrowserRouter([
                     </ProtectedRoute>
                 ),
             },
-            // {
-            //     path: "/invoices/new",
-            //     element: (
-            //         <ProtectedRoute requiredRoles={["admin"]}>
-            //             <InvoiceForm key="invoiceCreate" />
-            //         </ProtectedRoute>
-            //     ),
-            // },
-            // {
-            //     path: "/invoices/:id",
-            //     element: (
-            //         <ProtectedRoute requiredRoles={["admin"]}>
-            //             <InvoiceForm key="invoiceUpdate" />
-            //         </ProtectedRoute>
-            //     ),
-            // },
-            // {
-            //     path: "/invoiceTemplate",
-            //     element: <InvoiceTemplate invoice={exampleInvoice} />,
-            // },
             {
                 path: "/invoiceTemplate/:id",
                 element: (
                     <ProtectedRoute requiredRoles={["admin"]}>
                         <InvoiceTemplate key="invoiceTemplate" />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "/record-payments",
+                element: (
+                    <ProtectedRoute requiredRoles={["admin"]}>
+                        <RecordPayment />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "/record-payment-for/invoice/:id",
+                element: (
+                    <ProtectedRoute requiredRoles={["admin"]}>
+                        <RecordPaymentForm />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "/receipt-template-for/invoice/:id",
+                element: (
+                    <ProtectedRoute requiredRoles={["admin"]}>
+                        <ReceiptTemplate key="receiptTemplate" />
                     </ProtectedRoute>
                 ),
             },
@@ -428,14 +435,6 @@ const router = createBrowserRouter([
                     </ProtectedRoute>
                 ),
             },
-            // {
-            //     path: "/students/new",
-            //     element: <StudentForm key="studentCreate" />,
-            // },
-            // {
-            //     path: "/students/:id",
-            //     element: <StudentForm key="studentUpdate" />,
-            // },
             {
                 path: "/student/:id/profile",
                 element: (
