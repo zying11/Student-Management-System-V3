@@ -1,83 +1,5 @@
-// import React from 'react';
-// import jsPDF from 'jspdf';
-
-// export default function InvoiceTemplate({ invoice }) {
-//   // Calculate total amount
-//   const totalAmount = invoice.items.reduce((acc, item) => {
-//     return acc + item.quantity * item.price;
-//   }, 0);
-
-//   const handlePrintPDF = () => {
-//     const doc = new jsPDF();
-//     doc.text('Invoice', 10, 10);
-//     doc.text(`Invoice #: ${invoice.id}`, 10, 20);
-//     doc.text(`Date: ${invoice.date}`, 10, 30);
-//     doc.text(`Student Name: ${invoice.customerName}`, 10, 40);
-//     doc.text(`Address: ${invoice.address}`, 10, 50);
-//     doc.text(`Email: ${invoice.email}`, 10, 60);
-//     doc.text('Item', 10, 70);
-//     doc.text('Quantity', 80, 70);
-//     doc.text('Price', 110, 70);
-//     doc.text('Total', 140, 70);
-
-//     let y = 80;
-//     invoice.items.forEach((item, index) => {
-//       const yPos = y + index * 10;
-//       doc.text(item.name, 10, yPos);
-//       doc.text(item.quantity.toString(), 80, yPos);
-//       doc.text(item.price.toString(), 110, yPos);
-//       doc.text((item.quantity * item.price).toString(), 140, yPos);
-//     });
-
-//     doc.text(`Total: RM${totalAmount.toFixed(2)}`, 10, y + invoice.items.length * 10 + 10);
-
-//     doc.save(`Invoice_${invoice.id}.pdf`);
-//   };
-
-//   return (
-//     <div className="container">
-//       <div className="row">
-//         <div className="col">
-//           <h2>Invoice</h2>
-//           <div>Invoice #: {invoice.id}</div>
-//           <div>Date: {invoice.date}</div>
-//         </div>
-//         <div className="col">
-//           <div>Student Name: {invoice.customerName}</div>
-//           <div>Address: {invoice.address}</div>
-//           <div>Email: {invoice.email}</div>
-//         </div>
-//       </div>
-//       <table className="table">
-//         <thead>
-//           <tr>
-//             <th>Item</th>
-//             <th>Quantity</th>
-//             <th>Price</th>
-//             <th>Total</th>
-//           </tr>
-//         </thead>
-//         <tbody>
-//           {invoice.items.map((item, index) => (
-//             <tr key={index}>
-//               <td>{item.name}</td>
-//               <td>{item.quantity}</td>
-//               <td>RM{item.price.toFixed(2)}</td>
-//               <td>RM{(item.quantity * item.price).toFixed(2)}</td>
-//             </tr>
-//           ))}
-//         </tbody>
-//       </table>
-//       <div className="invoice-total">
-//         <strong>Total: RM{totalAmount.toFixed(2)}</strong>
-//       </div>
-//       <button className="btn btn-primary" onClick={handlePrintPDF}>Generate PDF</button>
-//     </div>
-//   );
-// }
-
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import axiosClient from "../axiosClient";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
@@ -171,6 +93,102 @@ export default function InvoiceTemplate() {
         doc.save(`Invoice_${invoice.id}.pdf`);
     };
 
+    // Function to handle sending the invoice (Send PDF via email)
+    const handleSendInvoice = async (invoice) => {
+        const parentEmails =
+            invoice?.student?.parents?.map((parent) => parent.email) || [];
+
+        if (parentEmails.length === 0) {
+            alert("No parent emails found!");
+            return;
+        }
+
+        try {
+            const doc = new jsPDF();
+
+            // Document Title
+            doc.setFontSize(18);
+            doc.text("XXX Tuition Center", 10, 10);
+
+            // Invoice and Student Details
+            doc.setFontSize(12);
+            doc.text(`Invoice Number: ${invoice.invoice_number}`, 10, 20);
+            doc.text(`Issue Date: ${invoice.issue_date}`, 10, 30);
+            doc.text(`Due Date: ${invoice.due_date}`, 10, 40);
+            doc.text(`To: ${invoice.student.name}`, 10, 50);
+            doc.text(`Address: ${invoice.student.address}`, 10, 60);
+            doc.text(`Postal Code: ${invoice.student.postal_code}`, 10, 70);
+            doc.text(`Nationality: ${invoice.student.nationality}`, 10, 80);
+
+            // Itemized Table
+            doc.autoTable({
+                startY: 90,
+                head: [
+                    [
+                        "#",
+                        "Item Name",
+                        "Quantity",
+                        "Unit Price (RM)",
+                        "Discount (%)",
+                        "Total (RM)",
+                    ],
+                ],
+                body: invoice.items.map((item, index) => [
+                    index + 1,
+                    item.item_name,
+                    item.quantity,
+                    item.price,
+                    item.discount,
+                    item.total,
+                ]),
+            });
+
+            // Total and Payment Method
+            // Calculate where to place after the table
+            const finalY = doc.previousAutoTable.finalY + 10;
+
+            doc.text(
+                `Payment Method: ${invoice.payment_method}`,
+                10,
+                finalY + 10
+            );
+            doc.text(`Notes: ${invoice.add_notes || "N/A"}`, 10, finalY + 30);
+
+            // Total Summary
+            doc.text(`Subtotal: RM ${invoice.total_payable}`, 140, finalY + 10);
+            doc.text(
+                `Tax (0%): RM ${invoice.total_payable * 0}`,
+                140,
+                finalY + 20
+            );
+            doc.setFontSize(14);
+            doc.text(`Total: RM ${invoice.total_payable}`, 140, finalY + 30);
+
+            // Convert the PDF to Blob
+            const pdfBlob = doc.output("blob");
+
+            // Create FormData to send the PDF
+            const formData = new FormData();
+            parentEmails.forEach((email) => formData.append("emails[]", email)); // Append each email
+            formData.append("pdf", pdfBlob, "receipt.pdf"); // Attach the PDF
+
+            const response = await axiosClient.post(
+                "/send-invoice-pdf-email",
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                }
+            );
+
+            alert("Invoice sent to all parent emails!");
+        } catch (error) {
+            console.error("Error sending invoice:", error);
+            alert("Failed to send invoice.");
+        }
+    };
+
     return (
         <>
             <div className="page-title">Fees</div>
@@ -191,16 +209,20 @@ export default function InvoiceTemplate() {
                                     md="3"
                                     className="text-md-end text-center mt-2 mt-md-0"
                                 >
-                                    <Button className="btn-create-yellow-border">
+                                    {/* <Button className="btn-create-yellow-border">
                                         <i className="fas fa-print me-1"></i>{" "}
                                         Print
-                                    </Button>
+                                    </Button> */}
+                                    {/* Send Button */}
                                     <Button
-                                        className="btn-create-purple ms-2"
-                                        onClick={handlePrintPDF}
+                                        className="btn-create-yellow-border"
+                                        onClick={() =>
+                                            handleSendInvoice(invoice)
+                                        }
+                                        disabled={loading}
                                     >
-                                        <i className="far fa-file-pdf me-1"></i>{" "}
-                                        Export
+                                        <i className="fas fa-print me-1"></i>{" "}
+                                        {loading ? "Sending..." : "Send"}
                                     </Button>
                                 </Col>
                             </Row>
@@ -339,10 +361,27 @@ export default function InvoiceTemplate() {
                             <Col xs="10">
                                 <p>Thank you!</p>
                             </Col>
-                            <Col xs="12" md="2" className="text-end">
-                                <Button className="btn-create-yellow">
-                                    Pay Now
+                        </Row>
+
+                        <Row className="d-flex justify-content-end align-items-center">
+                            <Col xs="12" md="3" className="text-end">
+                                {/* Export Button */}
+                                <Button
+                                    className="btn-create-purple ms-2"
+                                    onClick={handlePrintPDF}
+                                >
+                                    <i className="far fa-file-pdf me-1"></i>{" "}
+                                    Export
                                 </Button>
+
+                                {/* Pay Now Button */}
+                                <Link
+                                    to={`/record-payment-for/invoice/${invoice.id}`}
+                                >
+                                    <Button className="btn-create-yellow ms-2">
+                                        Pay Now
+                                    </Button>
+                                </Link>
                             </Col>
                         </Row>
                     </Card.Body>

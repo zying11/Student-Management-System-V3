@@ -17,9 +17,9 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\ParentsController;
 use App\Http\Controllers\StudyLevelController;
+use App\Http\Controllers\RecordPaymentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Models\Invoice;
 
 /*
 |--------------------------------------------------------------------------
@@ -133,6 +133,8 @@ Route::put('/invoices/{id}', [InvoiceController::class, 'update']);
 Route::delete('/invoices/{id}', [InvoiceController::class, 'destroy']);
 // Route to generate invoice number
 Route::get('/generate-invoice-number', [InvoiceController::class, 'generateInvoiceNumber']);
+// Route to send invoice via email
+Route::post('/send-invoice-pdf-email', [InvoiceController::class, 'sendInvoicePdfEmail']);
 
 
 // // Password Reset Routes
@@ -216,6 +218,23 @@ Route::get('/enrollments/{id}', [EnrollmentController::class, 'show']);
 Route::put('/enrollments/{id}', [EnrollmentController::class, 'update']);
 // Route to delete specific enrollment details by ID
 Route::delete('/enrollments/{id}', [EnrollmentController::class, 'destroy']);
+
+// RECORD PAYMENT
+// Route to fetch the list of all record paymemts
+Route::get('/record-payments', [RecordPaymentController::class, 'index']);
+// Route to store a new record payment
+Route::post('/record-payments', [RecordPaymentController::class, 'store']);
+// Route to retrieve specific record payment details by ID
+Route::get('/record-payment-for/invoice/{id}', [RecordPaymentController::class, 'show']);
+// Route to update specific record payment details by ID
+Route::put('/record-payment-for/invoice/{id}', [RecordPaymentController::class, 'update']);
+// Route to delete specific record payment details by ID
+Route::delete('/record-payment-for/invoice/{id}', [RecordPaymentController::class, 'destroy']);
+// Route to generate receipt number
+Route::get('/generate-receipt-number', [RecordPaymentController::class, 'generateReceiptNumber']);
+// Route to send payment receipt via email
+Route::post('/send-receipt-pdf-email', [RecordPaymentController::class, 'sendReceiptPdfEmail']);
+
 
 
 

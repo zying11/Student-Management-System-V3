@@ -63,11 +63,6 @@ export default function Invoice() {
         }
     };
 
-    // // Handle sending invoice
-    // const handleSendInvoice = (id) => {
-    //     console.log(`Sending invoice with ID: ${id}`);
-    // };
-
     // Filter invoices name by search query
     const filteredInvoices = invoiceData.invoices.filter((invoice) =>
         invoice.student.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -131,10 +126,16 @@ export default function Invoice() {
                           >
                               Delete Invoice
                           </Dropdown.Item>
-                          <Dropdown.Item
+                          {/* <Dropdown.Item
                               onClick={() => handleSendInvoice(invoice.id)}
                           >
                               Send Invoice
+                          </Dropdown.Item> */}
+                          <Dropdown.Item
+                              as={Link}
+                              to={`/record-payment-for/invoice/${invoice.id}`}
+                          >
+                              Pay Now
                           </Dropdown.Item>
                       </Dropdown.Menu>
                   </Dropdown>
