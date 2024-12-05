@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Resources\InvoiceResource;
 use App\Models\Invoice;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\InvoiceMail;
 
 class InvoiceController extends Controller
 {
@@ -65,9 +67,8 @@ class InvoiceController extends Controller
             $invoice->items()->create($item);
         }
 
-        return response()->json(['message' => 'Invoice created successfully', 'invoice' => $invoice], 201);
+        return response()->json(['message' => 'Invoice created successfully', 'invoice' => $invoice,], 201);
     }
-
 
     /**
      * Display the specified resource.
@@ -130,5 +131,28 @@ class InvoiceController extends Controller
         $invoice->delete();
 
         return response('', 204);
+    }
+
+    /**
+     * Send invoice as PDF attachments via email.
+     */
+    public function sendInvoicePdfEmail(Request $request)
+    {
+        $request->validate([
+            'emails' => 'required|array',
+            'emails.*' => 'email', // Validate each email
+            'pdf' => 'required|file|mimes:pdf|max:2048',
+        ]);
+
+        // Save the uploaded PDF temporarily
+        $pdfPath = $request->file('pdf')->store('invoices');
+
+        $absolutePath = storage_path("app/{$pdfPath}");
+
+        foreach ($request->emails as $email) {
+            Mail::to($email)->send(new InvoiceMail($absolutePath));
+        }
+
+        return response()->json(['message' => 'Invoice sent successfully.']);
     }
 }
