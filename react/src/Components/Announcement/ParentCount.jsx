@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axiosClient from "../../axiosClient";
 
-function ParentCount({ announcementId, lessonId, updateTotalParents }) {
+function ParentCount({ lessonId, updateTotalParents }) {
     const [parentCount, setParentCount] = useState(null);
 
     useEffect(() => {
         async function fetchParentCount() {
             try {
                 const res = await axiosClient.get(
-                    `/announcement/parents/${announcementId}/${lessonId}`
+                    `/announcement/parents/${lessonId}`
                 );
                 setParentCount(res.data.parentCount);
                 // Update the total parent count in the parent component
@@ -19,7 +19,7 @@ function ParentCount({ announcementId, lessonId, updateTotalParents }) {
         }
 
         fetchParentCount();
-    }, [announcementId, lessonId]);
+    }, [lessonId]);
 
     return <p className="parents">{parentCount ?? "Loading..."} parents</p>;
 }

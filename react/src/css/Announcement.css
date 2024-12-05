@@ -35,3 +35,10 @@
         font-size: 12px;
     }
 }
+
+#make-announcement{
+    .parent-count{
+        font-size: 10px;
+        color: #828282;
+    }
+}

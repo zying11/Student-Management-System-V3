@@ -30,20 +30,20 @@ class AnnouncementController extends Controller
         return response()->json($announcements);
     }
 
-    public function getParentCount($announcementId, $lessonId)
+    public function getParentCount($lessonId)
     {
         // Validate that the lesson is linked to the announcement
-        $lessonExists = DB::table('recipients')
-            ->where('announcement_id', $announcementId)
-            ->where('lesson_id', $lessonId)
-            ->exists();
+        // $lessonExists = DB::table('recipients')
+        //     ->where('announcement_id', $announcementId)
+        //     ->where('lesson_id', $lessonId)
+        //     ->exists();
 
-        if (!$lessonExists) {
-            return response()->json([
-                'status' => 404,
-                'message' => 'Lesson not found for the specified announcement.',
-            ]);
-        }
+        // if (!$lessonExists) {
+        //     return response()->json([
+        //         'status' => 404,
+        //         'message' => 'Lesson not found for the specified announcement.',
+        //     ]);
+        // }
 
         // Fetch all student IDs for this lesson
         $studentIds = DB::table('enrollments')
