@@ -27,7 +27,7 @@ export default function Lesson() {
         fetchSubjects();
     }, []);
 
-    // Variable for fetching subject data
+    // Variable for fetching teacher data
     const [teachers, setTeacher] = useState([]);
 
     // Fetch teacher data

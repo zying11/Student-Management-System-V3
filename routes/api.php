@@ -105,7 +105,7 @@ Route::get('/attendance/summary/{student_id}', [AttendanceController::class, 'ge
 //Announcement
 Route::get('/announcement/{id?}', [AnnouncementController::class, 'index']);
 Route::get('/announcement/lessons/{id}', [LessonController::class, 'getLessonsByAnnouncement']);
-Route::get('/announcement/parents/{announcementId}/{lessonId}', [AnnouncementController::class, 'getParentCount']);
+Route::get('/announcement/parents/{lessonId}', [AnnouncementController::class, 'getParentCount']);
 
 
 // USER

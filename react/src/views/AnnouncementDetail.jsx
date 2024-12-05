@@ -149,7 +149,6 @@ export default function AnnouncementDetail() {
                                             )}
                                         </div>
                                         <ParentCount
-                                            announcementId={id}
                                             lessonId={recipient.id}
                                             updateTotalParents={(count) =>
                                                 updateTotalParents(
