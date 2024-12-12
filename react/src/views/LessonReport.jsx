@@ -176,8 +176,9 @@ export default function LessonReport() {
                     );
 
                     const selectedLessonDetails = lessons.find(
-                        (lesson) => lesson.id === selectedLesson
+                        (lesson) => lesson.id == selectedLesson
                     );
+                    console.log(selectedLesson);
                     if (selectedLessonDetails) {
                         setViewedLesson(
                             `${selectedLessonDetails.level_name} - ${selectedLessonDetails.subject_name}`
@@ -212,7 +213,8 @@ export default function LessonReport() {
                         absencesData.map((item) => item.absence_count)
                     );
                 } else {
-                    setNoDataFound(true);
+                    // there might be instance where there are no number of absence
+                    // setNoDataFound(true);
                     setStudentNames([]);
                     setAbsenceCounts([]);
                 }
@@ -265,8 +267,13 @@ export default function LessonReport() {
                             <option key={lesson.id} value={lesson.id}>
                                 {lesson.level_name} - {lesson.subject_name},{" "}
                                 {daysOfWeek[lesson.day]}{" "}
-                                {formatTimeTo12Hour(lesson.start_time)} -{" "}
-                                {formatTimeTo12Hour(lesson.end_time)}
+                                {lesson.start_time
+                                    ? formatTimeTo12Hour(lesson.start_time)
+                                    : "TBD"}{" "}
+                                -{" "}
+                                {lesson.end_time
+                                    ? formatTimeTo12Hour(lesson.end_time)
+                                    : "TBD"}
                             </option>
                         ))}
                     </select>

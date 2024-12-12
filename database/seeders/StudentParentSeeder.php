@@ -6,6 +6,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Student;
 use App\Models\Parents;
+use App\Models\StudentParent;
 
 class StudentParentSeeder extends Seeder
 {
@@ -30,11 +31,29 @@ class StudentParentSeeder extends Seeder
             return;
         }
 
+        StudentParent::create([
+            'student_id' => 1,
+            'parent_id' => 16,
+        ]);
+
+
+        StudentParent::create([
+            'student_id' => 1,
+            'parent_id' => 17,
+        ]);
+
         // Attach parents to each student
         foreach ($students as $student) {
+            // Skip student with ID 1
+            if ($student->id === 1) {
+                continue;
+            }
+
+            // Randomly attach 1 to 3 parents to the student
             $student->parents()->attach(
                 $parents->random(rand(1, 3))->pluck('id')->toArray()
             );
         }
+
     }
 }

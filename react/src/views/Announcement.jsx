@@ -23,13 +23,17 @@ export default function Announcement() {
 
     // Helper function to convert 24-hour time to 12-hour format
     function formatTimeTo12Hour(time) {
+        if (!time || typeof time !== "string") {
+            return "TBA"; // Return a default value if time is invalid
+        }
+
         let [hour, minute] = time.split(":"); // Split the time into hour and minute
         hour = parseInt(hour, 10); // Convert hour string to an integer
 
         const ampm = hour >= 12 ? "pm" : "am"; // Determine AM or PM
         hour = hour % 12 || 12; // Convert to 12-hour format, 0 becomes 12
 
-        return `${hour}${ampm}`; // Return formatted time
+        return `${hour}:${minute} ${ampm}`; // Return formatted time with minutes
     }
 
     useEffect(() => {
@@ -54,11 +58,14 @@ export default function Announcement() {
 
     // Filtering function
     const [lessons, setLessons] = useState([]);
-    const [filteredLessons, setFilteredLessons] = useState([]);
+    const [filteredLessons, setFilteredLessons] = useState({
+        loading: true,
+        filteredLessons: [],
+    });
 
     const [subjects, setSubjects] = useState([]);
     const [levels, setLevels] = useState([]);
-    const [days, setDays] = useState([
+    const [days] = useState([
         { id: 0, name: "Sunday" },
         { id: 1, name: "Monday" },
         { id: 2, name: "Tuesday" },
@@ -80,9 +87,12 @@ export default function Announcement() {
                 const data = res.data.lessons;
 
                 setLessons(data);
-                setFilteredLessons(data); // Initially show all lessons
+                setFilteredLessons({
+                    loading: false,
+                    filteredLessons: data,
+                });
 
-                console.log(data);
+                // console.log(data);
 
                 // Extract unique subjects and levels
                 const uniqueSubjects = [
@@ -103,6 +113,10 @@ export default function Announcement() {
                 setLevels(uniqueLevels);
             } catch (error) {
                 console.error("Error fetching lessons", error);
+                setFilteredLessons({
+                    loading: false,
+                    filteredLessons: [],
+                }); // Ensure loading is turned off even on error
             }
         }
         fetchLessons();
@@ -117,7 +131,10 @@ export default function Announcement() {
                 (!selectedDay || lesson.day == selectedDay)
             );
         });
-        setFilteredLessons(filteredData);
+        setFilteredLessons({
+            loading: false,
+            filteredLessons: filteredData,
+        });
     };
 
     // Clear filter function
@@ -125,7 +142,10 @@ export default function Announcement() {
         setSelectedSubject("");
         setSelectedLevel("");
         setSelectedDay("");
-        setFilteredLessons(lessons); // Reset to all lessons
+        setFilteredLessons({
+            loading: false,
+            filteredLessons: lessons,
+        }); // Reset to all lessons
     };
 
     // Stores the IDs of the lessons that have been checked.
@@ -151,6 +171,10 @@ export default function Announcement() {
         });
     };
 
+    // useEffect(() => {
+    //     console.log(selectedLessons);
+    // }, [selectedLessons]);
+
     // Update total parents dynamically when selection changes
     useEffect(() => {
         // Calculates the total by summing up the parent counts for the selected lessons
@@ -167,6 +191,28 @@ export default function Announcement() {
             ...prevCounts,
             [lessonId]: count,
         }));
+    };
+
+    // For Pagination
+    const [currentPage, setCurrentPage] = useState(1);
+    const lessonsPerPage = 5; // Max 5 lessons per page
+
+    // Calculate the lessons to display on the current page
+    const indexOfLastLesson = currentPage * lessonsPerPage;
+    const indexOfFirstLesson = indexOfLastLesson - lessonsPerPage;
+    const currentLessons = filteredLessons.filteredLessons.slice(
+        indexOfFirstLesson,
+        indexOfLastLesson
+    );
+
+    const totalPages = Math.ceil(
+        filteredLessons.filteredLessons.length / lessonsPerPage
+    );
+
+    const goToPage = (pageNumber) => {
+        if (pageNumber > 0 && pageNumber <= totalPages) {
+            setCurrentPage(pageNumber);
+        }
     };
 
     return (
@@ -256,7 +302,7 @@ export default function Announcement() {
                                 onChange={(e) => setSelectedDay(e.target.value)}
                             >
                                 <option value="">All Days</option>
-                                {days.map((day) => (
+                                {days?.map((day) => (
                                     <option key={day.id} value={day.id}>
                                         {day.name}
                                     </option>
@@ -281,46 +327,91 @@ export default function Announcement() {
                                 </button>
                             </div>
 
-                            {filteredLessons.length > 0 ? (
-                                <ul className="p-0">
-                                    {filteredLessons.map((lesson) => (
-                                        <li key={lesson.id} className="mb-4">
-                                            <input
-                                                type="checkbox"
-                                                checked={selectedLessons.includes(
-                                                    lesson.id
-                                                )}
-                                                onChange={() =>
-                                                    handleCheckboxChange(
+                            {filteredLessons.loading ? (
+                                <p>Loading...</p>
+                            ) : filteredLessons.filteredLessons.length > 0 ? (
+                                <div>
+                                    <ul className="p-0">
+                                        {currentLessons.map((lesson) => (
+                                            <li
+                                                key={lesson.id}
+                                                className="mb-4"
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedLessons.includes(
                                                         lesson.id
-                                                    )
-                                                }
-                                            />
-                                            {` ${lesson.subject_name}, ${
-                                                lesson.level_name
-                                            }, ${
-                                                days[lesson.day].name
-                                            }, ${formatTimeTo12Hour(
-                                                lesson.start_time
-                                            )} - ${formatTimeTo12Hour(
-                                                lesson.end_time
-                                            )}`}
-                                            <p className="parent-count ms-3">
-                                                <ParentCount
-                                                    lessonId={lesson.id}
-                                                    updateTotalParents={(
-                                                        count
-                                                    ) =>
-                                                        updateTotalParents(
-                                                            lesson.id,
-                                                            count
+                                                    )}
+                                                    onChange={() =>
+                                                        handleCheckboxChange(
+                                                            lesson.id
                                                         )
                                                     }
                                                 />
-                                            </p>
-                                        </li>
-                                    ))}
-                                </ul>
+                                                {` ${lesson.subject_name}, ${
+                                                    lesson.level_name
+                                                }, 
+                                ${days[lesson.day]?.name || "TBA"}, 
+                                ${formatTimeTo12Hour(
+                                    lesson.start_time
+                                )} - ${formatTimeTo12Hour(lesson.end_time)}`}
+                                                <p className="parent-count ms-3">
+                                                    <ParentCount
+                                                        lessonId={lesson.id}
+                                                        updateTotalParents={(
+                                                            count
+                                                        ) =>
+                                                            updateTotalParents(
+                                                                lesson.id,
+                                                                count
+                                                            )
+                                                        }
+                                                    />
+                                                </p>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                    <div className="pagination justify-content-end">
+                                        <button
+                                            className="previous-btn"
+                                            onClick={() =>
+                                                goToPage(currentPage - 1)
+                                            }
+                                            disabled={currentPage === 1}
+                                        >
+                                            Previous
+                                        </button>
+                                        {[...Array(totalPages)].map(
+                                            (_, index) => (
+                                                <button
+                                                    key={index}
+                                                    className={
+                                                        currentPage ===
+                                                        index + 1
+                                                            ? "active page-btn"
+                                                            : "page-btn"
+                                                    }
+                                                    onClick={() =>
+                                                        goToPage(index + 1)
+                                                    }
+                                                >
+                                                    {index + 1}
+                                                </button>
+                                            )
+                                        )}
+                                        <button
+                                            className="next-btn"
+                                            onClick={() =>
+                                                goToPage(currentPage + 1)
+                                            }
+                                            disabled={
+                                                currentPage === totalPages
+                                            }
+                                        >
+                                            Next
+                                        </button>
+                                    </div>
+                                </div>
                             ) : (
                                 <p>No lessons found.</p>
                             )}

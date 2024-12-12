@@ -57,9 +57,9 @@ class EnrollmentSeeder extends Seeder
     {
         // Retrieve all students and lessons
         $students = Student::all();
-        
+
         // Eager-load the subject relationship
-        $lessons = Lesson::with('subject')->get(); 
+        $lessons = Lesson::with('subject')->get();
 
         if ($students->isEmpty() || $lessons->isEmpty()) {
             echo "Please seed students and lessons before seeding enrollments.\n";
@@ -76,7 +76,7 @@ class EnrollmentSeeder extends Seeder
 
             // Filter out already assigned subjects
             $availableLessons = $lessons->filter(function ($lesson) use ($assignedSubjectIds) {
-                return !in_array($lesson->subject_id, $assignedSubjectIds);
+                return !in_array($lesson->subject_id, $assignedSubjectIds) && $lesson->id !== 4; // exclude 4th lesson for announcement testing
             });
 
             // Pick random lessons from the remaining available lessons
@@ -96,6 +96,13 @@ class EnrollmentSeeder extends Seeder
                 }
             }
         }
+
+        Enrollment::create([
+            'student_id' => 1,
+            'subject_id' => 4,
+            'study_level_id' => 4,
+            'lesson_id' => 4,
+        ]);
     }
 }
 

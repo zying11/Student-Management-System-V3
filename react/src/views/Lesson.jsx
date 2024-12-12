@@ -315,10 +315,8 @@ export default function Lesson() {
             </ContentContainer>
             <div
                 id="editLessonModal"
-                className="modal fade lesson-modal"
-                tabIndex="-1"
-                data-bs-backdrop="static"
-                data-bs-keyboard="false"
+                className="modal fade"
+                data-bs-backdrop="false"
             >
                 <div className="modal-dialog">
                     <div className="modal-content">
@@ -440,9 +438,7 @@ export default function Lesson() {
             <div
                 id="createLessonModal"
                 className="modal fade lesson-modal"
-                tabindex="-1"
-                data-bs-backdrop="static"
-                data-bs-keyboard="false"
+                data-bs-backdrop="false"
             >
                 <div className="modal-dialog">
                     <div className="modal-content">

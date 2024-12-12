@@ -169,9 +169,12 @@ export default function Attendance() {
             await axiosClient.post("/mark-attendance", {
                 records: attendanceRecords,
             });
+
+            // Clear the attendance data to reset the form
+            setAttendanceData([]);
             alert("Attendance saved successfully!");
         } catch (error) {
-            console.error("Error saving attendance:", error);
+            console.error("Error saving attendance:", error.response);
             alert("Error saving attendance.");
         }
     }
@@ -258,11 +261,17 @@ export default function Attendance() {
                             <option key={lesson.id} value={lesson.id}>
                                 {lesson.level_name} - {lesson.subject_name},{" "}
                                 {daysOfWeek[lesson.day]}{" "}
-                                {formatTimeTo12Hour(lesson.start_time)} -{" "}
-                                {formatTimeTo12Hour(lesson.end_time)}
+                                {lesson.start_time
+                                    ? formatTimeTo12Hour(lesson.start_time)
+                                    : "TBD"}{" "}
+                                -{" "}
+                                {lesson.end_time
+                                    ? formatTimeTo12Hour(lesson.end_time)
+                                    : "TBD"}
                             </option>
                         ))}
                     </select>
+
                     <input
                         type="date"
                         className="form-control"

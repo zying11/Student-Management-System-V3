@@ -10,6 +10,12 @@ class Attendance extends Model
     use HasFactory;
 
     protected $table = 'attendance';
+    protected $fillable = [
+        'lesson_id',
+        'student_id',
+        'attendance_status',
+        'attendance_date',
+    ];
 
     public function attendances()
     {
