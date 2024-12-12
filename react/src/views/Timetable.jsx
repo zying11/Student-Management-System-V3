@@ -269,6 +269,9 @@ export default function Timetable() {
                     eventData
                 );
                 console.log("Saved successfully!");
+                if (res.status == "200") {
+                    alert("Saved successfully!");
+                }
             }
 
             setIsChange(!isChange);
@@ -440,8 +443,9 @@ export default function Timetable() {
 
                 <div className="d-flex justify-content-end mt-4">
                     <Button
-                        data-bs-toggle="modal"
-                        data-bs-target="#confirmationModal"
+                        // data-bs-toggle="modal"
+                        // data-bs-target="#confirmationModal"
+                        onClick={handleSaveTimetable}
                         color="yellow"
                     >
                         Save Timetable

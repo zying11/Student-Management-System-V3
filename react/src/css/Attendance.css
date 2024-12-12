@@ -1,3 +1,8 @@
+.modal-wrapper {
+    position: relative;
+    z-index: 1060;
+}
+
 .attendance-report-data {
     .content-body {
         margin-top: 0 !important;

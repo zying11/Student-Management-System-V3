@@ -20,14 +20,17 @@ function SendAnnouncement({ selectedLessons, parentCounts }) {
 
         try {
             const response = await axiosClient.post("/send-announcement", {
-                lessonIds: selectedLessons,
+                lesson_ids: selectedLessons,
                 message: message,
             });
 
-            if (response.data.status === 200) {
+            if (response.data.status === "success") {
                 alert("Announcement sent successfully!");
+                setMessage(""); // Clear message input after success
             } else {
-                alert("Failed to send the announcement.");
+                alert(
+                    "Failed to send the announcement: " + response.data.message
+                );
             }
         } catch (error) {
             console.error("Error sending announcement:", error);
@@ -38,8 +41,7 @@ function SendAnnouncement({ selectedLessons, parentCounts }) {
     };
 
     return (
-        <>
-            {" "}
+        <div>
             <h6>Message</h6>
             <textarea
                 className="form-control"
@@ -48,19 +50,21 @@ function SendAnnouncement({ selectedLessons, parentCounts }) {
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
             ></textarea>
-            <div>
+            <div className="d-flex justify-content-between mt-3">
                 <p>
-                    Total Recipients: <span>{parentCounts}</span>
+                    Total Recipients:{" "}
+                    <span style={{ color: "#828282" }}>{parentCounts}</span>
                 </p>
                 <button
-                    className="btn btn-primary mt-3"
+                    type="submit"
+                    className="btn-create"
                     onClick={handleSendAnnouncement}
                     disabled={isSending}
                 >
                     {isSending ? "Sending..." : "Send Announcement"}
                 </button>
             </div>
-        </>
+        </div>
     );
 }
 

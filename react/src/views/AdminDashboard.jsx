@@ -5,6 +5,7 @@ import { Table } from "../components/Table/Table";
 import Button from "../components/Button/Button";
 import ConfirmationModal from "../components/Modal/ConfirmationModal";
 import PieChart from "../components/Chart/PieChart";
+import Modal from "../components/Modal/StudyLevelModal";
 import axiosClient from "../axiosClient";
 import "../css/AdminDashboard.css";
 
@@ -337,7 +338,7 @@ export default function AdminDashboard() {
 
     // Update this effect to search for the subject when selectedSubjectId changes
     useEffect(() => {
-        console.log(selectedSubjectId);
+        // console.log(selectedSubjectId);
         if (selectedSubjectId) {
             const subject = displaySubject.subjects.find(
                 (subject) => subject.id === selectedSubjectId
@@ -497,10 +498,11 @@ export default function AdminDashboard() {
 
             <div
                 id="addStudyLevelModal"
-                className="modal fade study-level-modal"
+                className="modal fade"
                 tabindex="-1"
-                data-bs-backdrop="static"
-                data-bs-keyboard="false"
+                aria-labelledby="addStudyLevelModal"
+                data-bs-backdrop="false"
+                aria-hidden="true"
             >
                 <div className="modal-dialog">
                     <div className="modal-content">
@@ -523,7 +525,6 @@ export default function AdminDashboard() {
                             method="post"
                             onSubmit={addStudyLevel}
                         >
-                            {/* Study Level Name */}
                             <div className="mb-3">
                                 <label className="form-label">
                                     Study Level
@@ -554,8 +555,8 @@ export default function AdminDashboard() {
                 id="addSubjectModal"
                 className="modal fade subject-modal"
                 tabindex="-1"
-                data-bs-backdrop="static"
                 data-bs-keyboard="false"
+                data-bs-backdrop="false"
             >
                 <div className="modal-dialog">
                     <div className="modal-content">
@@ -644,7 +645,7 @@ export default function AdminDashboard() {
                 id="editSubjectModal"
                 className="modal fade edit-subject-modal"
                 tabIndex="-1"
-                data-bs-backdrop="static"
+                data-bs-backdrop="false"
                 data-bs-keyboard="false"
             >
                 <div className="modal-dialog">

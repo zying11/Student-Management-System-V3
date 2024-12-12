@@ -7,7 +7,7 @@ const ConfirmationModal = ({ id, icon, headerText, bodyText, onConfirm }) => {
         <div
             className="modal fade confirmation"
             id={id}
-            data-bs-backdrop="static"
+            data-bs-backdrop="false"
             data-bs-keyboard="false"
             tabIndex="-1"
             aria-labelledby={`${id}Label`}
