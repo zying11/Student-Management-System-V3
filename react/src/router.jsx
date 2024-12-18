@@ -215,6 +215,9 @@ import AnnouncementDetail from "./views/AnnouncementDetail.jsx";
 import RecordPayment from "./views/RecordPayment.jsx";
 import RecordPaymentForm from "./views/RecordPaymentForm.jsx";
 import ReceiptTemplate from "./views/ReceiptTemplate.jsx";
+import AssessmentFeedback from "./views/AssessmentFeedback.jsx";
+import AssessmentFeedbackHistory from "./views/AssessmentFeedbackHistory.jsx";
+import AssessmentFeedbackReviewForm from "./views/AssessmentFeedbackReviewForm.jsx";
 
 // Check the user role and render the dashboard accordingly
 const DashboardWrapper = () => {
@@ -504,6 +507,30 @@ const router = createBrowserRouter([
                 element: (
                     <ProtectedRoute requiredRoles={["admin", "teacher"]}>
                         <TeacherProfileView key="teacherProfile" />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "/assessment-feedback",
+                element: (
+                    <ProtectedRoute requiredRoles={["admin", "teacher"]}>
+                        <AssessmentFeedback />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "/assessment-feedback/history/student/:studentId/subject/:subjectId",
+                element: (
+                    <ProtectedRoute requiredRoles={["admin", "teacher"]}>
+                        <AssessmentFeedbackHistory />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "/assessment-feedback/review/student/:studentId/subject/:subjectId/feedback/:feedbackId",
+                element: (
+                    <ProtectedRoute requiredRoles={["admin", "teacher"]}>
+                        <AssessmentFeedbackReviewForm />
                     </ProtectedRoute>
                 ),
             },

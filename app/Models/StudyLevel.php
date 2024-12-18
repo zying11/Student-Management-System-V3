@@ -10,4 +10,10 @@ class StudyLevel extends Model
     use HasFactory;
 
     protected $table = 'study_level';
+
+    // zy - 
+    public function enrollments()
+    {
+        return $this->hasMany(Enrollment::class);
+    }
 }
