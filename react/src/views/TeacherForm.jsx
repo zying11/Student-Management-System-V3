@@ -199,7 +199,7 @@ export default function TeacherForm({ isEditing }) {
             alert(`Teacher ${isEditing ? "updated" : "created"} successfully`);
 
             // Redirect to the teacher list page
-            navigate("/teacher");
+            navigate("/teachers");
         } catch (error) {
             if (error.response && error.response.data) {
                 setErrors(error.response.data.errors);
