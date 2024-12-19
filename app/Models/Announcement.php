@@ -7,5 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Announcement extends Model
 {
-    use HasFactory;
+    protected $fillable = ['admin_id', 'message'];
+
+    public function recipients()
+    {
+        return $this->hasMany(Recipient::class);
+    }
 }
+

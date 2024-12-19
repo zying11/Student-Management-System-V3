@@ -6,6 +6,7 @@ use App\Models\Announcement;
 use App\Models\StudentParent;
 use App\Models\Parents;
 use App\Models\Enrollment;
+use App\Models\Recipient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Twilio\Rest\Client;
@@ -69,77 +70,6 @@ class AnnouncementController extends Controller
         ]);
     }
 
-    // Method to handle form submission and send a WhatsApp message via Twilio
-    // function sendAnnouncement(Request $request)
-    // {
-    //     // Validate the incoming request
-    //     $request->validate([
-    //         'phone' => 'required|string',
-    //         'message' => 'required|string',
-    //     ]);
-
-    //     $twilioSid = env('TWILIO_SID');
-    //     $twilioAuthToken = env('TWILIO_AUTH_TOKEN');
-    //     $twilioWhatsappNumber = 'whatsapp:' . env('TWILIO_WHATSAPP_NUMBER');
-    //     $to = 'whatsapp:' . $request->phone;
-    //     $message = $request->message;
-
-    //     try {
-    //         $client = new Client($twilioSid, $twilioAuthToken);
-    //         $twilioMessage = $client->messages->create(
-    //             $to,
-    //             [
-    //                 'from' => $twilioWhatsappNumber,
-    //                 'body' => $message,
-    //             ]
-    //         );
-
-    //         return response()->json([
-    //             'status' => 200,
-    //             'message' => 'Message sent successfully!',
-    //             'sid' => $twilioMessage->sid,
-    //         ]);
-    //     } catch (Exception $e) {
-    //         return response()->json([
-    //             'status' => 500,
-    //             'message' => 'Error sending message.',
-    //             'error' => $e->getMessage(),
-    //         ], 500);
-    //     }
-
-    // function getParentPhoneNumbers(Request $request)
-    // {
-    //     $lessonIds = $request->input('lesson_ids', []);
-
-    //     if (empty($lessonIds)) {
-    //         return response()->json(['status' => 'error', 'message' => 'No lessons selected.'], 400);
-    //     }
-
-    //     try {
-    //         // Fetch student IDs for the selected lessons
-    //         $studentIds = Enrollment::whereIn('lesson_id', $lessonIds)->pluck('student_id');
-
-    //         // Fetch parent IDs for these students
-    //         $parentIds = StudentParent::whereIn('student_id', $studentIds)->pluck('parent_id');
-
-    //         // Fetch parent phone numbers
-    //         $parentNumbers = Parents::whereIn('id', $parentIds)
-    //             ->pluck('phone_number')
-    //             ->unique();
-
-    //         // Format phone numbers with Malaysian country code (+60)
-    //         $formattedNumbers = $parentNumbers->map(function ($number) {
-    //             return '+60' . ltrim($number, '0'); // Add +60 and remove leading zero
-    //         });
-
-    //         return response()->json(['status' => 'success', 'phone_numbers' => $formattedNumbers]);
-    //     } catch (Exception $e) {
-    //         return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
-    //     }
-    // }
-
-
-
     function sendAnnouncement(Request $request)
     {
         // Retrieve Twilio credentials
@@ -188,9 +118,48 @@ class AnnouncementController extends Controller
             return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
         }
 
-
-
     }
+
+    public function saveAnnouncement(Request $request)
+    {
+        $validatedData = $request->validate([
+            'lesson_ids' => 'required|array',
+            'lesson_ids.*' => 'exists:lessons,id',
+            'message' => 'required|string',
+            'admin_id' => 'required',
+        ]);
+
+        try {
+
+            // Create the announcement
+            $announcement = Announcement::create([
+                'admin_id' => $validatedData['admin_id'],
+                'message' => $validatedData['message'],
+            ]);
+
+            // Attach recipients
+            $recipients = [];
+            foreach ($validatedData['lesson_ids'] as $lessonId) {
+                $recipients[] = [
+                    'announcement_id' => $announcement->id,
+                    'lesson_id' => $lessonId,
+                ];
+            }
+
+            Recipient::insert($recipients);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Announcement saved successfully!',
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to send announcement. ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
 }
 
 

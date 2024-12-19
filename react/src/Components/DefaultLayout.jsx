@@ -92,15 +92,13 @@ export default function DefaultLayout() {
                         </div>
                     </nav>
 
-                    <div
-                        className="position-relative px-md-3 px-2 mt-xl-5 mt-3"
-                        style={{
-                            maxWidth: "1280px",
-                            left: "50%",
-                            transform: "translate(-50%, 0px)",
-                        }}
-                    >
-                        <Outlet />
+                    <div className="container mt-xl-5 mt-3">
+                        <div
+                            className="px-md-3 px-2 mx-auto"
+                            style={{ maxWidth: "1280px" }}
+                        >
+                            <Outlet />
+                        </div>
                     </div>
                 </div>
             </div>

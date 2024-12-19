@@ -5,7 +5,6 @@ import { Table } from "../components/Table/Table";
 import Button from "../components/Button/Button";
 import ConfirmationModal from "../components/Modal/ConfirmationModal";
 import PieChart from "../components/Chart/PieChart";
-import Modal from "../components/Modal/StudyLevelModal";
 import axiosClient from "../axiosClient";
 import "../css/AdminDashboard.css";
 
@@ -501,7 +500,7 @@ export default function AdminDashboard() {
                 className="modal fade"
                 tabindex="-1"
                 aria-labelledby="addStudyLevelModal"
-                data-bs-backdrop="false"
+                data-bs-backdrop="static"
                 aria-hidden="true"
             >
                 <div className="modal-dialog">
@@ -556,7 +555,7 @@ export default function AdminDashboard() {
                 className="modal fade subject-modal"
                 tabindex="-1"
                 data-bs-keyboard="false"
-                data-bs-backdrop="false"
+                data-bs-backdrop="static"
             >
                 <div className="modal-dialog">
                     <div className="modal-content">
@@ -645,7 +644,7 @@ export default function AdminDashboard() {
                 id="editSubjectModal"
                 className="modal fade edit-subject-modal"
                 tabIndex="-1"
-                data-bs-backdrop="false"
+                data-bs-backdrop="static"
                 data-bs-keyboard="false"
             >
                 <div className="modal-dialog">
@@ -717,19 +716,17 @@ export default function AdminDashboard() {
                             </div>
 
                             <div className="button-container d-flex justify-content-end gap-3">
-                                <button
-                                    type="submit"
-                                    className="btn btn-primary"
-                                >
+                                <Button type="submit" className="btn">
                                     Save
-                                </button>
-                                <button
+                                </Button>
+                                <Button
                                     type="button"
-                                    className="btn btn-secondary"
+                                    className="btn"
+                                    color="yellow"
                                     data-bs-dismiss="modal"
                                 >
                                     Cancel
-                                </button>
+                                </Button>
                             </div>
                         </form>
                     </div>

@@ -9,6 +9,8 @@ class Recipient extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['announcement_id', 'lesson_id'];
+
     public function announcement()
     {
         return $this->belongsTo(Announcement::class);

@@ -110,6 +110,7 @@ Route::get('/announcement/{id?}', [AnnouncementController::class, 'index']);
 Route::get('/announcement/lessons/{id}', [LessonController::class, 'getLessonsByAnnouncement']);
 Route::get('/announcement/parents/{lessonId}', [AnnouncementController::class, 'getParentCount']);
 Route::post('/send-announcement', [AnnouncementController::class, 'sendAnnouncement']);
+Route::post('/save-announcement', [AnnouncementController::class, 'saveAnnouncement']);
 
 // USER
 // Route::apiResource('/users', UserController::class);
