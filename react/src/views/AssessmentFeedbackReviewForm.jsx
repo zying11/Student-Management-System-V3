@@ -10,8 +10,8 @@ import ReactStars from "react-rating-stars-component";
 export default function AssessmentFeedbackReviewForm() {
     // extract studentId, subjectId, and feedbackId from the URL
     const { studentId, subjectId, feedbackId } = useParams();
-
     const navigate = useNavigate();
+    
     const [feedbackDetails, setFeedbackDetails] = useState({
         status: "",
         review_date: "",
@@ -19,12 +19,12 @@ export default function AssessmentFeedbackReviewForm() {
             {
                 topic_name: "",
                 competency_level: "",
-                class_participation: "",
-                problem_solving: "",
-                assignment_completion: "",
-                communication_skills: "",
-                behavior_discipline: "",
-                effort_motivation: "",
+                class_participation: 0,
+                problem_solving: 0,
+                assignment_completion: 0,
+                communication_skills: 0,
+                behavior_discipline: 0,
+                effort_motivation: 0,
                 comment: "",
             },
         ],
@@ -61,56 +61,19 @@ export default function AssessmentFeedbackReviewForm() {
         fetchFeedbackDetails();
     }, [feedbackId]);
 
-    // const validateFields = () => {
-    //     const errors = {};
-
-    //     // Validate topics
-    //     feedbackDetails.topics.forEach((topic, index) => {
-    //         if (!topic.topic_name.trim()) {
-    //             errors[`topics.${index}.topic_name`] =
-    //                 "Topic name is required.";
-    //         }
-    //         if (!topic.competency_level) {
-    //             errors[`topics.${index}.competency_level`] =
-    //                 "Competency level is required.";
-    //         }
-    //         if (topic.class_participation < 1) {
-    //             errors[`topics.${index}.class_participation`] =
-    //                 "Class participation rating is required.";
-    //         }
-    //         if (topic.problem_solving < 1) {
-    //             errors[`topics.${index}.problem_solving`] =
-    //                 "Problem-solving rating is required.";
-    //         }
-
-    //     });
-
-    //     // Validate overall feedback and suggestions
-    //     if (!feedbackDetails.overall_feedback.trim()) {
-    //         errors.overall_feedback = "Overall feedback is required.";
-    //     }
-    //     if (!feedbackDetails.suggestions.trim()) {
-    //         errors.suggestions = "Suggestions are required.";
-    //     }
-
-    //     setValidationErrors(errors);
-
-    //     // Return true if no errors
-    //     return Object.keys(errors).length === 0;
-    // };
 
     const handleFieldChange = (index, field, value) => {
+        // Update the specific field in the topics array
         const updatedTopics = [...feedbackDetails.topics];
         updatedTopics[index][field] = value;
         setFeedbackDetails({ ...feedbackDetails, topics: updatedTopics });
 
-        // Remove validation error for the field if it becomes valid
-        const fieldKey = `topics.${index}.${field}`;
-        if (validationErrors[fieldKey]) {
-            const newErrors = { ...validationErrors };
-            delete newErrors[fieldKey];
-            setValidationErrors(newErrors);
-        }
+        // Clear the error for the specific field the user is typing in
+        setValidationErrors((prevErrors) => {
+            const updatedErrors = { ...prevErrors };
+            delete updatedErrors[`topics.${index}.${field}`]; // Remove the error for the specific field
+            return updatedErrors;
+        });
     };
 
     const addNewTopic = () => {
@@ -140,50 +103,88 @@ export default function AssessmentFeedbackReviewForm() {
         setFeedbackDetails({ ...feedbackDetails, topics: updatedTopics });
     };
 
+    const validateForm = () => {
+        const errors = {};
+
+        if (!feedbackDetails.status) {
+            errors.status = "Status is required.";
+        }
+
+        if (!feedbackDetails.review_date) {
+            errors.review_date = "Review date is required.";
+        }
+
+        feedbackDetails.topics.forEach((topic, index) => {
+            if (!topic.topic_name) {
+                errors[`topics.${index}.topic_name`] =
+                    "Topic name is required.";
+            }
+            if (!topic.competency_level) {
+                errors[`topics.${index}.competency_level`] =
+                    "Competency level is required.";
+            }
+            if (!topic.class_participation) {
+                errors[`topics.${index}.class_participation`] =
+                    "Class participation is required.";
+            }
+            if (!topic.problem_solving) {
+                errors[`topics.${index}.problem_solving`] =
+                    "Problem-solving skills is required.";
+            }
+            if (!topic.assignment_completion) {
+                errors[`topics.${index}.assignment_completion`] =
+                    "Assignment completion is required.";
+            }
+            if (!topic.communication_skills) {
+                errors[`topics.${index}.communication_skills`] =
+                    "Communication skills is required.";
+            }
+            if (!topic.behavior_discipline) {
+                errors[`topics.${index}.behavior_discipline`] =
+                    "Behavior and discipline is required.";
+            }
+            if (!topic.effort_motivation) {
+                errors[`topics.${index}.effort_motivation`] =
+                    "Effort and motivation is required.";
+            }
+            if (!topic.comment) {
+                errors[`topics.${index}.comment`] = "Comment is required.";
+            }
+        });
+
+        if (!feedbackDetails.overall_feedback) {
+            errors.overall_feedback = "Overall feedback is required.";
+        }
+
+        if (!feedbackDetails.suggestions) {
+            errors.suggestions = "Suggestions are required.";
+        }
+
+        setValidationErrors(errors);
+
+        return Object.keys(errors).length === 0;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Ensure topics array has at least one topic
-        if (feedbackDetails.topics.length === 0) {
-            setError("Please add at least one topic.");
+        if (!validateForm()) {
             return;
         }
 
         try {
-            // API call to save the feedback details
-            const response = await axiosClient.put(
-                `/feedback/${feedbackId}`,
-                feedbackDetails
-            );
-
-            // Handle success
+            await axiosClient.put(`/feedback/${feedbackId}`, feedbackDetails);
             alert("Feedback updated successfully!");
-
-            // Optionally reset error state
-            setError("");
-
-            // navigate to feedback history page
             navigate(
                 `/assessment-feedback/history/student/${studentId}/subject/${subjectId}`
             );
         } catch (err) {
-            console.error("Error updating feedback:", err);
-
-            // Handle validation or server-side errors
-            if (err.response && err.response.data) {
-                // Display specific backend validation errors
-                setError(
-                    err.response.data.message || "Error updating feedback."
-                );
-            } else {
-                // General error
-                setError("Error updating feedback. Please try again.");
-            }
+            setError("Error updating feedback.");
         }
     };
 
     if (loading) {
-        return <div>Loading feedback details...</div>;
+        return <div>Loading...</div>;
     }
 
     return (
@@ -192,7 +193,7 @@ export default function AssessmentFeedbackReviewForm() {
 
             {error && <div className="alert alert-danger">{error}</div>}
             <ContentContainer title={`Feedback Details`}>
-                <Row>
+                <Row className="mb-4">
                     <Col>
                         <p>Student Name: {feedbackDetails.student_name}</p>
                     </Col>
@@ -208,25 +209,34 @@ export default function AssessmentFeedbackReviewForm() {
                 </Row>
 
                 <Form onSubmit={handleSubmit}>
-                    <Row className="mt-4">
+                    <Row className="mb-3">
                         <Col>
                             {/* Status */}
                             <Form.Group>
                                 <Form.Label>Status</Form.Label>
                                 <Form.Select
                                     value={feedbackDetails.status}
-                                    onChange={(e) =>
+                                    onChange={(e) => {
                                         setFeedbackDetails({
                                             ...feedbackDetails,
                                             status: e.target.value,
-                                        })
-                                    }
+                                        });
+
+                                        // Clear error when the user starts interacting with the field
+                                        setValidationErrors((prevErrors) => ({
+                                            ...prevErrors,
+                                            status: "",
+                                        }));
+                                    }}
+                                    isInvalid={!!validationErrors.status}
                                 >
-                                    <option>Select Feedback Status</option>
                                     <option value="0">Not Started</option>
                                     <option value="1">In Progress</option>
                                     <option value="2">Completed</option>
                                 </Form.Select>
+                                <Form.Control.Feedback type="invalid">
+                                    {validationErrors.status}
+                                </Form.Control.Feedback>
                             </Form.Group>
                         </Col>
 
@@ -237,30 +247,40 @@ export default function AssessmentFeedbackReviewForm() {
                                 <Form.Control
                                     type="date"
                                     value={feedbackDetails.review_date}
-                                    onChange={(e) =>
+                                    onChange={(e) => {
                                         setFeedbackDetails({
                                             ...feedbackDetails,
                                             review_date: e.target.value,
-                                        })
-                                    }
+                                        });
+
+                                        // Clear error when the user starts interacting with the field
+                                        setValidationErrors((prevErrors) => ({
+                                            ...prevErrors,
+                                            review_date: "",
+                                        }));
+                                    }}
+                                    isInvalid={!!validationErrors.review_date}
                                 />
+                                <Form.Control.Feedback type="invalid">
+                                    {validationErrors.review_date}
+                                </Form.Control.Feedback>
                             </Form.Group>
                         </Col>
                     </Row>
 
                     {/* Topics */}
                     <h5 className="mt-4">Topics</h5>
-                    {feedbackDetails.topics.map((topic, index) => (
-                        <div key={index} className="topic-section mb-3">
+                    {feedbackDetails.topics?.map((topic, index) => (
+                        <React.Fragment key={index}>
                             <h6 className="mt-2">Topic {index + 1}</h6>
-                            <Row>
+                            <Row className="mb-3">
                                 <Col>
                                     <Form.Group>
-                                        <Form.Label>Topic</Form.Label>
+                                        <Form.Label>Topic Name</Form.Label>
                                         <Form.Control
                                             type="text"
-                                            placeholder="Enter topic name"
                                             value={topic.topic_name}
+                                            placeholder="Enter topic name"
                                             onChange={(e) =>
                                                 handleFieldChange(
                                                     index,
@@ -268,11 +288,24 @@ export default function AssessmentFeedbackReviewForm() {
                                                     e.target.value
                                                 )
                                             }
+                                            isInvalid={
+                                                !!validationErrors[
+                                                    `topics.${index}.topic_name`
+                                                ]
+                                            }
                                         />
+                                        <Form.Control.Feedback type="invalid">
+                                            {
+                                                validationErrors[
+                                                    `topics.${index}.topic_name`
+                                                ]
+                                            }
+                                        </Form.Control.Feedback>
                                     </Form.Group>
-
+                                </Col>
+                                <Col>
                                     <Form.Group>
-                                        <Form.Label className="mt-2">
+                                        <Form.Label>
                                             Competency Level
                                         </Form.Label>
                                         <Form.Select
@@ -284,8 +317,13 @@ export default function AssessmentFeedbackReviewForm() {
                                                     e.target.value
                                                 )
                                             }
+                                            isInvalid={
+                                                !!validationErrors[
+                                                    `topics.${index}.competency_level`
+                                                ]
+                                            }
                                         >
-                                            <option>
+                                            <option value="">
                                                 Select Competency Level
                                             </option>
                                             <option value="Needs Improvement">
@@ -301,183 +339,393 @@ export default function AssessmentFeedbackReviewForm() {
                                                 Mastered
                                             </option>
                                         </Form.Select>
-                                    </Form.Group>
-                                    <Form.Group>
-                                        <Form.Label className="mt-2">
-                                            Class Participation
-                                        </Form.Label>
-                                        <ReactStars
-                                            count={5}
-                                            size={34}
-                                            value={topic.class_participation}
-                                            onChange={(newRating) =>
-                                                handleFieldChange(
-                                                    index,
-                                                    "class_participation",
-                                                    newRating
-                                                )
+                                        <Form.Control.Feedback type="invalid">
+                                            {
+                                                validationErrors[
+                                                    `topics.${index}.competency_level`
+                                                ]
                                             }
-                                            activeColor="#ffd700"
-                                        />
-                                    </Form.Group>
-                                    <Form.Group>
-                                        <Form.Label className="mt-2">
-                                            Problem-Solving Skills
-                                        </Form.Label>
-                                        <ReactStars
-                                            count={5}
-                                            size={34}
-                                            value={topic.problem_solving}
-                                            onChange={(newRating) =>
-                                                handleFieldChange(
-                                                    index,
-                                                    "problem_solving",
-                                                    newRating
-                                                )
-                                            }
-                                            activeColor="#ffd700"
-                                        />
-                                    </Form.Group>
-                                    <Form.Group>
-                                        <Form.Label className="mt-2">
-                                            Assignment Completion
-                                        </Form.Label>
-                                        <ReactStars
-                                            count={5}
-                                            size={34}
-                                            value={topic.assignment_completion}
-                                            onChange={(newRating) =>
-                                                handleFieldChange(
-                                                    index,
-                                                    "assignment_completion",
-                                                    newRating
-                                                )
-                                            }
-                                            activeColor="#ffd700"
-                                        />
-                                    </Form.Group>
-                                    <Form.Group>
-                                        <Form.Label className="mt-2">
-                                            Communication Skills
-                                        </Form.Label>
-                                        <ReactStars
-                                            count={5}
-                                            size={34}
-                                            value={topic.communication_skills}
-                                            onChange={(newRating) =>
-                                                handleFieldChange(
-                                                    index,
-                                                    "communication_skills",
-                                                    newRating
-                                                )
-                                            }
-                                            activeColor="#ffd700"
-                                        />
-                                    </Form.Group>
-                                    <Form.Group>
-                                        <Form.Label className="mt-2">
-                                            Behavior and Discipline
-                                        </Form.Label>
-                                        <ReactStars
-                                            count={5}
-                                            size={34}
-                                            value={topic.behavior_discipline}
-                                            onChange={(newRating) =>
-                                                handleFieldChange(
-                                                    index,
-                                                    "behavior_discipline",
-                                                    newRating
-                                                )
-                                            }
-                                            activeColor="#ffd700"
-                                        />
-                                    </Form.Group>
-                                    <Form.Group>
-                                        <Form.Label className="mt-2">
-                                            Effort and Motivation
-                                        </Form.Label>
-                                        <ReactStars
-                                            count={5}
-                                            size={34}
-                                            value={topic.effort_motivation}
-                                            onChange={(newRating) =>
-                                                handleFieldChange(
-                                                    index,
-                                                    "effort_motivation",
-                                                    newRating
-                                                )
-                                            }
-                                            activeColor="#ffd700"
-                                        />
+                                        </Form.Control.Feedback>
                                     </Form.Group>
                                 </Col>
                             </Row>
-                            <Form.Group>
-                                <Form.Label>Comment</Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    placeholder="Enter comments"
-                                    value={topic.comment}
-                                    onChange={(e) =>
-                                        handleFieldChange(
-                                            index,
-                                            "comment",
-                                            e.target.value
-                                        )
-                                    }
-                                />
-                            </Form.Group>
-                            <Button
-                                className="mt-2"
-                                onClick={() => removeTopic(index)}
-                            >
-                                Remove Topic
-                            </Button>
-                        </div>
+
+                            <Row className="mb-3">
+                                <Col>
+                                    <Form.Group>
+                                        <Form.Label>
+                                            Class Participation
+                                        </Form.Label>
+                                        <div
+                                            className={
+                                                validationErrors[
+                                                    `topics.${index}.class_participation`
+                                                ]
+                                                    ? "is-invalid"
+                                                    : ""
+                                            }
+                                        >
+                                            <ReactStars
+                                                count={5}
+                                                size={34}
+                                                value={
+                                                    topic.class_participation
+                                                }
+                                                onChange={(newRating) =>
+                                                    handleFieldChange(
+                                                        index,
+                                                        "class_participation",
+                                                        newRating
+                                                    )
+                                                }
+                                            />
+                                        </div>
+                                        {validationErrors[
+                                            `topics.${index}.class_participation`
+                                        ] && (
+                                            <div className="invalid-feedback">
+                                                {
+                                                    validationErrors[
+                                                        `topics.${index}.class_participation`
+                                                    ]
+                                                }
+                                            </div>
+                                        )}
+                                    </Form.Group>
+                                </Col>
+                                <Col>
+                                    <Form.Group>
+                                        <Form.Label>
+                                            Problem-Solving Skills
+                                        </Form.Label>
+                                        <div
+                                            className={
+                                                validationErrors[
+                                                    `topics.${index}.problem_solving`
+                                                ]
+                                                    ? "is-invalid"
+                                                    : ""
+                                            }
+                                        >
+                                            <ReactStars
+                                                count={5}
+                                                size={34}
+                                                value={topic.problem_solving}
+                                                onChange={(newRating) =>
+                                                    handleFieldChange(
+                                                        index,
+                                                        "problem_solving",
+                                                        newRating
+                                                    )
+                                                }
+                                            />
+                                        </div>
+                                        {validationErrors[
+                                            `topics.${index}.problem_solving`
+                                        ] && (
+                                            <div className="invalid-feedback">
+                                                {
+                                                    validationErrors[
+                                                        `topics.${index}.problem_solving`
+                                                    ]
+                                                }
+                                            </div>
+                                        )}
+                                    </Form.Group>
+                                </Col>
+                            </Row>
+
+                            <Row className="mb-3">
+                                <Col>
+                                    <Form.Group>
+                                        <Form.Label>
+                                            {" "}
+                                            Assignment Completion
+                                        </Form.Label>
+                                        <div
+                                            className={
+                                                validationErrors[
+                                                    `topics.${index}.assignment_completion`
+                                                ]
+                                                    ? "is-invalid"
+                                                    : ""
+                                            }
+                                        >
+                                            <ReactStars
+                                                count={5}
+                                                size={34}
+                                                value={
+                                                    topic.assignment_completion
+                                                }
+                                                onChange={(newRating) =>
+                                                    handleFieldChange(
+                                                        index,
+                                                        "assignment_completion",
+                                                        newRating
+                                                    )
+                                                }
+                                            />
+                                        </div>
+                                        {validationErrors[
+                                            `topics.${index}.assignment_completion`
+                                        ] && (
+                                            <div className="invalid-feedback">
+                                                {
+                                                    validationErrors[
+                                                        `topics.${index}.assignment_completion`
+                                                    ]
+                                                }
+                                            </div>
+                                        )}
+                                    </Form.Group>
+                                </Col>
+                                <Col>
+                                    <Form.Group>
+                                        <Form.Label>
+                                            {" "}
+                                            Communication Skills
+                                        </Form.Label>
+                                        <div
+                                            className={
+                                                validationErrors[
+                                                    `topics.${index}.communication_skills`
+                                                ]
+                                                    ? "is-invalid"
+                                                    : ""
+                                            }
+                                        >
+                                            <ReactStars
+                                                count={5}
+                                                size={34}
+                                                value={
+                                                    topic.communication_skills
+                                                }
+                                                onChange={(newRating) =>
+                                                    handleFieldChange(
+                                                        index,
+                                                        "communication_skills",
+                                                        newRating
+                                                    )
+                                                }
+                                            />
+                                        </div>
+                                        {validationErrors[
+                                            `topics.${index}.communication_skills`
+                                        ] && (
+                                            <div className="invalid-feedback">
+                                                {
+                                                    validationErrors[
+                                                        `topics.${index}.communication_skills`
+                                                    ]
+                                                }
+                                            </div>
+                                        )}
+                                    </Form.Group>
+                                </Col>
+                            </Row>
+
+                            <Row className="mb-3">
+                                <Col>
+                                    <Form.Group>
+                                        <Form.Label>
+                                            {" "}
+                                            Behavior and Discipline
+                                        </Form.Label>
+                                        <div
+                                            className={
+                                                validationErrors[
+                                                    `topics.${index}.behavior_discipline`
+                                                ]
+                                                    ? "is-invalid"
+                                                    : ""
+                                            }
+                                        >
+                                            <ReactStars
+                                                count={5}
+                                                size={34}
+                                                value={
+                                                    topic.behavior_discipline
+                                                }
+                                                onChange={(newRating) =>
+                                                    handleFieldChange(
+                                                        index,
+                                                        "behavior_discipline",
+                                                        newRating
+                                                    )
+                                                }
+                                            />
+                                        </div>
+                                        {validationErrors[
+                                            `topics.${index}.behavior_discipline`
+                                        ] && (
+                                            <div className="invalid-feedback">
+                                                {
+                                                    validationErrors[
+                                                        `topics.${index}.behavior_discipline`
+                                                    ]
+                                                }
+                                            </div>
+                                        )}
+                                    </Form.Group>
+                                </Col>
+                                <Col>
+                                    <Form.Group>
+                                        <Form.Label>
+                                            {" "}
+                                            Effort and Motivation
+                                        </Form.Label>
+                                        <div
+                                            className={
+                                                validationErrors[
+                                                    `topics.${index}.effort_motivation`
+                                                ]
+                                                    ? "is-invalid"
+                                                    : ""
+                                            }
+                                        >
+                                            <ReactStars
+                                                count={5}
+                                                size={34}
+                                                value={topic.effort_motivation}
+                                                onChange={(newRating) =>
+                                                    handleFieldChange(
+                                                        index,
+                                                        "effort_motivation",
+                                                        newRating
+                                                    )
+                                                }
+                                            />
+                                        </div>
+                                        {validationErrors[
+                                            `topics.${index}.effort_motivation`
+                                        ] && (
+                                            <div className="invalid-feedback">
+                                                {
+                                                    validationErrors[
+                                                        `topics.${index}.effort_motivation`
+                                                    ]
+                                                }
+                                            </div>
+                                        )}
+                                    </Form.Group>
+                                </Col>
+                            </Row>
+
+                            <Row className="mb-3">
+                                <Col>
+                                    <Form.Group>
+                                        <Form.Label> Comment</Form.Label>
+                                        <Form.Control
+                                            as="textarea"
+                                            value={topic.comment}
+                                            placeholder="Enter comments"
+                                            onChange={(e) =>
+                                                handleFieldChange(
+                                                    index,
+                                                    "comment",
+                                                    e.target.value
+                                                )
+                                            }
+                                            isInvalid={
+                                                !!validationErrors[
+                                                    `topics.${index}.comment`
+                                                ]
+                                            }
+                                        />
+                                        <Form.Control.Feedback type="invalid">
+                                            {
+                                                validationErrors[
+                                                    `topics.${index}.comment`
+                                                ]
+                                            }
+                                        </Form.Control.Feedback>
+                                    </Form.Group>
+                                </Col>
+                            </Row>
+
+                            <Row className="mb-3">
+                                <Col className="d-flex justify-content-end">
+                                    <img
+                                        className="ms-2"
+                                        src="http://localhost:8000/icon/add.png"
+                                        alt="Add"
+                                        onClick={addNewTopic}
+                                        style={{ cursor: "pointer" }}
+                                    />
+                                    <img
+                                        className="ms-2"
+                                        src="http://localhost:8000/icon/delete.png"
+                                        alt="Delete"
+                                        onClick={() => removeTopic(index)}
+                                        style={{ cursor: "pointer" }}
+                                    />
+                                </Col>
+                            </Row>
+                        </React.Fragment>
                     ))}
 
-                    <Button onClick={addNewTopic} className="btn-create-yellow">
-                        Add Topic
-                    </Button>
-
                     {/* Overall Feedback */}
-                    <Form.Group>
-                        <Form.Label>Overall Feedback</Form.Label>
-                        <Form.Control
-                            as="textarea"
-                            rows={3}
-                            placeholder="Enter overall feedback"
-                            value={feedbackDetails.overall_feedback}
-                            onChange={(e) =>
-                                setFeedbackDetails({
-                                    ...feedbackDetails,
-                                    overall_feedback: e.target.value,
-                                })
-                            }
-                        />
-                    </Form.Group>
+                    <Row className="mb-3">
+                        <Form.Group>
+                            <Form.Label>Overall Feedback</Form.Label>
+                            <Form.Control
+                                as="textarea"
+                                rows={3}
+                                value={feedbackDetails.overall_feedback}
+                                onChange={(e) => {
+                                    setFeedbackDetails({
+                                        ...feedbackDetails,
+                                        overall_feedback: e.target.value,
+                                    });
 
-                    {/* Suggestions */}
-                    <Form.Group>
-                        <Form.Label>Suggestions</Form.Label>
-                        <Form.Control
-                            as="textarea"
-                            rows={3}
-                            placeholder="Enter suggestions"
-                            value={feedbackDetails.suggestions}
-                            onChange={(e) =>
-                                setFeedbackDetails({
-                                    ...feedbackDetails,
-                                    suggestions: e.target.value,
-                                })
-                            }
-                        />
-                    </Form.Group>
+                                    // Clear error when the user starts interacting with the field
+                                    setValidationErrors((prevErrors) => ({
+                                        ...prevErrors,
+                                        overall_feedback: "",
+                                    }));
+                                }}
+                                isInvalid={!!validationErrors.overall_feedback}
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                {validationErrors.overall_feedback}
+                            </Form.Control.Feedback>
+                        </Form.Group>
+                    </Row>
+
+                    <Row className="mb-3">
+                        {/* Suggestions */}
+                        <Form.Group>
+                            <Form.Label>Suggestions</Form.Label>
+                            <Form.Control
+                                as="textarea"
+                                rows={3}
+                                value={feedbackDetails.suggestions}
+                                onChange={(e) => {
+                                    setFeedbackDetails({
+                                        ...feedbackDetails,
+                                        suggestions: e.target.value,
+                                    });
+
+                                    // Clear error when the user starts interacting with the field
+                                    setValidationErrors((prevErrors) => ({
+                                        ...prevErrors,
+                                        suggestions: "",
+                                    }));
+                                }}
+                                isInvalid={!!validationErrors.suggestions}
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                {validationErrors.suggestions}
+                            </Form.Control.Feedback>
+                        </Form.Group>
+                    </Row>
 
                     {/* Submit Button */}
-                    <Button type="submit" className="mt-3">
-                        Save Feedback
-                    </Button>
+                    <Row className="mb-3">
+                        <Col className="d-flex justify-content-end">
+                            <Button type="submit">Submit</Button>
+                        </Col>
+                    </Row>
                 </Form>
             </ContentContainer>
         </div>

@@ -76,7 +76,7 @@ export default function AssessmentFeedback() {
         return acc;
     }, {});
 
-    // Filter feedbacks by name based on search query and avoid duplicates
+    // Filter feedbacks by student name based on search query and avoid duplicates
     const filteredFeedbacks = feedbackData.feedbacks
         .filter((feedback) =>
             feedback.name
@@ -84,11 +84,11 @@ export default function AssessmentFeedback() {
                 .includes(searchQuery.trim().toLowerCase())
         )
         .map((feedback) => {
-            // Deduplicate the feedback array by subject name
+            // Deduplicate the feedback array by subject name, left only one month within the same subject
             const uniqueFeedback = [
                 ...new Map(
                     feedback.feedback.map((subFeedback) => [
-                        subFeedback.subject.subject_name,
+                        subFeedback.subject.id,
                         subFeedback,
                     ])
                 ).values(),
@@ -123,7 +123,7 @@ export default function AssessmentFeedback() {
                   feedback.name || "-", // Student Name
                   levelLookup[subjectFeedback.subject.level_id] || "-",
                   subjectFeedback.subject.subject_name || "-",
-                  `${subjectFeedback.status}/12 Completed`,
+                  `0/12 Completed`,
                   <Link
                       to={`/assessment-feedback/history/student/${feedback.id}/subject/${subjectFeedback.subject_id}`} // feedback.id is the student ID
                       className="text-decoration-none"
