@@ -27,6 +27,21 @@ class FeedbackController extends Controller
             'December'
         ];
 
+        // Define default topic structure
+        $defaultTopic = [
+            [
+                'topic_name' => '',
+                'competency_level' => '',
+                'class_participation' => 0,
+                'problem_solving' => 0,
+                'assignment_completion' => 0,
+                'communication_skills' => 0,
+                'behavior_discipline' => 0,
+                'effort_motivation' => 0,
+                'comment' => '',
+            ],
+        ];
+
         // Fetch all students with their enrollments and subjects
         $students = Student::with(['enrollments.subject', 'feedback.subject'])->get();
 
@@ -44,7 +59,7 @@ class FeedbackController extends Controller
                         [
                             'status' => 0,
                             'review_date' => null,
-                            'topics' => json_encode([]),
+                            'topics' => $defaultTopic,
                         ]
                     );
                 }
@@ -87,6 +102,21 @@ class FeedbackController extends Controller
             'December'
         ];
 
+        // Define default topic structure
+        $defaultTopic = [
+            [
+                'topic_name' => '',
+                'competency_level' => '',
+                'class_participation' => 0,
+                'problem_solving' => 0,
+                'assignment_completion' => 0,
+                'communication_skills' => 0,
+                'behavior_discipline' => 0,
+                'effort_motivation' => 0,
+                'comment' => '',
+            ],
+        ];
+
         // Fetch all students enrolled in lessons taught by the teacher
         $students = Student::with(['enrollments.subject', 'enrollments.lesson'])
             ->whereHas('enrollments.lesson', function ($query) use ($teacherId) {
@@ -110,7 +140,7 @@ class FeedbackController extends Controller
                             [
                                 'status' => 0,
                                 'review_date' => null,
-                                'topics' => json_encode([]),
+                                'topics' => $defaultTopic,
                             ]
                         );
                     }
@@ -173,7 +203,7 @@ class FeedbackController extends Controller
         $feedback->update([
             'status' => $validatedData['status'],
             'review_date' => $validatedData['review_date'],
-            'topics' => $validatedData['topics'], // Topics will be stored as JSON in the DB
+            'topics' => $validatedData['topics'],
             'overall_feedback' => $validatedData['overall_feedback'],
             'suggestions' => $validatedData['suggestions'],
         ]);

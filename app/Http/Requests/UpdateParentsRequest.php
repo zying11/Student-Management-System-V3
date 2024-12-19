@@ -29,7 +29,7 @@ class UpdateParentsRequest extends FormRequest
                 'required',
                 'email',
                 'max:255',
-                'unique:users,email,' . $this->id,
+                'unique:parents,email,' . $this->id,
             ],
             // 'email' => [
             //     'nullable',
