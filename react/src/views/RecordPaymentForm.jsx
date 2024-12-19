@@ -116,7 +116,7 @@ export default function RecordPaymentForm() {
         try {
             if (isEditing) {
                 await axiosClient.put(
-                    `/record-payment-for/invoice${id}`,
+                    `/record-payment-for/invoice/${id}`,
                     paymentDetails
                 );
             } else {

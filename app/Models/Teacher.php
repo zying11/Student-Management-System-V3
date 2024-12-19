@@ -50,4 +50,16 @@ class Teacher extends Model
         // return $this->belongsTo(Lesson::class);
         return $this->hasMany(Lesson::class, 'teacher_id');
     }
+
+    public function students()
+    {
+        return $this->hasManyThrough(
+            Student::class,    
+            Enrollment::class, 
+            'lesson_id',       
+            'id',     
+            'id',             
+            'id'           
+        );
+    }
 }

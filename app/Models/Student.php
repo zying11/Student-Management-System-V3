@@ -68,4 +68,34 @@ class Student extends Model
     {
         return $this->hasMany(Invoice::class);
     }
+
+    /**
+     * Define the relationship to the Subject model.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function subjects()
+    {
+        return $this->belongsToMany(Subject::class, 'enrollments', 'student_id', 'subject_id');
+    }
+
+    /**
+     * Define the relationship to the Feedback model.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function feedback()
+    {
+        return $this->hasMany(Feedback::class);
+    }
+
+    /**
+     * Define the relationship to the Lesson model.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function lessons()
+    {
+        return $this->belongsToMany(Lesson::class, 'lesson_student', 'student_id', 'lesson_id');
+    }
 }

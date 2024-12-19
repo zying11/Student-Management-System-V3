@@ -18,6 +18,7 @@ use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\ParentsController;
 use App\Http\Controllers\StudyLevelController;
 use App\Http\Controllers\RecordPaymentController;
+use App\Http\Controllers\FeedbackController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -75,6 +76,8 @@ Route::get('subjects', [SubjectController::class, 'index']);
 Route::post('add-subject', [SubjectController::class, 'addSubject']);
 Route::delete('/delete-subject/{id}', [SubjectController::class, 'deleteSubject']);
 Route::put('/edit-subject/{id}', [SubjectController::class, 'updateSubject']);
+// ZY- Route to fetch specific subject details by ID
+Route::get('/subjects/{id}', [SubjectController::class, 'show']);
 
 //Study Level
 Route::get('study-levels', [StudyLevelController::class, 'index']);
@@ -236,7 +239,17 @@ Route::get('/generate-receipt-number', [RecordPaymentController::class, 'generat
 // Route to send payment receipt via email
 Route::post('/send-receipt-pdf-email', [RecordPaymentController::class, 'sendReceiptPdfEmail']);
 
-
+// FEEDBACK
+// Fetch all students for admins
+Route::get('/feedback-list/all-students', [FeedbackController::class, 'fetchAllStudents']);
+// Fetch specific teacher's students
+Route::get('/feedback-list/teacher/user/{userId}', [FeedbackController::class, 'fetchTeacherStudents']);
+// Fetch feedback history for a student and related subjects
+Route::get('/students/{studentId}/subjects/{subjectId}/feedback', [FeedbackController::class, 'getFeedbackHistory']);
+// Fetch feedback details by ID
+Route::get('/feedback/{id}', [FeedbackController::class, 'show']);
+// Update feedback details by ID
+Route::put('/feedback/{id}', [FeedbackController::class, 'update']);
 
 
 // based on user role to access the api routes, will be implemented later

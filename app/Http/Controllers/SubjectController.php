@@ -69,4 +69,18 @@ class SubjectController extends Controller
 
         return response()->json(['status' => 404, 'message' => 'Subject not found.'], 404);
     }
+
+    /**
+     * zy- Display the specified subject.
+     */
+    public function show($id)
+    {
+        // Find the subject by ID
+        $subject = Subject::findOrFail($id);
+
+        return response()->json([
+            'status' => 200,
+            'subject' => $subject
+        ]);
+    }
 }

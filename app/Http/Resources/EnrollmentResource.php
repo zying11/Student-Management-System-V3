@@ -38,6 +38,7 @@ class EnrollmentResource extends JsonResource
             'lesson' => $this->lesson ? [
                 'id' => $this->lesson->id,
                 'subject_name' => $this->lesson->subject ? $this->lesson->subject->subject_name : 'N/A',
+                'teacher_id' => $this->lesson->teacher_id,
                 'teacher_name' => $this->lesson->teacher && $this->lesson->teacher->user ? $this->lesson->teacher->user->name : 'N/A',
                 'start_time' => $this->lesson->start_time,
                 'end_time' => $this->lesson->end_time,

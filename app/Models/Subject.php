@@ -14,4 +14,9 @@ class Subject extends Model
         return $this->belongsTo(StudyLevel::class, 'level_id');
     }
 
+    // zy- Define the relationship to Feedback
+    public function feedback()
+    {
+        return $this->hasMany(Feedback::class);
+    }
 }
