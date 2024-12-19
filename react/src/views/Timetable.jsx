@@ -7,7 +7,6 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin, { Draggable } from "@fullcalendar/interaction";
 import Button from "../components/Button/Button";
 import ConfirmationModal from "../components/Modal/ConfirmationModal";
-import LessonDetailsModal from "../components/Modal/LessonDetailsModal";
 import "../css/Timetable.css";
 
 export default function Timetable() {
@@ -40,6 +39,17 @@ export default function Timetable() {
         fetchRooms();
     }, []);
 
+    // Helper function to convert 24-hour time to 12-hour format
+    function formatTimeTo12Hour(time) {
+        let [hour, minute] = time.split(":"); // Split the time into hour and minute
+        hour = parseInt(hour, 10); // Convert hour string to an integer
+
+        const ampm = hour >= 12 ? "pm" : "am"; // Determine AM or PM
+        hour = hour % 12 || 12; // Convert to 12-hour format, 0 becomes 12
+
+        return `${hour}${ampm}`; // Return formatted time
+    }
+
     // Variable to display unassigned lesson data
     const [unassignedLessons, setUnassignedLessons] = useState([]);
 
@@ -54,7 +64,7 @@ export default function Timetable() {
                     "http://127.0.0.1:8000/api/lessons"
                 );
                 const data = res.data;
-                // console.log(data);
+                console.log(data);
                 if (Array.isArray(data.lessons)) {
                     // Filter out lessons where day, start_time, or end_time is null
                     const filteredLessons = data.lessons.filter(
@@ -220,7 +230,7 @@ export default function Timetable() {
                 lesson.day == dayOfWeek
         );
 
-        console.log(teacherLessons);
+        // console.log(teacherLessons);
 
         // Check for clashes with existing lessons
         let isClash = false;
@@ -299,45 +309,12 @@ export default function Timetable() {
                 extendedProps: {
                     subject: lesson.subject.subject_name,
                     studyLevel: lesson.subject.study_level.level_name,
-                    teacher: lesson.teacher_id,
+                    teacher: lesson.teacher.user.name,
+                    startTime: lesson.start_time,
+                    endTime: lesson.end_time,
                 },
             };
         });
-    };
-
-    // State for controlling whether the modal is visible
-    const [showModal, setShowModal] = useState(false);
-
-    // State for storing the content of the modal (lesson details)
-    const [modalContent, setModalContent] = useState({
-        lessonId: "",
-        teacherName: "",
-        subjectName: "",
-        // roomName: "",
-        startTime: "",
-        endTime: "",
-    });
-
-    const handleEventClick = (info) => {
-        // Extract event data (lesson details)
-        const event = info.event;
-        const lessonId = event.id;
-        const teacherName = event.extendedProps.teacher;
-        const subjectName = event.extendedProps.subject;
-        // const roomName = event.extendedProps.room_name;
-        const startTime = event.startStr;
-        const endTime = event.endStr;
-
-        // Populate the modal or info box with lesson details
-        setModalContent({
-            lessonId,
-            teacherName,
-            subjectName,
-            // roomName,
-            startTime,
-            endTime,
-        });
-        setShowModal(true);
     };
 
     // Fetch events based on the selected room
@@ -351,7 +328,6 @@ export default function Timetable() {
                     // console.log(res.data); // To check data format
                     const formattedEvents = formatEventData(res.data.lessons);
                     setTimetableEvents(formattedEvents);
-                    console.log(timetableEvents);
                 } catch (error) {
                     console.error("Error fetching events:", error);
                 }
@@ -359,6 +335,21 @@ export default function Timetable() {
             fetchEvents();
         }
     }, [selectedRoomId]);
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedEvent, setSelectedEvent] = useState(null);
+
+    const handleEventClick = (clickInfo) => {
+        setSelectedEvent(clickInfo.event); // Pass additional details here
+        // console.log(selectedEvent);
+
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+        setSelectedEvent(null);
+    };
 
     return (
         <>
@@ -443,9 +434,8 @@ export default function Timetable() {
 
                 <div className="d-flex justify-content-end mt-4">
                     <Button
-                        // data-bs-toggle="modal"
-                        // data-bs-target="#confirmationModal"
-                        onClick={handleSaveTimetable}
+                        data-bs-toggle="modal"
+                        data-bs-target="#confirmationModal"
                         color="yellow"
                     >
                         Save Timetable
@@ -453,11 +443,45 @@ export default function Timetable() {
                 </div>
             </ContentContainer>
 
-            <LessonDetailsModal
-                showModal={showModal}
-                setShowModal={setShowModal}
-                modalContent={modalContent}
-            />
+            {isModalOpen && selectedEvent && (
+                <div className="modal-overlay">
+                    <div className="modal-details">
+                        <button
+                            className="close-btn btn-close"
+                            onClick={closeModal}
+                        >
+                            ×
+                        </button>
+                        <div className="modal-header p-3">
+                            <h5>Lesson Details</h5>
+                        </div>
+                        <div className="p-3">
+                            <p className="mb-3">
+                                <strong>Subject:</strong>{" "}
+                                {selectedEvent.extendedProps.subject}
+                            </p>
+                            <p className="mb-3">
+                                <strong>Level:</strong>{" "}
+                                {selectedEvent.extendedProps.studyLevel}
+                            </p>
+                            <p className="mb-3">
+                                <strong>Teacher:</strong>{" "}
+                                {selectedEvent.extendedProps.teacher}
+                            </p>
+                            <p>
+                                <strong>Time:</strong>{" "}
+                                {formatTimeTo12Hour(
+                                    selectedEvent.extendedProps.startTime
+                                )}
+                                {"-"}
+                                {formatTimeTo12Hour(
+                                    selectedEvent.extendedProps.endTime
+                                )}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <div
                 className="modal fade"

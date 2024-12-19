@@ -1,7 +1,9 @@
 import axiosClient from "../axiosClient";
+import { useStateContext } from "../contexts/ContextProvider";
 import { useState } from "react";
 
 function SendAnnouncement({ selectedLessons, parentCounts }) {
+    const { token, user } = useStateContext();
     const [message, setMessage] = useState("");
     const [isSending, setIsSending] = useState(false);
 
@@ -18,23 +20,47 @@ function SendAnnouncement({ selectedLessons, parentCounts }) {
 
         setIsSending(true);
 
+        // try {
+        //     const response = await axiosClient.post("/send-announcement", {
+        //         lesson_ids: selectedLessons,
+        //         message: message,
+        //     });
+
+        //     if (response.data.status === "success") {
+        //         alert("Announcement sent successfully!");
+        //         setMessage(""); // Clear message input after success
+        //     } else {
+        //         alert(
+        //             "Failed to send the announcement: " + response.data.message
+        //         );
+        //     }
+        // } catch (error) {
+        //     console.error("Error sending announcement:", error);
+        //     alert("An error occurred while sending the announcement.");
+        // } finally {
+        //     setIsSending(false);
+        // }
+
         try {
-            const response = await axiosClient.post("/send-announcement", {
+            const response = await axiosClient.post("/save-announcement", {
+                admin_id: user.id,
                 lesson_ids: selectedLessons,
                 message: message,
             });
 
             if (response.data.status === "success") {
-                alert("Announcement sent successfully!");
-                setMessage(""); // Clear message input after success
+                console.log("Attendance saved successfully!");
             } else {
                 alert(
-                    "Failed to send the announcement: " + response.data.message
+                    "Failed to save the announcement: " + response.data.message
                 );
             }
+            setMessage("");
         } catch (error) {
-            console.error("Error sending announcement:", error);
-            alert("An error occurred while sending the announcement.");
+            console.error("Error saving announcement:", error);
+            alert(
+                "An error occurred while saving the announcement in the database."
+            );
         } finally {
             setIsSending(false);
         }

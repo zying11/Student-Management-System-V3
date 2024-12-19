@@ -182,7 +182,6 @@ import DefaultLayout from "./components/DefaultLayout.jsx";
 import GuestLayout from "./components/GuestLayout.jsx";
 import Users from "./views/Users.jsx";
 import UserForm from "./views/UserForm.jsx";
-import Scheduler from "./views/Scheduler.jsx";
 import Lesson from "./views/Lesson.jsx";
 import Invoice from "./views/Invoice.jsx";
 import InvoiceForm from "./views/InvoiceForm.jsx";
@@ -280,14 +279,6 @@ const router = createBrowserRouter([
                 element: (
                     <ProtectedRoute requiredRoles={["admin"]}>
                         <Timetable />
-                    </ProtectedRoute>
-                ),
-            },
-            {
-                path: "/timetabletest",
-                element: (
-                    <ProtectedRoute requiredRoles={["admin"]}>
-                        <Scheduler />
                     </ProtectedRoute>
                 ),
             },

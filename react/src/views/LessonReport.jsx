@@ -351,6 +351,7 @@ export default function LessonReport() {
                         xData={lessonDates}
                         yData={attendanceRates}
                         stepSize="10"
+                        maxBars="4"
                     />
                     <BarChart
                         chartTitle="Number of Absence"
@@ -359,6 +360,7 @@ export default function LessonReport() {
                         xData={studentNames}
                         yData={absenceCounts}
                         stepSize="1"
+                        maxBars="4"
                     />
                 </div>
                 <div className="mt-5">

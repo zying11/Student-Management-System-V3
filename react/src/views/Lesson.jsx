@@ -316,7 +316,11 @@ export default function Lesson() {
             <div
                 id="editLessonModal"
                 className="modal fade"
-                data-bs-backdrop="false"
+                tabindex="-1"
+                data-bs-backdrop="static"
+                data-bs-keyboard="false"
+                aria-labelledby="editLessonModal"
+                aria-hidden="true"
             >
                 <div className="modal-dialog">
                     <div className="modal-content">
@@ -437,8 +441,12 @@ export default function Lesson() {
 
             <div
                 id="createLessonModal"
-                className="modal fade lesson-modal"
-                data-bs-backdrop="false"
+                className="modal fade"
+                tabindex="-1"
+                data-bs-backdrop="static"
+                data-bs-keyboard="false"
+                aria-labelledby="createLessonModal"
+                aria-hidden="true"
             >
                 <div className="modal-dialog">
                     <div className="modal-content">
