@@ -35,9 +35,36 @@ export default function EnrollmentDetailsForm({
         "Saturday",
     ];
 
+    // Get unique subjects by grouping them
+    const getUniqueSubjects = () => {
+        const uniqueSubjects = new Set();
+        return subjectsArray
+            .filter((subject) => {
+                if (!uniqueSubjects.has(subject.subject_name)) {
+                    uniqueSubjects.add(subject.subject_name);
+                    return true;
+                }
+                return false;
+            })
+            .map((subject) => ({
+                subject_name: subject.subject_name,
+            }));
+    };
+
+    // Get all study levels for a subject name (not ID)
+    const getStudyLevelsForSubject = (subjectName) => {
+        return subjectsArray
+            .filter((subject) => subject.subject_name === subjectName)
+            .map((subject) => ({
+                id: subject.level_id,
+                level_name: subject.level_name,
+                subject_id: subject.id, // Keep the original subject ID
+            }));
+    };
+
     // Get the room name based on the room ID
-    const getRoomName = (roomId, rooms) => {
-        const room = rooms.find((room) => room.id === roomId);
+    const getRoomName = (roomId) => {
+        const room = roomsArray.find((room) => room.id === roomId);
         return room ? room.room_name : "Unknown Room";
     };
 
@@ -76,33 +103,6 @@ export default function EnrollmentDetailsForm({
         });
     };
 
-    // Get the study levels available for the selected subject
-    const getStudyLevelsForSubject = (subjectId) => {
-        // Find the subject based on the subjectId
-        const subject = subjectsArray.find(
-            (subject) => subject.id === subjectId
-        );
-        // If the subject is found, return the study levels for the subject
-        // Otherwise, return an empty array
-        return subject
-            ? subjectsArray
-                  .filter((sub) => sub.id === subjectId) // Filter the subjects based on the subject ID
-                  .map((sub) => ({
-                      // Map the subjects to an object with the level ID and level name
-                      id: sub.level_id,
-                      level_name: sub.level_name,
-                  }))
-            : [];
-    };
-
-    // Get the lessons for the selected subject
-    const getLessonsForSubject = (subjectId) => {
-        // Filter the lessons based on the subject ID
-        // Return the lessons for the selected subject
-        // If there are no lessons, return an empty array
-        return lessonsArray.filter((lesson) => lesson.subject_id === subjectId);
-    };
-
     // Handle enrollment change function
     const handleEnrollmentChangeWrapper = (e, index, field) => {
         // Get the selected value
@@ -115,39 +115,69 @@ export default function EnrollmentDetailsForm({
         // Set the error for the subject to an empty string or null
         // Otherwise, update the field
         if (field === "subject_id") {
-            const selectedSubjectId = parseInt(selectedValue, 10);
-            const updatedEnrollmentDetails = {
-                ...enrollmentDetails[index],
-                subject_id: selectedSubjectId,
-                study_level_id: "", // Reset study level
-                lesson_id: "", // Reset lesson
-            };
+            // When selecting a subject, mean selecting the subject name
+            const selectedSubjectName = selectedValue;
 
-            // Update subject and clear errors
-            handleEnrollmentChange(
-                { target: { value: selectedSubjectId } },
-                index,
-                "subject_id"
+            // Get the first available subject ID for this subject name
+            const firstSubject = subjectsArray.find(
+                (subject) => subject.subject_name === selectedSubjectName
             );
 
-            // Clear errors for study level and lesson fields
+            if (firstSubject) {
+                // Update with the first available subject ID
+                handleEnrollmentChange(
+                    { target: { value: firstSubject.id } },
+                    index,
+                    "subject_id"
+                );
+            }
+
+            // Reset study level and lesson
             handleEnrollmentChange(
-                { target: { value: updatedEnrollmentDetails.study_level_id } },
+                { target: { value: "" } },
                 index,
                 "study_level_id"
             );
             handleEnrollmentChange(
-                { target: { value: updatedEnrollmentDetails.lesson_id } },
+                { target: { value: "" } },
                 index,
                 "lesson_id"
             );
+        } else if (field === "study_level_id") {
+            const selectedLevelId = parseInt(selectedValue, 10);
 
-            // Instead of deleting, set the error for subject to an empty string or null
-            handleEnrollmentChange(
-                { target: { value: "" } },
-                index,
-                "enrollment_subject_id"
+            // Get current subject name from the current subject ID
+            const currentSubject = subjectsArray.find(
+                (sub) => sub.id === enrollmentDetails[index].subject_id
             );
+
+            if (currentSubject) {
+                // Find the subject entry that matches both subject name and selected level
+                const newSubject = subjectsArray.find(
+                    (sub) =>
+                        sub.subject_name === currentSubject.subject_name &&
+                        sub.level_id === selectedLevelId
+                );
+
+                if (newSubject) {
+                    // Update the study level
+                    handleEnrollmentChange(e, index, field);
+
+                    // Update the subject ID to match the new level
+                    handleEnrollmentChange(
+                        { target: { value: newSubject.id } },
+                        index,
+                        "subject_id"
+                    );
+
+                    // Reset lesson
+                    handleEnrollmentChange(
+                        { target: { value: "" } },
+                        index,
+                        "lesson_id"
+                    );
+                }
+            }
         } else {
             handleEnrollmentChange(e, index, field);
         }
@@ -155,41 +185,49 @@ export default function EnrollmentDetailsForm({
 
     // Get available subjects for each enrollment detail
     const getAvailableSubjects = (index) => {
-        // Get IDs of currently selected subjects
-        const selectedSubjectIds = enrollmentDetails
-            .map(
-                (
-                    enrollment,
-                    i // Map the enrollment details
-                ) => (i !== index ? enrollment.subject_id : null) // If the index is not the current index, get the subject ID
-            )
-            .filter((id) => id !== null); // Filter out the null values
+        // Get selected subject names from other rows
+        const selectedSubjectNames = enrollmentDetails
+            .map((enrollment, i) => {
+                if (i !== index && enrollment.subject_id) {
+                    const subject = subjectsArray.find(
+                        (sub) => sub.id === enrollment.subject_id
+                    );
+                    return subject?.subject_name;
+                }
+                return null;
+            })
+            .filter((name) => name !== null);
 
-        // Filter the subjects based on the selected subject IDs
-        // If the subject is not selected or the subject ID is the same as the subject ID in the enrollment detail
-        // Map the subjects to an option element
-        // If there are available subjects, return the subjects
-        // Otherwise, return a message that there are no subjects available
-        return subjectsArray
-            .filter(
-                (subject) =>
-                    !selectedSubjectIds.includes(subject.id) ||
-                    enrollmentDetails[index].subject_id === subject.id
-            )
+        // Get current subject name
+        const currentSubject = enrollmentDetails[index].subject_id
+            ? subjectsArray.find(
+                  (sub) => sub.id === enrollmentDetails[index].subject_id
+              )
+            : null;
+
+        return getUniqueSubjects()
+            .filter((subject) => {
+                // Include the current subject
+                if (
+                    currentSubject &&
+                    currentSubject.subject_name === subject.subject_name
+                ) {
+                    return true;
+                }
+                // Filter out subjects selected in other rows
+                return !selectedSubjectNames.includes(subject.subject_name);
+            })
             .map((subject) => (
-                <option key={subject.id} value={subject.id}>
+                <option key={subject.subject_name} value={subject.subject_name}>
                     {subject.subject_name}
                 </option>
             ));
     };
 
-    // Get study levels for the selected subject
-    const availableStudyLevels = (subjectId) =>
-        getStudyLevelsForSubject(subjectId).map((level) => (
-            <option key={level.id} value={level.id}>
-                {level.level_name}
-            </option>
-        ));
+    // Get the lessons for the selected subject
+    const getLessonsForSubject = (subjectId) => {
+        return lessonsArray.filter((lesson) => lesson.subject_id === subjectId);
+    };
 
     // Get available lessons for the selected subject
     // Disable lessons that clash with existing lessons
@@ -201,8 +239,7 @@ export default function EnrollmentDetailsForm({
             return (
                 <option key={lesson.id} value={lesson.id} disabled={isClashing}>
                     {lesson.start_time} - {lesson.end_time} (
-                    {daysOfWeek[lesson.day]},{" "}
-                    {getRoomName(lesson.room_id, roomsArray)})
+                    {daysOfWeek[lesson.day]}, {getRoomName(lesson.room_id)})
                     {isClashing && " - Time Clash"}
                 </option>
             );
@@ -223,7 +260,12 @@ export default function EnrollmentDetailsForm({
                                 <Form.Label>Subject</Form.Label>
                                 <Form.Select
                                     name="subject_id"
-                                    value={enrollment.subject_id}
+                                    value={
+                                        subjectsArray.find(
+                                            (sub) =>
+                                                sub.id === enrollment.subject_id
+                                        )?.subject_name || ""
+                                    }
                                     onChange={(e) =>
                                         handleEnrollmentChangeWrapper(
                                             e,
@@ -238,13 +280,7 @@ export default function EnrollmentDetailsForm({
                                     }
                                 >
                                     <option value="">Select Subject</option>
-                                    {getAvailableSubjects(index).length > 0 ? (
-                                        getAvailableSubjects(index)
-                                    ) : (
-                                        <option value="">
-                                            No subjects available
-                                        </option>
-                                    )}
+                                    {getAvailableSubjects(index)}
                                 </Form.Select>
                                 <Form.Control.Feedback type="invalid">
                                     {errors[`enrollment_subject_id_${index}`]}
@@ -274,16 +310,21 @@ export default function EnrollmentDetailsForm({
                                     }
                                 >
                                     <option value="">Select Study Level</option>
-                                    {availableStudyLevels(enrollment.subject_id)
-                                        .length > 0 ? (
-                                        availableStudyLevels(
-                                            enrollment.subject_id
-                                        )
-                                    ) : (
-                                        <option value="">
-                                            No study levels available
-                                        </option>
-                                    )}
+                                    {enrollment.subject_id &&
+                                        getStudyLevelsForSubject(
+                                            subjectsArray.find(
+                                                (sub) =>
+                                                    sub.id ===
+                                                    enrollment.subject_id
+                                            )?.subject_name
+                                        ).map((level) => (
+                                            <option
+                                                key={level.id}
+                                                value={level.id}
+                                            >
+                                                {level.level_name}
+                                            </option>
+                                        ))}
                                 </Form.Select>
                                 <Form.Control.Feedback type="invalid">
                                     {
@@ -319,19 +360,11 @@ export default function EnrollmentDetailsForm({
                                     }
                                 >
                                     <option value="">Select Class Time</option>
-                                    {availableLessons(
-                                        enrollment.subject_id,
-                                        index
-                                    ).length > 0 ? (
+                                    {enrollment.subject_id &&
                                         availableLessons(
                                             enrollment.subject_id,
                                             index
-                                        )
-                                    ) : (
-                                        <option value="">
-                                            No class times available
-                                        </option>
-                                    )}
+                                        )}
                                 </Form.Select>
                                 <Form.Control.Feedback type="invalid">
                                     {errors[`enrollment_lesson_id_${index}`]}
@@ -345,7 +378,7 @@ export default function EnrollmentDetailsForm({
                                     className="ms-2"
                                     src="http://localhost:8000/icon/add.png"
                                     alt="Add"
-                                    onClick={() => addLesson()}
+                                    onClick={addLesson}
                                     style={{ cursor: "pointer" }}
                                 />
                                 <img

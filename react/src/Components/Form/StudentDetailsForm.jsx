@@ -3,7 +3,11 @@ import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 
-export default function StudentDetailsForm({ studentDetails, handleStudentDetailsChange, errors }) {
+export default function StudentDetailsForm({
+    studentDetails,
+    handleStudentDetailsChange,
+    errors,
+}) {
     console.log(errors);
     return (
         <>
@@ -67,6 +71,7 @@ export default function StudentDetailsForm({ studentDetails, handleStudentDetail
                         placeholder="Age"
                         isInvalid={!!errors.age}
                         readOnly
+                        style={{ backgroundColor: "#f0f0f0" }} // Light background for read-only
                     />
                     <Form.Control.Feedback type="invalid">
                         {errors.age}

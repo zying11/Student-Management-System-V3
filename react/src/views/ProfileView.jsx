@@ -5,6 +5,7 @@ import Spinner from "react-bootstrap/Spinner";
 import { Table } from "../components/Table/Table";
 import Button from "../components/Button/Button";
 import { ContentContainer } from "../components/ContentContainer/ContentContainer";
+import { useStateContext } from "../contexts/ContextProvider";
 
 export default function ProfileView({
     profileType,
@@ -13,6 +14,8 @@ export default function ProfileView({
     title,
     defaultImage = "http://localhost:8000/images/user-profile.png",
 }) {
+    // Access the logged-in user with their role
+    const { user } = useStateContext();
     const { id } = useParams();
     const [profileData, setProfileData] = useState({ data: {}, loading: true });
     const [error, setError] = useState("");
@@ -305,19 +308,18 @@ export default function ProfileView({
 
             {/* Action buttons */}
             <div className="d-flex justify-content-end mt-3">
-                <div className="me-3">
-                    <Link
-                        to={`/${profileType}/edit/${id}`}
-                        className="text-decoration-none"
-                    >
-                        <Button className="btn-create-yellow">Edit</Button>
-                    </Link>
-                </div>
+                {user.role_id === 1 && ( // Only Admin can edit profile
+                    <div className="me-3">
+                        <Link
+                            to={`/${profileType}/edit/${id}`}
+                            className="text-decoration-none"
+                        >
+                            <Button className="btn-create-yellow">Edit</Button>
+                        </Link>
+                    </div>
+                )}
                 <div>
-                    <Link
-                        to={`/${profileType}`}
-                        className="text-decoration-none"
-                    >
+                    <Link to={`/students`} className="text-decoration-none">
                         <Button>Back</Button>
                     </Link>
                 </div>
