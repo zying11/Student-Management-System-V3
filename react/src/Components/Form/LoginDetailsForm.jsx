@@ -2,8 +2,20 @@ import React from "react";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
+import { useStateContext } from "../../contexts/ContextProvider";
 
-export default function LoginDetailsForm({ loginDetails, handleLoginChange, errors, fixedRole }) {
+export default function LoginDetailsForm({
+    loginDetails,
+    handleLoginChange,
+    errors,
+    fixedRole,
+}) {
+    // Access the logged-in user with their role
+    const { user } = useStateContext();
+
+    // Check if the logged-in user is a teacher or admin to conditionally set readOnly
+    const isReadOnly = user.role_id === 2; // Assuming role_id of 2 is for teacher
+
     return (
         <>
             <Row className="mb-3">
@@ -16,6 +28,10 @@ export default function LoginDetailsForm({ loginDetails, handleLoginChange, erro
                         onChange={handleLoginChange}
                         placeholder="Enter full name"
                         isInvalid={!!errors.name}
+                        readOnly={isReadOnly} // Read-only for teachers based on their role
+                        style={{
+                            backgroundColor: isReadOnly ? "#f0f0f0" : "white",
+                        }} // Light background for read-only
                     />
                     <Form.Control.Feedback type="invalid">
                         {errors.name}
@@ -29,6 +45,7 @@ export default function LoginDetailsForm({ loginDetails, handleLoginChange, erro
                             type="text"
                             value={fixedRole === 1 ? "Admin" : "Teacher"}
                             readOnly
+                            style={{ backgroundColor: "#f0f0f0" }} // Light background for read-only
                         />
                     </Form.Group>
                 ) : (
@@ -61,6 +78,10 @@ export default function LoginDetailsForm({ loginDetails, handleLoginChange, erro
                         onChange={handleLoginChange}
                         placeholder="Enter email address"
                         isInvalid={!!errors.email}
+                        readOnly={isReadOnly} // Read-only for teachers based on their role
+                        style={{
+                            backgroundColor: isReadOnly ? "#f0f0f0" : "white",
+                        }} // Light background for read-only
                     />
                     <Form.Control.Feedback type="invalid">
                         {errors.email}

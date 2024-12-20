@@ -5,8 +5,12 @@ import Button from "../components/Button/Button";
 import { ContentContainer } from "../components/ContentContainer/ContentContainer";
 import { Table } from "../components/Table/Table";
 import SearchBar from "../components/SearchBar";
+import { useStateContext } from "../contexts/ContextProvider";
 
 export default function Teacher() {
+    // Access the logged-in user with their role
+    const { user } = useStateContext();
+
     const [teacherData, setTeacherData] = useState({
         teachers: [],
         loading: true,
@@ -19,14 +23,29 @@ export default function Teacher() {
     useEffect(() => {
         async function fetchTeachers() {
             try {
-                // Fetch data from /teachers endpoint
-                const res = await axiosClient.get("/teachers");
-                setTeacherData({
-                    teachers: res.data.data,
-                    loading: false,
-                });
+                let response;
+
+                if (user.role_id === 1) {
+                    // Admin role, fetch all teachers
+                    response = await axiosClient.get("/teachers");
+                    setTeacherData({
+                        teachers: response.data.data,
+                        loading: false,
+                    });
+                } else if (user.role_id === 2) {
+                    // Teacher, fetch only their own details
+                    response = await axiosClient.get(
+                        `/teacher-details/users/${user.id}`
+                    );
+                    setTeacherData({
+                        teachers: [response.data], // Wrap single teacher in an array for consistency
+                        loading: false,
+                    });
+                } else {
+                    throw new Error("Unauthorized role");
+                }
             } catch (error) {
-                console.error("Error fetching teachers:", error);
+                console.error("Error fetching teacher data:", error);
                 setTeacherData({
                     teachers: [],
                     loading: false,
@@ -37,11 +56,10 @@ export default function Teacher() {
             }
         }
 
-        // Call fetchTeachers function
         fetchTeachers();
-    }, []);
+    }, [user]);
 
-    // Handle deletion of a teacher
+    // Handle deletion of a teacher (admin only)
     const handleDelete = async (id) => {
         if (!window.confirm("Are you sure you want to delete this teacher?")) {
             return;
@@ -62,10 +80,16 @@ export default function Teacher() {
         }
     };
 
-     // Filter teachers by search query
-     const filteredTeachers = teacherData.teachers.filter((teacher) =>
-        teacher.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    // Filter teachers by search query (admin only)
+    const filteredTeachers =
+        user.role_id === 1
+            ? teacherData.teachers.filter((teacher) =>
+                  teacher.name
+                      ?.toLowerCase()
+                      .includes(searchQuery.toLowerCase())
+              )
+            : // If user is a teacher, show only their own details
+              teacherData.teachers;
 
     const tableHeader = [
         "ID",
@@ -74,24 +98,23 @@ export default function Teacher() {
         "Email",
         "Joining Date",
         "Actions",
-    ];
+    ].filter(Boolean); // Remove null entries
 
     const tableData = teacherData.loading
         ? [
               [
-                  <td key="loading" colSpan="6" className="text-center">
+                  <td
+                      key="loading"
+                      colSpan={tableHeader.length}
+                      className="text-center"
+                  >
                       Loading...
                   </td>,
               ],
           ]
-        : // Map teacher data to table rows
-        filteredTeachers.map((teacher) => [
-        // teacherData.teachers.map((teacher) => [
+        : filteredTeachers.map((teacher) => [
               teacher.id || "-",
               teacher.name || "-",
-              // Array.isArray(teacher.subject_teaching_names) && teacher.subject_teaching_names.length > 0
-              // ? teacher.subject_teaching_names.join(", ")
-              // : "-",
               Array.isArray(teacher.subject_teaching) &&
               teacher.subject_teaching.length > 0
                   ? teacher.subject_teaching.map((subject) => (
@@ -102,27 +125,55 @@ export default function Teacher() {
                   : "Not assigned",
               teacher.email || "-",
               teacher.joining_date || "-",
-              <div className="actions">
-                  {/*Edit action*/}
-                  <Link
-                      to={`/teacher/edit/${teacher.id}`}
-                      className="text-decoration-none"
-                  >
-                      <img
-                          className="me-2"
-                          src="http://localhost:8000/icon/edit.png"
-                          alt="Edit"
-                      />
-                  </Link>
-                  {/*Delete action*/}
-                  <img
-                      className="me-2"
-                      src="http://localhost:8000/icon/delete.png"
-                      alt="Delete"
-                      onClick={() => handleDelete(teacher.id)}
-                      style={{ cursor: "pointer" }}
-                  />
-                  {/*Profile action*/}
+
+              // Actions column with conditional rendering based on user role
+              <div
+                  className="actions"
+                  style={{ display: "flex", justifyContent: "start" }}
+              >
+                  {user.role_id === 1 && ( // Admin can Edit, Delete, Profile actions
+                      <>
+                          {/* Edit action */}
+                          <Link
+                              to={`/teacher/edit/${teacher.id}`}
+                              className="text-decoration-none"
+                          >
+                              <img
+                                  className="me-2"
+                                  src="http://localhost:8000/icon/edit.png"
+                                  alt="Edit"
+                              />
+                          </Link>
+                          {/* Delete action */}
+                          <img
+                              className="me-2"
+                              src="http://localhost:8000/icon/delete.png"
+                              alt="Delete"
+                              onClick={() => handleDelete(teacher.id)}
+                              style={{ cursor: "pointer" }}
+                          />
+                      </>
+                  )}
+
+                  {user.role_id === 2 && ( // Teacher can Edit, Profile actions only
+                      <>
+                          {/* Edit action */}
+                          <Link
+                              to={`/teacher/edit/${teacher.id}`}
+                              className="text-decoration-none"
+                          >
+                              <img
+                                  className="me-2"
+                                  src="http://localhost:8000/icon/edit.png"
+                                  alt="Edit"
+                              />
+                          </Link>
+                          {/* Placeholder for Delete action */}
+                          <div style={{ width: "2px" }}></div>
+                      </>
+                  )}
+
+                  {/* Profile action */}
                   <Link
                       to={`/teacher/${teacher.id}/profile`}
                       className="text-decoration-none"
@@ -139,18 +190,24 @@ export default function Teacher() {
     return (
         <>
             <div className="page-title">Teachers</div>
-            <div className="d-flex justify-content-end">
-                <Link to="/teacher/create" className="text-decoration-none">
-                    <Button>Add Teacher</Button>
-                </Link>
-            </div>
+
+            {user.role_id === 1 && ( // Only show Add Teacher button for admin
+                <div className="d-flex justify-content-end">
+                    <Link to="/teacher/create" className="text-decoration-none">
+                        <Button>Add Teacher</Button>
+                    </Link>
+                </div>
+            )}
+
             <ContentContainer title="Teacher List">
-                  {/* Search by teacher name */}
-                  <SearchBar
-                    searchQuery={searchQuery}
-                    setSearchQuery={setSearchQuery}
-                    placeholder="Search teacher by name"
-                />
+                {/* Search bar visible only for admin */}
+                {user.role_id === 1 && (
+                    <SearchBar
+                        searchQuery={searchQuery}
+                        setSearchQuery={setSearchQuery}
+                        placeholder="Search teacher by name"
+                    />
+                )}
 
                 {error && <div className="alert alert-danger">{error}</div>}
                 <Table
