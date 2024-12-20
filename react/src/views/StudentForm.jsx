@@ -53,6 +53,18 @@ export default function StudentForm({ isEditing }) {
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
 
+    const [enrollmentsData, setEnrollmentsData] = useState([]);
+
+    useEffect(() => {
+        // Fetch enrollments data
+        const fetchEnrollments = async () => {
+            const enrollmentsResponse = await axiosClient.get("/enrollments");
+            const enrollmentsData = enrollmentsResponse.data;
+            setEnrollmentsData(enrollmentsData);
+        };
+        fetchEnrollments();
+    }, []);
+
     useEffect(() => {
         // Fetch subjects, lessons and rooms to populate the dropdowns
         const fetchSubjectsAndLessons = async () => {
@@ -610,6 +622,7 @@ export default function StudentForm({ isEditing }) {
                             subjects={subjects}
                             lessons={lessons}
                             rooms={rooms}
+                            existingEnrollments={enrollmentsData}
                         />
                     </ContentContainer>
 

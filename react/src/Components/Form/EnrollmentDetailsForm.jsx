@@ -10,6 +10,7 @@ export default function EnrollmentDetailsForm({
     subjects,
     lessons,
     rooms,
+    existingEnrollments,
 }) {
     // Ensure there's at least one enrollment detail field on initial render
     useEffect(() => {
@@ -66,6 +67,26 @@ export default function EnrollmentDetailsForm({
     const getRoomName = (roomId) => {
         const room = roomsArray.find((room) => room.id === roomId);
         return room ? room.room_name : "Unknown Room";
+    };
+
+    // To count current enrollments per lesson
+    const getLessonEnrollmentCount = (lessonId) => {
+        return (existingEnrollments?.data || []).filter(
+            (enrollment) => enrollment.lesson.id === lessonId
+        ).length;
+    };
+
+    // To include room capacity check
+    const getRoomCapacity = (roomId) => {
+        const room = roomsArray.find((room) => room.id === roomId);
+        return room ? room.capacity : 0;
+    };
+
+    // To check if a lesson is full
+    const isLessonFull = (lesson) => {
+        const currentEnrollments = getLessonEnrollmentCount(lesson.id);
+        const roomCapacity = getRoomCapacity(lesson.room_id);
+        return currentEnrollments >= roomCapacity;
     };
 
     // Function to check if there's a clash with existing lessons, excluding the current lesson
@@ -233,13 +254,25 @@ export default function EnrollmentDetailsForm({
     // Disable lessons that clash with existing lessons
     // If there are available lessons, return the lessons
     // Otherwise, return a message that there are no lessons available
+    // To include capacity information
     const availableLessons = (subjectId, currentIndex) => {
         return getLessonsForSubject(subjectId).map((lesson) => {
             const isClashing = checkForClashes(lesson, currentIndex);
+            const currentEnrollments = getLessonEnrollmentCount(lesson.id);
+            const roomCapacity = getRoomCapacity(lesson.room_id);
+            const isFull = currentEnrollments >= roomCapacity;
+
             return (
-                <option key={lesson.id} value={lesson.id} disabled={isClashing}>
+                <option
+                    key={lesson.id}
+                    value={lesson.id}
+                    disabled={isClashing || isFull}
+                >
                     {lesson.start_time} - {lesson.end_time} (
-                    {daysOfWeek[lesson.day]}, {getRoomName(lesson.room_id)})
+                    {daysOfWeek[lesson.day]}, {getRoomName(lesson.room_id)}) -
+                    {isFull
+                        ? " Full"
+                        : ` ${currentEnrollments}/${roomCapacity} spots filled`}
                     {isClashing && " - Time Clash"}
                 </option>
             );
