@@ -8,8 +8,13 @@ import Form from "react-bootstrap/Form";
 import { InputGroup, FormControl } from "react-bootstrap";
 import SearchBar from "../components/SearchBar";
 import { Row, Col } from "react-bootstrap";
+import { useStateContext } from "../contexts/ContextProvider";
+import "../css/Student.css";
 
 export default function Students() {
+    // Access the logged-in user with their role
+    const { user } = useStateContext();
+
     const [studentData, setStudentData] = useState({
         students: [],
         loading: true,
@@ -23,12 +28,27 @@ export default function Students() {
     useEffect(() => {
         async function fetchStudents() {
             try {
-                // Fetch data from /students endpoint
-                const res = await axiosClient.get("/students");
-                setStudentData({
-                    students: res.data.data,
-                    loading: false,
-                });
+                let response;
+
+                if (user.role_id === 1) {
+                    // Admin role, fetch all students
+                    response = await axiosClient.get("/students");
+                    setStudentData({
+                        students: response.data.data,
+                        loading: false,
+                    });
+                } else if (user.role_id === 2) {
+                    // Teacher role, fetch only related students
+                    response = await axiosClient.get(
+                        `/students-with/teacher/users/${user.id}`
+                    );
+                    setStudentData({
+                        students: response.data.data,
+                        loading: false,
+                    });
+                } else {
+                    throw new Error("Unauthorized role");
+                }
             } catch (error) {
                 console.error("Error fetching students:", error);
                 setStudentData({
@@ -43,7 +63,7 @@ export default function Students() {
 
         // Call fetchStudents function
         fetchStudents();
-    }, []);
+    }, [user]);
 
     // Handle deletion of a student
     const handleDelete = async (id) => {
@@ -96,6 +116,16 @@ export default function Students() {
         }
     });
 
+    const highlightText = (text, query) => {
+        if (!query) return text;
+
+        const regex = new RegExp(`(${query})`, "gi");
+        return text.replace(
+            regex,
+            (match) => `<span class="highlight">${match}</span>`
+        );
+    };
+
     const tableHeader = [
         "ID",
         "Student Name",
@@ -118,42 +148,37 @@ export default function Students() {
               // studentData.students.map((student) => [
               student.id || "-",
               student.name || "-",
+              // Highlight subjects
               student.enrollments.length > 0
-                  ? student.enrollments.map((enrollment, index) => (
-                        <span key={index}>
-                            {enrollment.subject?.subject_name || "-"} <br />
-                        </span>
-                    ))
-                  : "-",
+                  ? student.enrollments
+                        .map((enrollment, index) => (
+                            <span
+                                key={index}
+                                dangerouslySetInnerHTML={{
+                                    __html: highlightText(
+                                        enrollment.subject?.subject_name || "-",
+                                        subjectQuery
+                                    ),
+                                }}
+                            />
+                        ))
+                        .reduce((prev, curr) => [
+                            prev,
+                            <br key={`br-${Math.random()}`} />,
+                            curr,
+                        ])
+                  : "Not Assigned",
+
               student.enrollments.length > 0
                   ? student.enrollments.map((enrollment, index) => (
                         <span key={index}>
                             {enrollment.study_level?.level_name || "-"} <br />
                         </span>
                     ))
-                  : "-",
+                  : "Not Assigned",
               student.registration_date || "-",
               <div className="actions">
-                  {/*Edit action*/}
-                  <Link
-                      to={`/student/edit/${student.id}`}
-                      className="text-decoration-none"
-                  >
-                      <img
-                          className="me-2"
-                          src="http://localhost:8000/icon/edit.png"
-                          alt="Edit"
-                      />
-                  </Link>
-                  {/*Delete action*/}
-                  <img
-                      className="me-2"
-                      src="http://localhost:8000/icon/delete.png"
-                      alt="Delete"
-                      onClick={() => handleDelete(student.id)}
-                      style={{ cursor: "pointer" }}
-                  />
-                  {/*Profile action*/}
+                  {/* Profile action - Visible to all roles */}
                   <Link
                       to={`/student/${student.id}/profile`}
                       className="text-decoration-none"
@@ -164,6 +189,28 @@ export default function Students() {
                           alt="Profile"
                       />
                   </Link>
+                  {/* Edit and Delete actions - Visible only to Admin */}
+                  {user.role_id === 1 && (
+                      <>
+                          <Link
+                              to={`/student/edit/${student.id}`}
+                              className="text-decoration-none"
+                          >
+                              <img
+                                  className="me-2"
+                                  src="http://localhost:8000/icon/edit.png"
+                                  alt="Edit"
+                              />
+                          </Link>
+                          <img
+                              className="me-2"
+                              src="http://localhost:8000/icon/delete.png"
+                              alt="Delete"
+                              onClick={() => handleDelete(student.id)}
+                              style={{ cursor: "pointer" }}
+                          />
+                      </>
+                  )}
               </div>,
           ]);
 
@@ -171,9 +218,11 @@ export default function Students() {
         <>
             <div className="page-title">Students</div>
             <div className="d-flex justify-content-end">
-                <Link to="/student/create" className="text-decoration-none">
-                    <Button>Add Student</Button>
-                </Link>
+                {user.role_id === 1 && ( // Only Admin can add new student
+                    <Link to="/student/create" className="text-decoration-none">
+                        <Button>Add Student</Button>
+                    </Link>
+                )}
             </div>
             <ContentContainer title="Student List">
                 <Row className="mb-3">
