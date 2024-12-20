@@ -488,7 +488,7 @@ const router = createBrowserRouter([
             {
                 path: "/teacher/edit/:id",
                 element: (
-                    <ProtectedRoute requiredRoles={["admin"]}>
+                    <ProtectedRoute requiredRoles={["admin", "teacher"]}>
                         <TeacherForm isEditing={true} key="teacherEdit" />
                     </ProtectedRoute>
                 ),

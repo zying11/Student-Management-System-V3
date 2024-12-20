@@ -27,6 +27,24 @@ class TeacherController extends Controller
         return TeacherResource::collection($teachers);
     }
 
+    /** 
+     * Display a listing of the login teacher (own details).
+     */
+    public function getTeacherDetailsByUserId($userId)
+    {
+        // Fetch the teacher record where user_id matches, including related data
+        $teacher = Teacher::where('user_id', $userId)
+            ->with('lesson.subject.studyLevel', 'lesson.room', 'user') // Eager load subject with study level, room and user relations
+            ->first();
+
+        // Check if the teacher was found
+        if ($teacher) {
+            return new TeacherResource($teacher); // Success response with teacher data
+        } else {
+            return response()->json(['message' => 'Teacher not found'], 404); // Not found response
+        }
+    }
+
     /**
      * Store a newly created teacher in storage.
      */

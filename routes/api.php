@@ -179,6 +179,8 @@ Route::put('/teachers/{id}', [TeacherController::class, 'update']);
 Route::delete('/teachers/{id}', [TeacherController::class, 'destroy']);
 // Route to fetch teacher by user id >> added by Regina for attendance
 Route::get('/teachers/users/{userId}', [TeacherController::class, 'getTeacherByUserId']);
+// Route to fetch specific teacher details by ID
+Route::get('/teacher-details/users/{userId}', [TeacherController::class, 'getTeacherDetailsByUserId']);
 
 
 // STUDENT

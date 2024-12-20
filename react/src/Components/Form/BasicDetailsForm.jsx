@@ -64,6 +64,7 @@ export default function BasicDetailsForm({ basicDetails, handleBasicDetailsChang
                         placeholder="Age"
                         isInvalid={!!errors.age}
                         readOnly
+                        style={{ backgroundColor: "#f0f0f0" }} // Light background for read-only
                     />
                     <Form.Control.Feedback type="invalid">
                         {errors.age}
