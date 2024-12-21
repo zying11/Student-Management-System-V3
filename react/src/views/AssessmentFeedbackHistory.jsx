@@ -1,99 +1,19 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useLocation } from "react-router-dom";
+
 import axiosClient from "../axiosClient";
 import Button from "../components/Button/Button";
 import { ContentContainer } from "../components/ContentContainer/ContentContainer";
 import { Table } from "../components/Table/Table";
-import "../css/Invoice.css";
-
-// export default function AssessmentFeedbackHistory() {
-//     // Extract the studentId and subjectId from the URL
-//     const { studentId, subjectId } = useParams();
-
-//     const [feedbackDetails, setFeedbackDetails] = useState([]);
-//     const [studentName, setStudentName] = useState("");
-//     const [subjectName, setSubjectName] = useState("");
-//     const [loading, setLoading] = useState(true);
-//     const [error, setError] = useState("");
-
-//     // Mapping status codes to their text representations
-//     const statusTextMap = {
-//         0: "Not Started",
-//         1: "In Progress",
-//         2: "Completed",
-//     };
-
-//     useEffect(() => {
-//         async function fetchDetails() {
-//             try {
-//                 // Fetch feedback details
-//                 const feedbackResponse = await axiosClient.get(
-//                     `/students/${studentId}/subjects/${subjectId}/feedback`
-//                 );
-//                 setFeedbackDetails(feedbackResponse.data.feedback);
-
-//                 // Fetch student name
-//                 const studentResponse = await axiosClient.get(
-//                     `/students/${studentId}`
-//                 );
-//                 setStudentName(studentResponse.data.name);
-
-//                 // Fetch subject name
-//                 const subjectResponse = await axiosClient.get(
-//                     `/subjects/${subjectId}`
-//                 );
-//                 setSubjectName(subjectResponse.data.subject.subject_name);
-
-//                 setLoading(false);
-//             } catch (err) {
-//                 console.error("Error fetching data:", err);
-//                 setError("Failed to load feedback details.");
-//                 setLoading(false);
-//             }
-//         }
-
-//         fetchDetails();
-//     }, [studentId, subjectId]);
-
-//     if (loading) {
-//         return <div>Loading...</div>;
-//     }
-
-//     const tableHeader = ["Month", "Status", "Review Date", "Actions"];
-//     const tableData = feedbackDetails.map((feedback) => [
-//         feedback.month || "-",
-//         statusTextMap[feedback.status] || "-",
-//         feedback.review_date || "-",
-//         <Link
-//             to={`/assessment-feedback/review/student/${studentId}/subject/${subjectId}/feedback/${feedback.id}`}
-//             key={`review-${feedback.id}`}
-//         >
-//             <Button className="btn-create-yellow">Review</Button>
-//         </Link>,
-//     ]);
-
-//     return (
-//         <>
-//             <div className="page-title">Feedback</div>
-
-//             <ContentContainer
-//                 title={`Feedback For ${studentName || "Student"}`}
-//             >
-//                 <p>Subject: {subjectName || "Subject"}</p>
-//                 {error && <div className="alert alert-danger">{error}</div>}
-//                 <Table
-//                     header={tableHeader}
-//                     data={tableData}
-//                     itemsPerPage={12}
-//                 />
-//             </ContentContainer>
-//         </>
-//     );
-// }
 
 export default function AssessmentFeedbackHistory() {
     // Extract the studentId and subjectId from the URL
     const { studentId, subjectId } = useParams();
+    const location = useLocation();
+    // Get year from URL
+    const yearFromUrl = parseInt(
+        new URLSearchParams(location.search).get("year")
+    );
 
     const [feedbackDetails, setFeedbackDetails] = useState([]);
     const [studentName, setStudentName] = useState("");
@@ -112,14 +32,16 @@ export default function AssessmentFeedbackHistory() {
     useEffect(() => {
         async function fetchDetails() {
             try {
-                // Fetch feedback details
+                // Include year from URL in the API request
                 const feedbackResponse = await axiosClient.get(
-                    `/students/${studentId}/subjects/${subjectId}/feedback`
+                    `/students/${studentId}/subjects/${subjectId}/feedback?year=${yearFromUrl}`
                 );
-                setFeedbackDetails(feedbackResponse.data.feedback);
+
+                const responseData = feedbackResponse.data;
+                setFeedbackDetails(responseData.feedback);
 
                 // Count completed feedback
-                const countCompleted = feedbackResponse.data.feedback.filter(
+                const countCompleted = responseData.feedback.filter(
                     (feedback) => feedback.status === 2
                 ).length;
                 setCompletedCount(countCompleted);
@@ -145,7 +67,7 @@ export default function AssessmentFeedbackHistory() {
         }
 
         fetchDetails();
-    }, [studentId, subjectId]);
+    }, [studentId, subjectId, yearFromUrl]);
 
     if (loading) {
         return <div>Loading...</div>;
@@ -157,7 +79,7 @@ export default function AssessmentFeedbackHistory() {
         statusTextMap[feedback.status] || "-",
         feedback.review_date || "-",
         <Link
-            to={`/assessment-feedback/review/student/${studentId}/subject/${subjectId}/feedback/${feedback.id}`}
+            to={`/assessment-feedback/review/student/${studentId}/subject/${subjectId}/feedback/${feedback.id}?year=${yearFromUrl}`}
             key={`review-${feedback.id}`}
         >
             <Button className="btn-create-yellow">Review</Button>
@@ -171,15 +93,34 @@ export default function AssessmentFeedbackHistory() {
             <ContentContainer
                 title={`Feedback For ${studentName || "Student"}`}
             >
-                <p>Subject: {subjectName || "Subject"}</p>
-                <p>Total Completed Feedback: {completedCount}</p>{" "}
+                <div className="mb-3">
+                    <p>Subject: {subjectName || "Subject"}</p>
+                    <p>Year: {yearFromUrl}</p>
+                    <p>Total Completed Feedback: {completedCount}</p>
+                </div>
+
                 {error && <div className="alert alert-danger">{error}</div>}
-                <Table
-                    header={tableHeader}
-                    data={tableData}
-                    itemsPerPage={12}
-                />
+
+                {feedbackDetails.length === 0 ? (
+                    <div className="no-feedback-message">
+                        <p>No feedback available for {yearFromUrl}.</p>
+                    </div>
+                ) : (
+                    <Table
+                        header={tableHeader}
+                        data={tableData}
+                        itemsPerPage={12}
+                    />
+                )}
             </ContentContainer>
+            <div className="d-flex justify-content-end mt-3">
+                <Link
+                    to="/assessment-feedback"
+                    className="text-decoration-none"
+                >
+                    <Button>Back</Button>
+                </Link>
+            </div>
         </>
     );
 }

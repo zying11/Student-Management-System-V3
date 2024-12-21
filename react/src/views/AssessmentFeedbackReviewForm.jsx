@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
 import axiosClient from "../axiosClient";
 import { Form } from "react-bootstrap";
 import Button from "../components/Button/Button";
@@ -8,10 +8,13 @@ import { Row, Col } from "react-bootstrap";
 import ReactStars from "react-rating-stars-component";
 
 export default function AssessmentFeedbackReviewForm() {
+    const location = useLocation();
+    const selectedYear = new URLSearchParams(location.search).get("year");
+
     // extract studentId, subjectId, and feedbackId from the URL
     const { studentId, subjectId, feedbackId } = useParams();
     const navigate = useNavigate();
-    
+
     const [feedbackDetails, setFeedbackDetails] = useState({
         status: "",
         review_date: "",
@@ -60,7 +63,6 @@ export default function AssessmentFeedbackReviewForm() {
 
         fetchFeedbackDetails();
     }, [feedbackId]);
-
 
     const handleFieldChange = (index, field, value) => {
         // Update the specific field in the topics array
@@ -260,6 +262,8 @@ export default function AssessmentFeedbackReviewForm() {
                                         }));
                                     }}
                                     isInvalid={!!validationErrors.review_date}
+                                    min={`${selectedYear}-01-01`} // Start of the selected year
+                                    max={`${selectedYear}-12-31`} // End of the selected year
                                 />
                                 <Form.Control.Feedback type="invalid">
                                     {validationErrors.review_date}
@@ -720,12 +724,26 @@ export default function AssessmentFeedbackReviewForm() {
                         </Form.Group>
                     </Row>
 
-                    {/* Submit Button */}
-                    <Row className="mb-3">
-                        <Col className="d-flex justify-content-end">
-                            <Button type="submit">Submit</Button>
-                        </Col>
-                    </Row>
+                    <div className="d-flex justify-content-end mt-3">
+                        <Row className="mb-3">
+                            <Col>
+                                {/* Back Button */}
+                                <Link
+                                    to={`/assessment-feedback/history/student/${studentId}/subject/${subjectId}?year=${selectedYear}`}
+                                    className="text-decoration-none"
+                                >
+                                    <Button className="btn-create-yellow">
+                                        Back
+                                    </Button>
+                                </Link>
+                            </Col>
+
+                            <Col>
+                                {/* Submit Button */}
+                                <Button type="submit">Submit</Button>
+                            </Col>
+                        </Row>
+                    </div>
                 </Form>
             </ContentContainer>
         </div>
