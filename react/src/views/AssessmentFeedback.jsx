@@ -6,7 +6,6 @@ import { ContentContainer } from "../components/ContentContainer/ContentContaine
 import { Table } from "../components/Table/Table";
 import SearchBar from "../components/SearchBar";
 import { useStateContext } from "../contexts/ContextProvider";
-import "../css/Invoice.css";
 
 export default function AssessmentFeedback() {
     // Access the logged-in user with their role
@@ -19,6 +18,7 @@ export default function AssessmentFeedback() {
     const [studyLevels, setStudyLevels] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [error, setError] = useState("");
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // Default to the current year
 
     // Fetch specific feedbacks
     useEffect(() => {
@@ -87,13 +87,19 @@ export default function AssessmentFeedback() {
         return `${completedCount}/12 Completed`;
     };
 
-    // Filter feedbacks by student name and organize by subject
+    // Filter feedbacks by student name, year of creation and organize by subject
     const filteredFeedbacks = feedbackData.feedbacks
-        .filter((feedback) =>
-            feedback.name
+        .filter((feedback) => {
+            // Filter by student name search query
+            return feedback.name
                 .toLowerCase()
-                .includes(searchQuery.trim().toLowerCase())
-        )
+                .includes(searchQuery.trim().toLowerCase());
+        })
+        .filter((feedback) => {
+            // Filter by student creation year
+            const studentYear = new Date(feedback.created_at).getFullYear(); // Assuming feedback has created_at
+            return studentYear === selectedYear;
+        })
         .map((feedback) => {
             // Group feedbacks by subject and level
             const subjectGroups = feedback.feedback.reduce((acc, curr) => {
@@ -132,14 +138,15 @@ export default function AssessmentFeedback() {
               ],
           ]
         : filteredFeedbacks.flatMap((feedback) =>
-              feedback.subjectGroups.map((group) => [   
+              feedback.subjectGroups.map((group) => [
                   feedback.id || "-",
                   feedback.name || "-",
                   levelLookup[group.subject.level_id] || "-",
                   group.subject.subject_name || "-",
                   calculateCompletionStatus(group.feedbacks),
+                  // Link to include year as URL parameter
                   <Link
-                      to={`/assessment-feedback/history/student/${feedback.id}/subject/${group.subject.id}`}
+                      to={`/assessment-feedback/history/student/${feedback.id}/subject/${group.subject.id}?year=${selectedYear}`}
                       className="text-decoration-none"
                   >
                       <Button className="btn-create-yellow">
@@ -148,25 +155,51 @@ export default function AssessmentFeedback() {
                   </Link>,
               ])
           );
+
     return (
         <>
             <div className="page-title">Feedback</div>
-
-            {/* Display assessment list table */}
             <ContentContainer title="Assessment Feedback List">
-                {/* Search by student name */}
-                <SearchBar
-                    searchQuery={searchQuery}
-                    setSearchQuery={setSearchQuery}
-                    placeholder="Search student by name"
-                />
+                <div className="d-flex justify-content-between align-items-center mb-3">
+                    <SearchBar
+                        searchQuery={searchQuery}
+                        setSearchQuery={setSearchQuery}
+                        placeholder="Search student by name"
+                    />
+
+                    <div className="year-selector">
+                        <select
+                            value={selectedYear}
+                            onChange={(e) =>
+                                setSelectedYear(Number(e.target.value))
+                            }
+                            className="form-select"
+                        >
+                            {Array.from(
+                                { length: 5 },
+                                (_, i) => new Date().getFullYear() - i
+                            ).map((year) => (
+                                <option key={year} value={year}>
+                                    {year}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
 
                 {error && <div className="alert alert-danger">{error}</div>}
-                <Table
-                    header={tableHeader}
-                    data={tableData}
-                    itemsPerPage={10}
-                />
+
+                {filteredFeedbacks.length === 0 && !feedbackData.loading ? (
+                    <div className="alert alert-warning text-center">
+                        No data for {selectedYear}.
+                    </div>
+                ) : (
+                    <Table
+                        header={tableHeader}
+                        data={tableData}
+                        itemsPerPage={10}
+                    />
+                )}
             </ContentContainer>
         </>
     );
