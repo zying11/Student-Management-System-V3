@@ -195,6 +195,9 @@ Route::get('/students/{id}', [StudentController::class, 'show']);
 Route::put('/students/{id}', [StudentController::class, 'update']);
 // Route to delete specific student details by ID
 Route::delete('/students/{id}', [StudentController::class, 'destroy']);
+// Route to fetch students for specific teacher by user id
+Route::get('/students-with/teacher/users/{userId}', [StudentController::class, 'getStudentsForTeacher']);
+
 
 // Additional routes for managing the relationship
 Route::post('students/{id}/parents', [StudentController::class, 'addParents']);
