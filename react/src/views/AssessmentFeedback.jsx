@@ -76,7 +76,18 @@ export default function AssessmentFeedback() {
         return acc;
     }, {});
 
-    // Filter feedbacks by student name based on search query and avoid duplicates
+    // Calculate completion status for a subject's feedback
+    const calculateCompletionStatus = (feedbackArray) => {
+        // Count completed feedbacks (status === 2)
+        const completedCount = feedbackArray.filter(
+            (feedback) => feedback.status === 2
+        ).length;
+
+        // Total should be 12 months
+        return `${completedCount}/12 Completed`;
+    };
+
+    // Filter feedbacks by student name and organize by subject
     const filteredFeedbacks = feedbackData.feedbacks
         .filter((feedback) =>
             feedback.name
@@ -84,19 +95,22 @@ export default function AssessmentFeedback() {
                 .includes(searchQuery.trim().toLowerCase())
         )
         .map((feedback) => {
-            // Deduplicate the feedback array by subject name, left only one month within the same subject
-            const uniqueFeedback = [
-                ...new Map(
-                    feedback.feedback.map((subFeedback) => [
-                        subFeedback.subject.id,
-                        subFeedback,
-                    ])
-                ).values(),
-            ];
+            // Group feedbacks by subject and level
+            const subjectGroups = feedback.feedback.reduce((acc, curr) => {
+                const key = `${curr.subject.id}-${curr.subject.level_id}`;
+                if (!acc[key]) {
+                    acc[key] = {
+                        subject: curr.subject,
+                        feedbacks: [],
+                    };
+                }
+                acc[key].feedbacks.push(curr);
+                return acc;
+            }, {});
 
             return {
                 ...feedback,
-                feedback: uniqueFeedback, // Replace the feedback array with unique subjects
+                subjectGroups: Object.values(subjectGroups),
             };
         });
 
@@ -118,14 +132,14 @@ export default function AssessmentFeedback() {
               ],
           ]
         : filteredFeedbacks.flatMap((feedback) =>
-              feedback.feedback?.map((subjectFeedback) => [
-                  feedback.id || "-", // Student ID
-                  feedback.name || "-", // Student Name
-                  levelLookup[subjectFeedback.subject.level_id] || "-",
-                  subjectFeedback.subject.subject_name || "-",
-                  `0/12 Completed`,
+              feedback.subjectGroups.map((group) => [   
+                  feedback.id || "-",
+                  feedback.name || "-",
+                  levelLookup[group.subject.level_id] || "-",
+                  group.subject.subject_name || "-",
+                  calculateCompletionStatus(group.feedbacks),
                   <Link
-                      to={`/assessment-feedback/history/student/${feedback.id}/subject/${subjectFeedback.subject_id}`} // feedback.id is the student ID
+                      to={`/assessment-feedback/history/student/${feedback.id}/subject/${group.subject.id}`}
                       className="text-decoration-none"
                   >
                       <Button className="btn-create-yellow">
@@ -134,7 +148,6 @@ export default function AssessmentFeedback() {
                   </Link>,
               ])
           );
-
     return (
         <>
             <div className="page-title">Feedback</div>
