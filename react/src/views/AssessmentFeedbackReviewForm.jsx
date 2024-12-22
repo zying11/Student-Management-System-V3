@@ -6,6 +6,7 @@ import Button from "../components/Button/Button";
 import { ContentContainer } from "../components/ContentContainer/ContentContainer";
 import { Row, Col } from "react-bootstrap";
 import ReactStars from "react-rating-stars-component";
+import jsPDF from "jspdf";
 
 export default function AssessmentFeedbackReviewForm() {
     const location = useLocation();
@@ -14,6 +15,9 @@ export default function AssessmentFeedbackReviewForm() {
     // extract studentId, subjectId, and feedbackId from the URL
     const { studentId, subjectId, feedbackId } = useParams();
     const navigate = useNavigate();
+
+    // Track whether the form is saved
+    const [isSaved, setIsSaved] = useState(false);
 
     const [feedbackDetails, setFeedbackDetails] = useState({
         status: "",
@@ -34,6 +38,8 @@ export default function AssessmentFeedbackReviewForm() {
         overall_feedback: "",
         suggestions: "",
     });
+
+    const [studentDetails, setStudentDetails] = useState({});
 
     const [validationErrors, setValidationErrors] = useState({});
     const [error, setError] = useState("");
@@ -63,6 +69,21 @@ export default function AssessmentFeedbackReviewForm() {
 
         fetchFeedbackDetails();
     }, [feedbackId]);
+
+    // Fetch student data
+    useEffect(() => {
+        async function fetchStudentDetails() {
+            try {
+                const res = await axiosClient.get(`/students/${studentId}`);
+                setStudentDetails(res.data);
+            } catch (err) {
+                console.error("Error fetching student details:", err);
+                setError("Error fetching student details. Please try again.");
+            }
+        }
+
+        fetchStudentDetails();
+    }, [studentId]);
 
     const handleFieldChange = (index, field, value) => {
         // Update the specific field in the topics array
@@ -168,20 +189,134 @@ export default function AssessmentFeedbackReviewForm() {
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        // Ensure this works for both manual calls and form events
+        if (e) e.preventDefault();
 
         if (!validateForm()) {
-            return;
+            return false;
         }
 
         try {
             await axiosClient.put(`/feedback/${feedbackId}`, feedbackDetails);
+            // Mark the form as saved
+            setIsSaved(true);
             alert("Feedback updated successfully!");
             navigate(
-                `/assessment-feedback/history/student/${studentId}/subject/${subjectId}`
+                `/assessment-feedback/history/student/${studentId}/subject/${subjectId}?year=${selectedYear}`
             );
+            return true;
         } catch (err) {
             setError("Error updating feedback.");
+            return false;
+        }
+    };
+
+    // Function to handle sending the review form (Send PDF via email)
+    const handleSendReviewForm = async (studentDetails, feedbackDetails) => {
+        // Check if the form is saved
+        if (!isSaved) {
+            // Save the form first
+            const saveSuccess = await handleSubmit();
+            if (!saveSuccess) {
+                // If save failed, stop the process
+                alert("Please save the form before sending.");
+                return;
+            }
+        }
+
+        const parentEmails =
+            studentDetails?.parents?.map((parent) => parent.email) || [];
+
+        if (parentEmails.length === 0) {
+            alert("No parent emails found!");
+            return;
+        }
+
+        try {
+            const doc = new jsPDF();
+
+            // Document Title
+            doc.setFontSize(18);
+            doc.text("XXX Tuition Center", 10, 10);
+
+            // Review Form and Student Details
+            doc.setFontSize(12);
+            doc.text(`Student Name: ${studentDetails.name}`, 10, 20);
+            doc.text(`Subject: ${feedbackDetails.subject_name}`, 10, 30);
+            doc.text(`Study Level: ${feedbackDetails.study_level}`, 10, 40);
+            doc.text(`Month: ${feedbackDetails.month} ${selectedYear}`, 10, 50);
+            doc.text(`Review Date: ${feedbackDetails.review_date}`, 10, 60);
+
+            // Topics Table
+            doc.autoTable({
+                startY: 70,
+                head: [
+                    [
+                        "#",
+                        "Topic Name",
+                        "Competency Level",
+                        "Class Participation",
+                        "Problem-Solving Skills",
+                        "Assignment Completion",
+                        "Communication Skills",
+                        "Behavior and Discipline",
+                        "Effort and Motivation",
+                        "Comment",
+                    ],
+                ],
+                body: feedbackDetails.topics.map((topic, index) => [
+                    index + 1,
+                    topic.topic_name,
+                    topic.competency_level,
+                    topic.class_participation,
+                    topic.problem_solving,
+                    topic.assignment_completion,
+                    topic.communication_skills,
+                    topic.behavior_discipline,
+                    topic.effort_motivation,
+                    topic.comment,
+                ]),
+            });
+
+            // Overall Feedback and Suggestions
+            // Calculate where to place after the table
+            const finalY = doc.previousAutoTable.finalY + 10;
+
+            doc.text(
+                `Overall Feedback: ${feedbackDetails.overall_feedback}`,
+                10,
+                finalY + 10
+            );
+            doc.text(
+                `Suggestions: ${feedbackDetails.suggestions}`,
+                10,
+                finalY + 20
+            );
+
+            // Convert the PDF to Blob
+            const pdfBlob = doc.output("blob");
+
+            // Create FormData to send the PDF
+            const formData = new FormData();
+            // Append each email
+            parentEmails.forEach((email) => formData.append("emails[]", email)); 
+            // Attach the PDF
+            formData.append("pdf", pdfBlob, "review-form.pdf"); 
+
+            const response = await axiosClient.post(
+                "/send-review-form-pdf-email",
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                }
+            );
+
+            alert("Review form sent to all parent emails!");
+        } catch (error) {
+            console.error("Error sending review form:", error);
+            alert("Failed to send review form.");
         }
     };
 
@@ -195,6 +330,27 @@ export default function AssessmentFeedbackReviewForm() {
 
             {error && <div className="alert alert-danger">{error}</div>}
             <ContentContainer title={`Feedback Details`}>
+                <div className="d-flex justify-content-end mt-3">
+                    <Row className="mb-3">
+                        <Col>
+                            {/* Send Button */}
+                            <Button
+                                className="btn-create-yellow-border"
+                                onClick={() =>
+                                    handleSendReviewForm(
+                                        studentDetails,
+                                        feedbackDetails
+                                    )
+                                }
+                                disabled={loading}
+                            >
+                                <i className="fas fa-print me-1"></i>{" "}
+                                {loading ? "Sending..." : "Send"}
+                            </Button>
+                        </Col>
+                    </Row>
+                </div>
+
                 <Row className="mb-4">
                     <Col>
                         <p>Student Name: {feedbackDetails.student_name}</p>
