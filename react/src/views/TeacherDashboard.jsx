@@ -5,6 +5,7 @@ import axiosClient from "../axiosClient";
 import { ContentContainer } from "../components/ContentContainer/ContentContainer";
 import AttendancePieChart from "../components/Chart/AttendancePieChart";
 import PieChart from "../components/Chart/PieChart";
+import "../css/TeacherDashboard.css";
 
 export default function TeacherDashboard() {
     // Get the logged-in user from context
@@ -36,9 +37,9 @@ export default function TeacherDashboard() {
                 setSubjectTeachCount(res.data.subjectTeachCount || 0);
 
                 // Attendance rates
-                setAttendanceRate(res.data.attendanceRate || 0); 
-                setAbsentRate(res.data.absentRate || 0); 
-                
+                setAttendanceRate(res.data.attendanceRate || 0);
+                setAbsentRate(res.data.absentRate || 0);
+
                 // Feedback counts
                 const completedFeedbackCount = res.data.completedFeedbackCount;
                 const overallFeedbackCount = res.data.overallFeedbackCount;
@@ -64,13 +65,61 @@ export default function TeacherDashboard() {
         fetchDashboardCounts();
     }, [user.id]);
 
+    // return (
+    //     <>
+    //         <div className="page-title">Teacher Dashboard</div>
+    //         <div className="mt-3">
+    //             <p>Welcome, Teacher {user.name || "Teacher"}</p>
+    //         </div>
+
+    //         <div className="wrapper d-flex flex-column">
+    //             <div className="first-row d-flex gap-3 flex-wrap justify-content-between mt-3">
+    //                 <OverviewItem
+    //                     iconSrc="student-num.png"
+    //                     title="Total Student Teach"
+    //                     text={studentCount}
+    //                     lineColor="#904dbc"
+    //                 />
+    //                 <OverviewItem
+    //                     iconSrc="subject-num.png"
+    //                     title="Subjects Taught"
+    //                     text={subjectTeachCount}
+    //                     lineColor="#904dbc"
+    //                 />
+    //                 <OverviewItem
+    //                     iconSrc="teacher-num.png"
+    //                     title="Total Feedback Completed"
+    //                     text={feedbackCount}
+    //                     lineColor="#904dbc"
+    //                 />
+    //             </div>
+    //         </div>
+
+    //         <div className="second-row d-flex flex-wrap gap-3 mt-3">
+    //             <ContentContainer title="Attendance Rate" >
+    //                 <div className="pie-chart-container">
+    //                     <AttendancePieChart
+    //                         attendanceRate={attendanceRate}
+    //                         absentRate={absentRate}
+    //                     />
+    //                 </div>
+    //             </ContentContainer>
+
+    //             <ContentContainer title="Students Gender" className="flex-fill">
+    //             <div className="pie-chart-container">
+    //                 <PieChart maleCount={maleCount} femaleCount={femaleCount} />
+    //             </div>
+    //             </ContentContainer>
+    //         </div>
+    //     </>
+    // );
     return (
         <>
             <div className="page-title">Teacher Dashboard</div>
             <div className="mt-3">
                 <p>Welcome, Teacher {user.name || "Teacher"}</p>
             </div>
-
+    
             <div className="wrapper d-flex flex-column">
                 <div className="first-row d-flex gap-3 flex-wrap justify-content-between mt-3">
                     <OverviewItem
@@ -93,19 +142,30 @@ export default function TeacherDashboard() {
                     />
                 </div>
             </div>
-
+    
             <div className="second-row d-flex flex-wrap gap-3 mt-3">
-                <ContentContainer title="Attendance Rate">
-                    <AttendancePieChart
-                        attendanceRate={attendanceRate}
-                        absentRate={absentRate}
-                    />
+                <ContentContainer
+                    title="Attendance Rate"
+                    className="dashboard-pie-chart-container"
+                >
+                    <div className="dashboard-pie-chart">
+                        <AttendancePieChart
+                            attendanceRate={attendanceRate}
+                            absentRate={absentRate}
+                        />
+                    </div>
                 </ContentContainer>
-
-                <ContentContainer title="Students Gender" className="flex-fill">
-                    <PieChart maleCount={maleCount} femaleCount={femaleCount} />
+    
+                <ContentContainer
+                    title="Students Gender"
+                    className="dashboard-pie-chart-container"
+                >
+                    <div className="dashboard-pie-chart">
+                        <PieChart maleCount={maleCount} femaleCount={femaleCount} />
+                    </div>
                 </ContentContainer>
             </div>
         </>
     );
+    
 }
