@@ -255,6 +255,8 @@ Route::get('/students/{studentId}/subjects/{subjectId}/feedback', [FeedbackContr
 Route::get('/feedback/{id}', [FeedbackController::class, 'show']);
 // Update feedback details by ID
 Route::put('/feedback/{id}', [FeedbackController::class, 'update']);
+// Route to send student assessment review form via email
+Route::post('/send-review-form-pdf-email', [FeedbackController::class, 'sendReviewFormPdfEmail']);
 
 
 // based on user role to access the api routes, will be implemented later

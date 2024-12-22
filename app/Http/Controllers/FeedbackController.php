@@ -6,6 +6,8 @@ use App\Models\Feedback;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use App\Models\Teacher;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ReviewFormMail;
 
 class FeedbackController extends Controller
 {
@@ -73,7 +75,6 @@ class FeedbackController extends Controller
 
         return response()->json($studentsWithFeedback);
     }
-
 
     public function fetchTeacherStudents($userId)
     {
@@ -227,5 +228,28 @@ class FeedbackController extends Controller
             'overall_feedback' => $feedback->overall_feedback,
             'suggestions' => $feedback->suggestions,
         ]);
+    }
+
+    /**
+     * Send student assessment review form as PDF attachments via email.
+     */
+    public function sendReviewFormPdfEmail(Request $request)
+    {
+        $request->validate([
+            'emails' => 'required|array',
+            'emails.*' => 'email', // Validate each email
+            'pdf' => 'required|file|mimes:pdf|max:2048',
+        ]);
+
+        // Save the uploaded PDF temporarily
+        $pdfPath = $request->file('pdf')->store('review_forms');
+
+        $absolutePath = storage_path("app/{$pdfPath}");
+
+        foreach ($request->emails as $email) {
+            Mail::to($email)->send(new ReviewFormMail($absolutePath));
+        }
+
+        return response()->json(['message' => 'Review forms sent successfully.']);
     }
 }
