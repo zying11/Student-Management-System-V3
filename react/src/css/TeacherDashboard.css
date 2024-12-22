@@ -1,0 +1,18 @@
+/* Dashboard-specific styles for pie charts */
+.dashboard-pie-chart-container {
+    flex: 1 1 45%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+  }
+  
+  .dashboard-pie-chart {
+    width: 100%; /* Ensure charts use full width */
+    max-width: 300px; /* Limit maximum size */
+    height: 300px; /* Ensure consistent height */
+    margin: 0 auto; /* Center the pie chart */
+  }
+  
