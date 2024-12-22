@@ -127,7 +127,8 @@ Route::put('/users/{id}', [UserController::class, 'update']);
 // INVOICE
 // Route::apiResource('/invoices', InvoiceController::class);
 // Route to fetch the list of all invoices
-Route::get('/invoices', [InvoiceController::class, 'index']);
+// Route::get('/invoices', [InvoiceController::class, 'index']);
+Route::get('/invoices', [InvoiceController::class, 'filterInvoices']);
 // Route to store a new invoice details
 Route::post('/invoices', [InvoiceController::class, 'store']);
 // Route to fetch specific invoice details by ID
@@ -231,7 +232,8 @@ Route::delete('/enrollments/{id}', [EnrollmentController::class, 'destroy']);
 
 // RECORD PAYMENT
 // Route to fetch the list of all record paymemts
-Route::get('/record-payments', [RecordPaymentController::class, 'index']);
+// Route::get('/record-payments', [RecordPaymentController::class, 'index']);
+Route::get('/record-payments', [RecordPaymentController::class, 'filterPayments']);
 // Route to store a new record payment
 Route::post('/record-payments', [RecordPaymentController::class, 'store']);
 // Route to retrieve specific record payment details by ID

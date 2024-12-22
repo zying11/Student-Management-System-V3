@@ -7,6 +7,7 @@ use App\Http\Resources\RecordPaymentResource;
 use App\Models\RecordPayment;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\PaymentReceiptMail;
+use Carbon\Carbon;
 
 class RecordPaymentController extends Controller
 {
@@ -135,5 +136,42 @@ class RecordPaymentController extends Controller
         }
 
         return response()->json(['message' => 'Payment receipts sent successfully.']);
+    }
+
+    // Filter payments by date
+    public function filterPayments(Request $request)
+    {
+        try {
+            // Default to 'this_month' if no date filter is provided
+            $dateFilter = $request->query('date_filter', 'this_month');
+
+            // Define the start date based on the selected filter
+            switch ($dateFilter) {
+                case 'last_3_months':
+                    $startDate = Carbon::now()->subMonths(3)->startOfMonth();
+                    break;
+
+                case 'this_month':
+                default:
+                    $startDate = Carbon::now()->startOfMonth();
+                    break;
+            }
+
+            // Retrieve payments filtered by the date, with the associated invoice data
+            $payments = RecordPayment::with('invoice')
+                ->where('payment_date', '>=', $startDate)
+                ->orderBy('id', 'desc')
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'payments' => RecordPaymentResource::collection($payments)
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error fetching payments: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

@@ -51,11 +51,11 @@ export default function ProfileView({
         fetchProfile();
     }, [id, fetchEndpoint, profileType]);
 
-    // Handle profile image click
-    const handleProfileImageClick = () => {
-        // Open file input dialog
-        fileInputRef.current.click();
-    };
+    // // Handle profile image click
+    // const handleProfileImageClick = () => {
+    //     // Open file input dialog
+    //     fileInputRef.current.click();
+    // };
 
     // Handle image change
     const handleImageChange = (event) => {
@@ -122,7 +122,7 @@ export default function ProfileView({
                                 src={profileImage}
                                 alt="Profile"
                                 onError={(e) => (e.target.src = defaultImage)}
-                                onClick={handleProfileImageClick}
+                                // onClick={handleProfileImageClick}
                                 style={{
                                     width: "180px",
                                     height: "180px",

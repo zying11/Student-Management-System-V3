@@ -15,15 +15,17 @@ export default function Invoice() {
     });
     const [searchQuery, setSearchQuery] = useState("");
     const [error, setError] = useState("");
+    const [dateFilter, setDateFilter] = useState("this_month");
 
-    // Fetch invoice data
+    // Fetch invoice data with date filter
     useEffect(() => {
         async function fetchInvoices() {
             try {
-                // Fetch data from /invoices endpoint
-                const res = await axiosClient.get("/invoices");
+                const res = await axiosClient.get(
+                    `/invoices?date_filter=${dateFilter}`
+                );
                 setInvoiceData({
-                    invoices: res.data.data,
+                    invoices: res.data.invoices,
                     loading: false,
                 });
             } catch (error) {
@@ -38,9 +40,8 @@ export default function Invoice() {
             }
         }
 
-        // Call fetchInvoices function
         fetchInvoices();
-    }, []);
+    }, [dateFilter]); // Re-fetch when the dateFilter changes
 
     // Handle deletion of an invoice
     const handleDelete = async (id) => {
@@ -63,7 +64,7 @@ export default function Invoice() {
         }
     };
 
-    // Filter invoices name by search query
+    // Filter invoices student name by search query
     const filteredInvoices = invoiceData.invoices.filter((invoice) =>
         invoice.student.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
@@ -116,7 +117,6 @@ export default function Invoice() {
                           </Dropdown.Item>
                           <Dropdown.Item
                               as={Link}
-                              //   to={`/invoice/view/${invoice.id}`}
                               to={`/invoiceTemplate/${invoice.id}`}
                           >
                               View Invoice
@@ -126,11 +126,6 @@ export default function Invoice() {
                           >
                               Delete Invoice
                           </Dropdown.Item>
-                          {/* <Dropdown.Item
-                              onClick={() => handleSendInvoice(invoice.id)}
-                          >
-                              Send Invoice
-                          </Dropdown.Item> */}
                           <Dropdown.Item
                               as={Link}
                               to={`/record-payment-for/invoice/${invoice.id}`}
@@ -152,7 +147,43 @@ export default function Invoice() {
                 </Link>
             </div>
 
-            {/* Display invoice list table */}
+            {/* Date Filter */}
+            <div className="date-filter">
+                <button
+                    className={`btn ${
+                        dateFilter === "this_month"
+                            ? "btn-primary"
+                            : "btn-outline-primary"
+                    }`}
+                    onClick={() => setDateFilter("this_month")}
+                >
+                    This Month
+                </button>
+                <button
+                    className={`btn ms-3 ${
+                        dateFilter === "last_3_months"
+                            ? "btn-primary"
+                            : "btn-outline-primary"
+                    }`}
+                    onClick={() => setDateFilter("last_3_months")}
+                >
+                    Last 3 Months
+                </button>
+                {/* <Button
+                    className={`btn-create-yellow-border ${dateFilter === "this_month" }`}
+                    onClick={() => setDateFilter("this_month")}
+                >
+                    This Month
+                </Button>
+                <Button
+                    className={`btn-create-yellow ms-3 ${dateFilter === "last_3_months"}`}
+                    onClick={() => setDateFilter("last_3_months")}
+                >
+                    Last 3 Months
+                </Button> */}
+            </div>
+
+            {/* Search Bar */}
             <ContentContainer title="Student Fees Collection List">
                 {/* Search by student name */}
                 <SearchBar

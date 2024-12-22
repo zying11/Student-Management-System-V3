@@ -17,21 +17,25 @@ export default function RecordPayment() {
     const [searchQuery, setSearchQuery] = useState("");
     const [statusFilter, setStatusFilter] = useState("");
     const [error, setError] = useState("");
+    const [dateFilter, setDateFilter] = useState("this_month");
 
     // Fetch record payment data
     useEffect(() => {
         async function fetchRecordPayments() {
             try {
                 // Fetch data from /record-payments endpoint
-                const res = await axiosClient.get("/record-payments");
+                const res = await axiosClient.get(
+                    `/record-payments?date_filter=${dateFilter}`
+                );
+
                 setRecordPaymentData({
-                    record_payments: res.data.data,
+                    record_payments: res.data.payments || [],
                     loading: false,
                 });
             } catch (error) {
                 console.error("Error fetching record payment:", error);
                 setRecordPaymentData({
-                    record_payments: [],
+                    record_payments: [], 
                     loading: false,
                 });
                 setError(
@@ -42,7 +46,7 @@ export default function RecordPayment() {
 
         // Call fetchRecordPayments function
         fetchRecordPayments();
-    }, []);
+    }, [dateFilter]); // Re-fetch when dateFilter changes
 
     // Handle deletion of a record payment
     const handleDelete = async (id) => {
@@ -166,11 +170,6 @@ export default function RecordPayment() {
                           >
                               Delete Payment
                           </Dropdown.Item>
-                          {/* <Dropdown.Item
-                              onClick={() => handleSendInvoice(payment.id)}
-                          >
-                              Send Receipt
-                          </Dropdown.Item> */}
                       </Dropdown.Menu>
                   </Dropdown>
               </div>,
@@ -179,6 +178,30 @@ export default function RecordPayment() {
     return (
         <>
             <div className="page-title">Fees</div>
+
+            {/* Date Filter */}
+            <div className="date-filter mt-5">
+                <button
+                    className={`btn ${
+                        dateFilter === "this_month"
+                            ? "btn-primary"
+                            : "btn-outline-primary"
+                    }`}
+                    onClick={() => setDateFilter("this_month")}
+                >
+                    This Month
+                </button>
+                <button
+                    className={`btn ms-3 ${
+                        dateFilter === "last_3_months"
+                            ? "btn-primary"
+                            : "btn-outline-primary"
+                    }`}
+                    onClick={() => setDateFilter("last_3_months")}
+                >
+                    Last 3 Months
+                </button>
+            </div>
 
             {/* Display record payment list table */}
             <ContentContainer title="Payment Collection List">
@@ -197,9 +220,9 @@ export default function RecordPayment() {
                                     <option value="">
                                         Filter payment status
                                     </option>
-                                    <option value={"paid"}>Paid</option>
-                                    <option value={"pending"}>Pending</option>
-                                    <option value={"overdue"}>Overdue</option>
+                                    <option value="paid">Paid</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="overdue">Overdue</option>
                                 </Form.Select>
                             </Form.Group>
                         </Form>

@@ -7,6 +7,7 @@ use App\Http\Resources\InvoiceResource;
 use App\Models\Invoice;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\InvoiceMail;
+use Carbon\Carbon;
 
 class InvoiceController extends Controller
 {
@@ -154,5 +155,42 @@ class InvoiceController extends Controller
         }
 
         return response()->json(['message' => 'Invoice sent successfully.']);
+    }
+
+    // Filter invoices by date
+    public function filterInvoices(Request $request)
+    {
+        try {
+            // Default to 'this_month'
+            $dateFilter = $request->query('date_filter', 'this_month'); 
+
+            // Define the start date based on the selected filter
+            switch ($dateFilter) {
+                case 'last_3_months':
+                    $startDate = Carbon::now()->subMonths(3)->startOfMonth();
+                    break;
+
+                case 'this_month':
+                default:
+                    $startDate = Carbon::now()->startOfMonth();
+                    break;
+            }
+
+            // Get invoices filtered by the date and eager load the associated student data
+            $invoices = Invoice::with('student')
+                ->where('issue_date', '>=', $startDate)
+                ->orderBy('id', 'desc')
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'invoices' => InvoiceResource::collection($invoices) 
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error fetching invoices: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }
