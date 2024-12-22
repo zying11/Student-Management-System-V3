@@ -21,6 +21,7 @@ use App\Http\Controllers\RecordPaymentController;
 use App\Http\Controllers\FeedbackController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TeacherDashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -258,6 +259,8 @@ Route::put('/feedback/{id}', [FeedbackController::class, 'update']);
 // Route to send student assessment review form via email
 Route::post('/send-review-form-pdf-email', [FeedbackController::class, 'sendReviewFormPdfEmail']);
 
+// TEACHER DASHBOARD
+Route::get('/teacher-dashboard-counts/{userId}', [TeacherDashboardController::class, 'getStudentCountsForTeacher']);
 
 // based on user role to access the api routes, will be implemented later
 
