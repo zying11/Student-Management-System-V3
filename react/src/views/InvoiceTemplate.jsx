@@ -379,7 +379,7 @@ export default function InvoiceTemplate() {
                                     to={`/record-payment-for/invoice/${invoice.id}`}
                                 >
                                     <Button className="btn-create-yellow ms-2">
-                                        Pay Now
+                                        Pay
                                     </Button>
                                 </Link>
                             </Col>
