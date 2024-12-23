@@ -10,8 +10,6 @@ const ConfirmationModal = ({ id, icon, headerText, bodyText, onConfirm }) => {
             data-bs-backdrop="static"
             data-bs-keyboard="false"
             tabIndex="-1"
-            aria-labelledby={`${id}Label`}
-            aria-hidden="true"
         >
             <div className="modal-dialog">
                 <div className="modal-content">

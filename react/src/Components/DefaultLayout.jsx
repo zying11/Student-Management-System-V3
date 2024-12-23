@@ -3,7 +3,7 @@ import { Navigate, Outlet } from "react-router-dom";
 import axiosClient from "../axiosClient";
 import { useStateContext } from "../contexts/ContextProvider";
 import { useState } from "react";
-import Sidebar from "./Sidebar";
+import Sidebar from "./Sidebar/Sidebar";
 import "../css/DefaultLayout.css";
 
 import "bootstrap";
@@ -58,7 +58,7 @@ export default function DefaultLayout() {
             <div className="wrapper">
                 <aside id="sidebar" className={isCollapsed ? "collapsed" : ""}>
                     <div className="h-100">
-                        <div className="sidebar-logo">LOGO</div>
+                        <div className="sidebar-logo">SMS</div>
                         <Sidebar
                             userRole={user?.role_id === 1 ? "admin" : "teacher"}
                         />

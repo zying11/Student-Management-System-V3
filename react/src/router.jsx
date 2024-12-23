@@ -217,6 +217,7 @@ import ReceiptTemplate from "./views/ReceiptTemplate.jsx";
 import AssessmentFeedback from "./views/AssessmentFeedback.jsx";
 import AssessmentFeedbackHistory from "./views/AssessmentFeedbackHistory.jsx";
 import AssessmentFeedbackReviewForm from "./views/AssessmentFeedbackReviewForm.jsx";
+import AllTeacherTimetable from "./views/AllTeacherTimetable.jsx";
 
 // Check the user role and render the dashboard accordingly
 const DashboardWrapper = () => {
@@ -282,6 +283,14 @@ const router = createBrowserRouter([
                 element: (
                     <ProtectedRoute requiredRoles={["admin"]}>
                         <Timetable />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "/teachers/timetable",
+                element: (
+                    <ProtectedRoute requiredRoles={["admin"]}>
+                        <AllTeacherTimetable />
                     </ProtectedRoute>
                 ),
             },
