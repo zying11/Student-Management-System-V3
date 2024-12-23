@@ -21,6 +21,7 @@ use App\Http\Controllers\RecordPaymentController;
 use App\Http\Controllers\FeedbackController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TeacherDashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -127,7 +128,8 @@ Route::put('/users/{id}', [UserController::class, 'update']);
 // INVOICE
 // Route::apiResource('/invoices', InvoiceController::class);
 // Route to fetch the list of all invoices
-Route::get('/invoices', [InvoiceController::class, 'index']);
+// Route::get('/invoices', [InvoiceController::class, 'index']);
+Route::get('/invoices', [InvoiceController::class, 'filterInvoices']);
 // Route to store a new invoice details
 Route::post('/invoices', [InvoiceController::class, 'store']);
 // Route to fetch specific invoice details by ID
@@ -231,7 +233,8 @@ Route::delete('/enrollments/{id}', [EnrollmentController::class, 'destroy']);
 
 // RECORD PAYMENT
 // Route to fetch the list of all record paymemts
-Route::get('/record-payments', [RecordPaymentController::class, 'index']);
+// Route::get('/record-payments', [RecordPaymentController::class, 'index']);
+Route::get('/record-payments', [RecordPaymentController::class, 'filterPayments']);
 // Route to store a new record payment
 Route::post('/record-payments', [RecordPaymentController::class, 'store']);
 // Route to retrieve specific record payment details by ID
@@ -259,6 +262,8 @@ Route::put('/feedback/{id}', [FeedbackController::class, 'update']);
 // Route to send student assessment review form via email
 Route::post('/send-review-form-pdf-email', [FeedbackController::class, 'sendReviewFormPdfEmail']);
 
+// TEACHER DASHBOARD
+Route::get('/teacher-dashboard-counts/{userId}', [TeacherDashboardController::class, 'getStudentCountsForTeacher']);
 
 // based on user role to access the api routes, will be implemented later
 
