@@ -92,7 +92,7 @@ export default function ProfileView({
     return (
         <>
             <div className="page-title">{title}</div>
-
+    
             {/* Display the user basic info */}
             <div className="mt-3">
                 <img
@@ -109,7 +109,7 @@ export default function ProfileView({
                     style={{ position: "relative" }}
                 >
                     <div className="d-flex flex-column">
-                        <div
+                        {/* <div
                             style={{
                                 position: "absolute",
                                 top: "-150px",
@@ -139,25 +139,32 @@ export default function ProfileView({
                                 ref={fileInputRef}
                                 style={{ display: "none" }}
                             />
-                        </div>
-
-                        {/* Display the user name */}
-                        <div className="mt-5">
+                        </div> */}
+    
+                        {/* User Name */}
+                        <div>
                             <h2>{profile.name}</h2>
                             <p>
                                 <small>{profileType}</small>
                             </p>
                         </div>
-
-                        {/* Display other specific profile details based on user */}
-                        <div className="row">
+    
+                        {/* Profile Details */}
+                        <div className="row w-100">
                             {profileFields.map((field, idx) => (
-                                <div className="col-4 mt-5" key={idx}>
+                                <div
+                                    className="col-12 col-sm-6 col-md-4 mt-4"
+                                    key={idx}
+                                >
                                     <div className="d-flex">
                                         <div className="me-3">
                                             <img
                                                 src={`http://localhost:8000/icon/${field.icon}`}
                                                 alt={field.label}
+                                                style={{
+                                                    maxWidth: "24px",
+                                                    height: "auto",
+                                                }}
                                             />
                                         </div>
                                         <div>
@@ -171,10 +178,13 @@ export default function ProfileView({
                     </div>
                 </ContentContainer>
             </div>
-
+    
+            {/* Conditional Details */}
             {(profileType === "admin" || profileType === "teacher") && (
                 <ContentContainer title="Login Details">
-                    {error && <div className="alert alert-danger">{error}</div>}
+                    {error && (
+                        <div className="alert alert-danger">{error}</div>
+                    )}
                     <Table
                         header={["ID", "Email", "Password"]}
                         data={
@@ -192,10 +202,12 @@ export default function ProfileView({
                     />
                 </ContentContainer>
             )}
-
+    
             {profileType === "teacher" && (
                 <ContentContainer title="Subject Teaching Details">
-                    {error && <div className="alert alert-danger">{error}</div>}
+                    {error && (
+                        <div className="alert alert-danger">{error}</div>
+                    )}
                     {profile.subject_teaching &&
                     Array.isArray(profile.subject_teaching) &&
                     profile.subject_teaching.length > 0 ? (
@@ -229,7 +241,7 @@ export default function ProfileView({
                     )}
                 </ContentContainer>
             )}
-
+    
             {profileType === "student" && (
                 <>
                     <ContentContainer title="Parents Details">
@@ -240,10 +252,11 @@ export default function ProfileView({
                         Array.isArray(profile.parents) &&
                         profile.parents.length > 0 ? (
                             <Table
-                                header={["ID", "Parent Name", "Email", "Phone"]}
+                                header={["ID", "Parent Name","Relationship", "Email", "Phone"]}
                                 data={profile.parents.map((parent) => [
                                     parent.id || "-",
                                     parent.name || "-",
+                                    parent.relationship || "-",
                                     parent.email || "-",
                                     parent.phone_number || "-",
                                 ])}
@@ -255,7 +268,7 @@ export default function ProfileView({
                             </div>
                         )}
                     </ContentContainer>
-
+    
                     <ContentContainer title="Subject Enrollment Details">
                         {error && (
                             <div className="alert alert-danger">{error}</div>
@@ -276,8 +289,8 @@ export default function ProfileView({
                                         enrolledSubject.id || "-",
                                         enrolledSubject.subject.subject_name ||
                                             "-",
-                                        enrolledSubject.study_level
-                                            .level_name || "-",
+                                        enrolledSubject.study_level.level_name ||
+                                            "-",
                                         `${
                                             enrolledSubject.lesson.start_time ||
                                             "N/A"
@@ -291,8 +304,7 @@ export default function ProfileView({
                                         }, ${
                                             enrolledSubject.lesson.room || "N/A"
                                         })`,
-                                        enrolledSubject.lesson.teacher_name ||
-                                            "-",
+                                        enrolledSubject.lesson.teacher_name || "-",
                                     ]
                                 )}
                                 itemsPerPage={3}
@@ -305,25 +317,28 @@ export default function ProfileView({
                     </ContentContainer>
                 </>
             )}
-
+    
             {/* Action buttons */}
-            <div className="d-flex justify-content-end mt-3">
+            <div className="d-flex flex-wrap justify-content-end mt-3">
                 {user.role_id === 1 && ( // Only Admin can edit profile
-                    <div className="me-3">
-                        <Link
+                    <div className="me-3 mb-2">
+                         <Link to={`/students`} className="text-decoration-none">
+                        <Button>Back</Button>
+                    </Link>
+                     
+                    </div>
+                )}
+                <div className="mb-2">
+                <Link
                             to={`/${profileType}/edit/${id}`}
                             className="text-decoration-none"
                         >
                             <Button className="btn-create-yellow">Edit</Button>
                         </Link>
-                    </div>
-                )}
-                <div>
-                    <Link to={`/students`} className="text-decoration-none">
-                        <Button>Back</Button>
-                    </Link>
+                   
                 </div>
             </div>
         </>
     );
+    
 }
