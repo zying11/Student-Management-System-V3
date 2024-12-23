@@ -24,6 +24,16 @@ export default function Students() {
     const [subjectQuery, setSubjectQuery] = useState("");
     const [error, setError] = useState("");
 
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth <= 1028);
+        // Check initial screen size
+        handleResize();
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
     // Fetch students data
     useEffect(() => {
         async function fetchStudents() {
@@ -177,7 +187,7 @@ export default function Students() {
                     ))
                   : "Not Assigned",
               student.registration_date || "-",
-              <div className="actions">
+              <div className="actions d-flex">
                   {/* Profile action - Visible to all roles */}
                   <Link
                       to={`/student/${student.id}/profile`}
@@ -226,7 +236,7 @@ export default function Students() {
             </div>
             <ContentContainer title="Student List">
                 <Row className="mb-3">
-                    <Col md={4}>
+                    <Col xs={12} sm={6}>
                         {/* Search by subject */}
                         <Form>
                             <InputGroup className="mb-3">
@@ -235,20 +245,27 @@ export default function Students() {
                                     onChange={(e) =>
                                         setSubjectQuery(e.target.value)
                                     }
-                                    placeholder="Search by subject"
+                                    placeholder={
+                                        isMobile
+                                            ? "Search subject"
+                                            : "Search by subject"
+                                    }
                                     aria-label="Search by subject"
-                                    aria-describedby="subject-search"
                                 />
                             </InputGroup>
                         </Form>
                     </Col>
 
-                    <Col md={8}>
+                    <Col xs={12} sm={6}>
                         {/* Search by student name */}
                         <SearchBar
                             searchQuery={searchQuery}
                             setSearchQuery={setSearchQuery}
-                            placeholder="Search student by name"
+                            placeholder={
+                                isMobile
+                                    ? "Search name"
+                                    : "Search student by name"
+                            }
                         />
                     </Col>
                 </Row>

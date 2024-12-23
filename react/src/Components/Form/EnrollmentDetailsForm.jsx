@@ -284,128 +284,145 @@ export default function EnrollmentDetailsForm({
             <Form.Group controlId="enrollments">
                 {enrollmentDetails.map((enrollment, index) => (
                     <React.Fragment key={index}>
-                        <Row className="mb-3">
-                            {/* Subject Field */}
-                            <Form.Group
-                                as={Col}
-                                controlId={`formSubject-${index}`}
-                            >
-                                <Form.Label>Subject</Form.Label>
-                                <Form.Select
-                                    name="subject_id"
-                                    value={
-                                        subjectsArray.find(
-                                            (sub) =>
-                                                sub.id === enrollment.subject_id
-                                        )?.subject_name || ""
-                                    }
-                                    onChange={(e) =>
-                                        handleEnrollmentChangeWrapper(
-                                            e,
-                                            index,
-                                            "subject_id"
-                                        )
-                                    }
-                                    isInvalid={
-                                        !!errors[
-                                            `enrollment_subject_id_${index}`
-                                        ]
-                                    }
+                        <Row>
+                            <Col className="mt-3" md={6} sm={12}>
+                                {/* Subject Field */}
+                                <Form.Group
+                                    as={Col}
+                                    controlId={`formSubject-${index}`}
                                 >
-                                    <option value="">Select Subject</option>
-                                    {getAvailableSubjects(index)}
-                                </Form.Select>
-                                <Form.Control.Feedback type="invalid">
-                                    {errors[`enrollment_subject_id_${index}`]}
-                                </Form.Control.Feedback>
-                            </Form.Group>
-
-                            {/* Study Level Field */}
-                            <Form.Group
-                                as={Col}
-                                controlId={`formStudyLevel-${index}`}
-                            >
-                                <Form.Label>Study Level</Form.Label>
-                                <Form.Select
-                                    name="study_level_id"
-                                    value={enrollment.study_level_id}
-                                    onChange={(e) =>
-                                        handleEnrollmentChangeWrapper(
-                                            e,
-                                            index,
-                                            "study_level_id"
-                                        )
-                                    }
-                                    isInvalid={
-                                        !!errors[
-                                            `enrollment_study_level_id_${index}`
-                                        ]
-                                    }
-                                >
-                                    <option value="">Select Study Level</option>
-                                    {enrollment.subject_id &&
-                                        getStudyLevelsForSubject(
+                                    <Form.Label>Subject</Form.Label>
+                                    <Form.Select
+                                        name="subject_id"
+                                        value={
                                             subjectsArray.find(
                                                 (sub) =>
                                                     sub.id ===
                                                     enrollment.subject_id
-                                            )?.subject_name
-                                        ).map((level) => (
-                                            <option
-                                                key={level.id}
-                                                value={level.id}
-                                            >
-                                                {level.level_name}
-                                            </option>
-                                        ))}
-                                </Form.Select>
-                                <Form.Control.Feedback type="invalid">
-                                    {
-                                        errors[
-                                            `enrollment_study_level_id_${index}`
-                                        ]
-                                    }
-                                </Form.Control.Feedback>
-                            </Form.Group>
-                        </Row>
-
-                        <Row className="mb-3">
-                            {/* Class Time Field */}
-                            <Form.Group
-                                as={Col}
-                                controlId={`formClassTime-${index}`}
-                            >
-                                <Form.Label>Class Time</Form.Label>
-                                <Form.Select
-                                    name="lesson_id"
-                                    value={enrollment.lesson_id}
-                                    onChange={(e) =>
-                                        handleEnrollmentChangeWrapper(
-                                            e,
-                                            index,
-                                            "lesson_id"
-                                        )
-                                    }
-                                    isInvalid={
-                                        !!errors[
-                                            `enrollment_lesson_id_${index}`
-                                        ]
-                                    }
+                                            )?.subject_name || ""
+                                        }
+                                        onChange={(e) =>
+                                            handleEnrollmentChangeWrapper(
+                                                e,
+                                                index,
+                                                "subject_id"
+                                            )
+                                        }
+                                        isInvalid={
+                                            !!errors[
+                                                `enrollment_subject_id_${index}`
+                                            ]
+                                        }
+                                    >
+                                        <option value="">Select Subject</option>
+                                        {getAvailableSubjects(index)}
+                                    </Form.Select>
+                                    <Form.Control.Feedback type="invalid">
+                                        {
+                                            errors[
+                                                `enrollment_subject_id_${index}`
+                                            ]
+                                        }
+                                    </Form.Control.Feedback>
+                                </Form.Group>
+                            </Col>
+                            <Col className="mt-3" md={6} sm={12}>
+                                {/* Study Level Field */}
+                                <Form.Group
+                                    as={Col}
+                                    controlId={`formStudyLevel-${index}`}
                                 >
-                                    <option value="">Select Class Time</option>
-                                    {enrollment.subject_id &&
-                                        availableLessons(
-                                            enrollment.subject_id,
-                                            index
-                                        )}
-                                </Form.Select>
-                                <Form.Control.Feedback type="invalid">
-                                    {errors[`enrollment_lesson_id_${index}`]}
-                                </Form.Control.Feedback>
-                            </Form.Group>
+                                    <Form.Label>Study Level</Form.Label>
+                                    <Form.Select
+                                        name="study_level_id"
+                                        value={enrollment.study_level_id}
+                                        onChange={(e) =>
+                                            handleEnrollmentChangeWrapper(
+                                                e,
+                                                index,
+                                                "study_level_id"
+                                            )
+                                        }
+                                        isInvalid={
+                                            !!errors[
+                                                `enrollment_study_level_id_${index}`
+                                            ]
+                                        }
+                                    >
+                                        <option value="">
+                                            Select Study Level
+                                        </option>
+                                        {enrollment.subject_id &&
+                                            getStudyLevelsForSubject(
+                                                subjectsArray.find(
+                                                    (sub) =>
+                                                        sub.id ===
+                                                        enrollment.subject_id
+                                                )?.subject_name
+                                            ).map((level) => (
+                                                <option
+                                                    key={level.id}
+                                                    value={level.id}
+                                                >
+                                                    {level.level_name}
+                                                </option>
+                                            ))}
+                                    </Form.Select>
+                                    <Form.Control.Feedback type="invalid">
+                                        {
+                                            errors[
+                                                `enrollment_study_level_id_${index}`
+                                            ]
+                                        }
+                                    </Form.Control.Feedback>
+                                </Form.Group>
+                            </Col>
                         </Row>
 
-                        <Row className="mb-3">
+                        <Row>
+                            <Col className="mt-3" md={6} sm={12}>
+                                {/* Class Time Field */}
+                                <Form.Group
+                                    controlId={`formClassTime-${index}`}
+                                >
+                                    <Form.Label>Class Time</Form.Label>
+                                    <Form.Select
+                                        name="lesson_id"
+                                        value={enrollment.lesson_id}
+                                        onChange={(e) =>
+                                            handleEnrollmentChangeWrapper(
+                                                e,
+                                                index,
+                                                "lesson_id"
+                                            )
+                                        }
+                                        isInvalid={
+                                            !!errors[
+                                                `enrollment_lesson_id_${index}`
+                                            ]
+                                        }
+                                    >
+                                        <option value="">
+                                            Select Class Time
+                                        </option>
+                                        {enrollment.subject_id &&
+                                            availableLessons(
+                                                enrollment.subject_id,
+                                                index
+                                            )}
+                                    </Form.Select>
+                                    <Form.Control.Feedback type="invalid">
+                                        {
+                                            errors[
+                                                `enrollment_lesson_id_${index}`
+                                            ]
+                                        }
+                                    </Form.Control.Feedback>
+                                </Form.Group>
+                            </Col>
+                        </Row>
+
+                        <Row className="mt-3">
                             <Col className="d-flex justify-content-end">
                                 <img
                                     className="ms-2"
