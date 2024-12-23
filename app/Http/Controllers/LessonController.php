@@ -78,6 +78,25 @@ class LessonController extends Controller
         return response()->json(['lessons' => $lessons]);
     }
 
+    public function getTeachersTimetable(Request $request)
+    {
+        // Extracts the value of the teacher_id query parameter from the URL
+        $teacherId = $request->query('teacher_id');
+
+        // If teacher_id is provided, filter lessons by teacher_id
+        if ($teacherId) {
+            $lessons = Lesson::where('teacher_id', $teacherId)
+                ->with(['subject.studyLevel', 'room', 'teacher.user'])
+                ->get();
+        } else {
+            // Otherwise, return all lessons with their related data
+            $lessons = Lesson::with(['subject.studyLevel', 'room', 'teacher.user'])->get();
+        }
+
+        return response()->json(['lessons' => $lessons]);
+    }
+
+
     public function setLessonTime(Request $request)
     {
         // Find the lesson by its ID 

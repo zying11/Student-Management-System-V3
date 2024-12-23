@@ -124,6 +124,7 @@
         text-align: left;
         position: relative;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
         .modal-header {
             border-bottom: 1px solid #dee2e6;
         }
@@ -138,4 +139,26 @@
         font-size: 20px;
         cursor: pointer;
     }
+}
+
+.modal-feedback {
+    position: fixed;
+    top: 10%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.modal-feedback.success {
+    border: 2px solid #1B998B;
+    color: #1B998B;
+}
+
+.modal-feedback.error {
+    border: 2px solid #A50C0C;
+    color: #A50C0C;
 }

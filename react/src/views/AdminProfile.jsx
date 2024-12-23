@@ -150,8 +150,23 @@ export default function CenterProfile() {
     return (
         <>
             <div className="page-title">Settings</div>
-            <div className="profile-container mt-5">
-                <div className="top-section"></div>
+            <div className="profile-container mt-5 p-5">
+                <div className="pic-container mb-3 d-flex justify-content-center">
+                    <img
+                        className="profile-pic"
+                        src={
+                            selectedImage
+                                ? selectedImage // Show the newly selected image preview
+                                : `${window.location.protocol}//${
+                                      window.location.hostname
+                                  }:8000/profile/${
+                                      centerProfile.centerLogo ||
+                                      "center-profile-default.png"
+                                  }`
+                        }
+                        alt="Center Logo"
+                    />
+                </div>
                 <div className="bottom-section">
                     <div className="page-content">
                         <h3>Tuition Center Profile</h3>
@@ -179,7 +194,7 @@ export default function CenterProfile() {
                                         disabled={!isEditing} // File selection handler
                                     />
                                 </div>
-                                <div className="input-group d-flex align-items-center">
+                                {/* <div className="input-group d-flex align-items-center">
                                     <div className="label">Favicon</div>
                                     <input
                                         name="favicon"
@@ -190,7 +205,7 @@ export default function CenterProfile() {
                                         readOnly={!isEditing}
                                         required
                                     />
-                                </div>
+                                </div> */}
                                 <div className="input-group d-flex align-items-center">
                                     <div className="label">Center Address</div>
                                     <input
@@ -292,22 +307,6 @@ export default function CenterProfile() {
                             )}
                         </div>
                     </div>
-                </div>
-                <div className="pic-container">
-                    <img
-                        className="profile-pic"
-                        src={
-                            selectedImage
-                                ? selectedImage // Show the newly selected image preview
-                                : `${window.location.protocol}//${
-                                      window.location.hostname
-                                  }:8000/profile/${
-                                      centerProfile.centerLogo ||
-                                      "center-profile-default.png"
-                                  }`
-                        }
-                        alt="Center Logo"
-                    />
                 </div>
             </div>
         </>

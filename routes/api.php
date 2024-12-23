@@ -54,6 +54,7 @@ Route::put('/edit-lesson/{id}', [LessonController::class, 'updateLesson']);
 Route::delete('/delete-lesson/{id}', [LessonController::class, 'deleteLesson']);
 Route::get('lessons', [LessonController::class, 'getLessons']);
 Route::get('/timetable-lessons', [LessonController::class, 'getTimetableLessons']);
+Route::get('/teachers-timetable', [LessonController::class, 'getTeachersTimetable']);
 
 // Room 
 Route::get('rooms', [RoomController::class, 'index']);

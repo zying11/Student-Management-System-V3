@@ -19,6 +19,16 @@ export default function Timetable() {
         console.log(selectedRoomId);
     };
 
+    const daysOfWeek = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+    ];
+
     // Fetch room data
     useEffect(() => {
         async function fetchRooms() {
@@ -64,7 +74,7 @@ export default function Timetable() {
                     "http://127.0.0.1:8000/api/lessons"
                 );
                 const data = res.data;
-                console.log(data);
+                // console.log(data);
                 if (Array.isArray(data.lessons)) {
                     // Filter out lessons where day, start_time, or end_time is null
                     const filteredLessons = data.lessons.filter(
@@ -182,6 +192,13 @@ export default function Timetable() {
         return start1 < end2 && start2 < end1;
     };
 
+    // Modal for user feedback
+    const [modal, setModal] = useState({
+        visible: false,
+        message: "",
+        type: "",
+    });
+
     // Catch event start and end time
     const handleEventDrop = (eventInfo) => {
         // Get lesson ID from data attribute
@@ -248,7 +265,19 @@ export default function Timetable() {
         });
 
         if (isClash) {
-            alert("Teacher's schedule is clashing with another lesson!");
+            // alert("Teacher's schedule is clashing with another lesson!");
+            setModal({
+                visible: true,
+                message:
+                    "Clashing Detected! The lesson you are trying to insert clashes with the teacher’s current timetable. Please select another time.",
+                type: "error",
+            });
+
+            // Hide modal after 3 seconds
+            setTimeout(() => {
+                setModal({ visible: false, message: "", type: "" });
+            }, 3000);
+
             // Revert the event drop to its original position
             eventInfo.revert();
         } else {
@@ -279,15 +308,28 @@ export default function Timetable() {
                     eventData
                 );
                 console.log("Saved successfully!");
-                if (res.status == "200") {
-                    alert("Saved successfully!");
-                }
             }
-
+            // Trigger success modal
+            setModal({
+                visible: true,
+                message: "Timetable Saved successfully!",
+                type: "success",
+            });
             setIsChange(!isChange);
         } catch (error) {
             console.error("Error", error.response);
+            // Trigger error modal
+            setModal({
+                visible: true,
+                message: "There's a problem saving the timetable!",
+                type: "error",
+            });
         }
+
+        //Hide modal after 3 seconds
+        setTimeout(() => {
+            setModal({ visible: false, message: "", type: "" });
+        }, 3000);
     };
 
     // Variable to display timetable events
@@ -305,11 +347,12 @@ export default function Timetable() {
                 title: lesson.subject.subject_name,
                 startTime: startTime,
                 endTime: endTime,
-                daysOfWeek: [parseInt(lesson.day)], // Set the day of the week (0-6)
+                daysOfWeek: [parseInt(lesson.day)], // Set the day of the week (0-6), repeating events
                 extendedProps: {
                     subject: lesson.subject.subject_name,
                     studyLevel: lesson.subject.study_level.level_name,
                     teacher: lesson.teacher.user.name,
+                    day: daysOfWeek[lesson.day],
                     startTime: lesson.start_time,
                     endTime: lesson.end_time,
                 },
@@ -341,7 +384,7 @@ export default function Timetable() {
 
     const handleEventClick = (clickInfo) => {
         setSelectedEvent(clickInfo.event); // Pass additional details here
-        // console.log(selectedEvent);
+        console.log(clickInfo.event);
 
         setIsModalOpen(true);
     };
@@ -447,7 +490,7 @@ export default function Timetable() {
                 <div className="modal-overlay">
                     <div className="modal-details">
                         <button
-                            className="close-btn btn-close"
+                            className="close-btn btn-close d-flex align-items-center justify-content-center"
                             onClick={closeModal}
                         >
                             ×
@@ -468,12 +511,16 @@ export default function Timetable() {
                                 <strong>Teacher:</strong>{" "}
                                 {selectedEvent.extendedProps.teacher}
                             </p>
+                            <p className="mb-3">
+                                <strong>Day:</strong>{" "}
+                                {selectedEvent.extendedProps.day}
+                            </p>
                             <p>
                                 <strong>Time:</strong>{" "}
                                 {formatTimeTo12Hour(
                                     selectedEvent.extendedProps.startTime
-                                )}
-                                {"-"}
+                                )}{" "}
+                                -{" "}
                                 {formatTimeTo12Hour(
                                     selectedEvent.extendedProps.endTime
                                 )}
@@ -483,21 +530,11 @@ export default function Timetable() {
                 </div>
             )}
 
-            <div
-                className="modal fade"
-                id="alertModal"
-                tabIndex="-1"
-                aria-labelledby="alertModalLabel"
-                aria-hidden="true"
-            >
-                <div className="modal-dialog">
-                    <div className="modal-content">
-                        <div className="modal-body">
-                            Timetable saved successfully!
-                        </div>
-                    </div>
+            {modal.visible && (
+                <div className={`modal-feedback ${modal.type}`}>
+                    <p>{modal.message}</p>
                 </div>
-            </div>
+            )}
 
             <ConfirmationModal
                 id="confirmationModal"

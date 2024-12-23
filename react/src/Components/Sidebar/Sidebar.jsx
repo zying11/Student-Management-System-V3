@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Link, Route, Routes } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 
 // Menu items for the sidebar
 const menuItems = [
@@ -69,11 +69,15 @@ const menuItems = [
         subItems: [
             { title: "Add New Lesson", link: "/lesson", roles: ["admin"] },
             { title: "Room Timetable", link: "/room", roles: ["admin"] },
-            { title: "Teacher Timetable", link: "", roles: ["admin"] },
+            {
+                title: "Teacher Timetable",
+                link: "/teachers/timetable",
+                roles: ["admin"],
+            },
             {
                 title: "Schedule Timetable",
                 link: "/timetable",
-                roles: ["admin", "teacher"],
+                roles: ["admin"],
             },
         ],
         roles: ["admin"],
@@ -152,24 +156,49 @@ const menuItems = [
     },
 ];
 
-const SidebarItem = ({ item, activeItem, setActiveItem, userRole }) => {
-    // State to track the active subItem
-    const [activeSubItem, setActiveSubItem] = useState(null);
-    // Check if the item has subItems
+const SidebarItem = ({
+    item,
+    activeItem,
+    setActiveItem,
+    activeSubItem,
+    setActiveSubItem,
+    userRole,
+}) => {
+    const location = useLocation();
     const hasSubItems = item.subItems && item.subItems.length > 0;
+
+    useEffect(() => {
+        if (hasSubItems) {
+            const activeSub = item.subItems.findIndex(
+                (subItem) => location.pathname === subItem.link
+            );
+            if (activeSub !== -1) {
+                setActiveItem(item.id);
+                setActiveSubItem(activeSub);
+            }
+        } else if (location.pathname === item.link) {
+            setActiveItem(item.id);
+            setActiveSubItem(null);
+        }
+    }, [location.pathname, item, setActiveItem, setActiveSubItem, hasSubItems]);
+
+    const handleItemClick = () => {
+        if (hasSubItems) {
+            setActiveItem(activeItem === item.id ? null : item.id);
+        } else {
+            setActiveItem(item.id);
+            setActiveSubItem(null);
+        }
+    };
 
     if (hasSubItems) {
         return (
             <li className="sidebar-item">
                 <a
-                    // onClick={() => setActiveItem(item.id)}
-                    // className={`sidebar-link ${
-                    //     activeItem === item.id ? "active" : ""
-                    // }`}
-                    className="sidebar-link"
-                    data-bs-target={`#${item.id}`}
-                    data-bs-toggle="collapse"
-                    // aria-expanded={activeItem === item.id}
+                    className={`sidebar-link ${
+                        activeItem === item.id ? "active" : ""
+                    }`}
+                    onClick={handleItemClick}
                 >
                     <img
                         className="sidebar-icon"
@@ -182,14 +211,12 @@ const SidebarItem = ({ item, activeItem, setActiveItem, userRole }) => {
                 </a>
                 <ul
                     id={item.id}
-                    className="sidebar-dropdown list-unstyled collapse"
-                    // className={`sidebar-dropdown list-unstyled collapse ${
-                    //     activeItem === item.id ? "show" : ""
-                    // }`}
-                    data-bs-parent="#sidebar"
+                    className={`sidebar-dropdown list-unstyled ${
+                        activeItem === item.id ? "show" : "collapse"
+                    }`}
                 >
                     {item.subItems
-                        .filter((subItem) => subItem.roles.includes(userRole)) // Filter sub-items based on role
+                        .filter((subItem) => subItem.roles.includes(userRole))
                         .map((subItem, subKey) => (
                             <li
                                 key={subKey}
@@ -200,9 +227,7 @@ const SidebarItem = ({ item, activeItem, setActiveItem, userRole }) => {
                                 <Link
                                     to={subItem.link}
                                     className="sidebar-inner-link"
-                                    onClick={() => {
-                                        setActiveSubItem(subKey);
-                                    }}
+                                    onClick={() => setActiveSubItem(subKey)}
                                 >
                                     {subItem.title}
                                 </Link>
@@ -213,14 +238,14 @@ const SidebarItem = ({ item, activeItem, setActiveItem, userRole }) => {
         );
     } else {
         return (
-            <li
-                // className={`sidebar-link ${
-                //     activeItem === item.id ? "active" : ""
-                // }`}
-                // onClick={() => setActiveItem(item.id)}
-                className="sidebar-link"
-            >
-                <Link to={item.link} className="sidebar-link">
+            <li className="sidebar-item">
+                <Link
+                    to={item.link}
+                    className={`sidebar-link ${
+                        activeItem === item.id ? "active" : ""
+                    }`}
+                    onClick={handleItemClick}
+                >
                     <img
                         className="sidebar-icon"
                         src={`${window.location.protocol}//${window.location.hostname}:8000/icon/${item.icon}`}
@@ -237,17 +262,20 @@ const SidebarItem = ({ item, activeItem, setActiveItem, userRole }) => {
 
 const Sidebar = ({ userRole }) => {
     const [activeItem, setActiveItem] = useState(null);
+    const [activeSubItem, setActiveSubItem] = useState(null);
 
     return (
         <ul id="sidebar" className="sidebar-nav mb-0 ps-0 ms-0">
             {menuItems
-                .filter((item) => item.roles.includes(userRole)) // Only display items accessible by the user role
+                .filter((item) => item.roles.includes(userRole))
                 .map((item) => (
                     <SidebarItem
                         key={item.id}
                         item={item}
                         activeItem={activeItem}
                         setActiveItem={setActiveItem}
+                        activeSubItem={activeSubItem}
+                        setActiveSubItem={setActiveSubItem}
                         userRole={userRole}
                     />
                 ))}
