@@ -241,7 +241,7 @@ export default function Announcement() {
     return (
         <>
             <div className="page-title">Announcement</div>
-            <ContentContainer id="announcement" title="Announcement Boad">
+            <ContentContainer id="announcement" title="Announcement Board">
                 <div className="announcement-list">
                     {displayAnnouncements.loading ? (
                         <div className="loading">Loading...</div>

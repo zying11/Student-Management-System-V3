@@ -26,3 +26,9 @@
         font-size: 18px;
     }
 }
+
+@media only screen and (max-width: 450px) {
+    .content-container {
+        padding: 20px 30px;
+    }
+}

@@ -269,7 +269,7 @@ export default function Lesson() {
               lesson.room?.room_name || "-", // ?. for null check
               <div className="actions">
                   <img
-                      className="me-2"
+                      className="me-2 mb-xl-0 mb-2"
                       src="http://localhost:8000/icon/edit.png"
                       alt="Edit"
                       data-bs-toggle="modal"

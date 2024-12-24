@@ -3,6 +3,7 @@
     padding: 20px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     min-width: 200px;
+    border-radius: 10px;
 
     .subject-name {
         font-size: 18px;
@@ -147,18 +148,72 @@
     left: 50%;
     transform: translate(-50%, -50%);
     padding: 20px;
-    background: white;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     z-index: 1000;
 }
 
 .modal-feedback.success {
-    border: 2px solid #1B998B;
-    color: #1B998B;
+    background: #dafae9;
+    border: 1px solid #0ca565;
+    color: #1b998b;
 }
 
 .modal-feedback.error {
-    border: 2px solid #A50C0C;
-    color: #A50C0C;
+    background: #ffdddd;
+    border: 1px solid #a50c0c;
+    color: #d62839;
+}
+
+/* Calendar Media Query */
+#calendar {
+    display: block;
+}
+
+/* .calendar-message {
+    display: none; 
+} */
+
+@media only screen and (max-width: 1024px) {
+    #calendar {
+        display: none;
+    }
+
+    /* .calendar-message {
+        display: block; 
+        padding: 20px;
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+        border-radius: 5px;
+        text-align: center;
+    } */
+}
+
+/* @media only screen and (max-width: 400px) {
+    .calendar-message {
+        padding: 10px;
+    }
+} */
+
+/* Media Query */
+@media only screen and (max-width: 450px) {
+    .unassigned {
+        padding: 10px;
+        border-radius: 5px;
+
+        .subject-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .level-name {
+            font-size: 12px;
+        }
+
+        p {
+            font-size: 10px;
+            color: #828282;
+        }
+    }
 }

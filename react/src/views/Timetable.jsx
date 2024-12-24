@@ -186,7 +186,9 @@ export default function Timetable() {
 
     // Function to check if two time ranges overlap
     const isTimeClashing = (start1, end1, start2, end2) => {
-        return start1 < end2 && start2 < end1;
+        return (
+            start1 < end2 && start2 < end1 && start1 !== end2 && start2 !== end1
+        );
     };
 
     // Modal for user feedback
@@ -363,7 +365,7 @@ export default function Timetable() {
                 };
 
                 const res = await axiosClient.post(
-                    "http://127.0.0.1:8000/api/set-lesson-time",
+                    "/set-lesson-time",
                     eventData
                 );
                 console.log("Saved successfully!");
@@ -397,23 +399,33 @@ export default function Timetable() {
     // Format the fetched data into FullCalendar event format
     const formatEventData = (lessons) => {
         return lessons.map((lesson) => {
-            const startTime = lesson.start_time.slice(0, 5); // Extract HH:mm format
-            const endTime = lesson.end_time.slice(0, 5); // Extract HH:mm format
+            // Check for null values and provide fallback defaults
+            const startTime = lesson.start_time
+                ? lesson.start_time.slice(0, 5)
+                : null;
+            const endTime = lesson.end_time
+                ? lesson.end_time.slice(0, 5)
+                : null;
+            const dayOfWeek = lesson.day !== null ? parseInt(lesson.day) : null;
 
             return {
                 id: lesson.id.toString(),
-                title: lesson.subject.subject_name,
-                teacherId: lesson.teacher.id,
+                title: lesson.subject?.subject_name || "No Subject",
+                teacherId: lesson.teacher?.id || null,
                 startTime: startTime,
                 endTime: endTime,
-                daysOfWeek: [parseInt(lesson.day)], // Set the day of the week (0-6), repeating events
+                daysOfWeek: dayOfWeek !== null ? [dayOfWeek] : undefined, // Avoid adding undefined days
                 extendedProps: {
-                    subject: lesson.subject.subject_name,
-                    studyLevel: lesson.subject.study_level.level_name,
-                    teacher: lesson.teacher.user.name,
-                    day: daysOfWeek[lesson.day],
-                    startTime: lesson.start_time,
-                    endTime: lesson.end_time,
+                    subject: lesson.subject?.subject_name || "No Subject",
+                    studyLevel:
+                        lesson.subject?.study_level?.level_name || "No Level",
+                    teacher: lesson.teacher?.user?.name || "No Teacher",
+                    day:
+                        dayOfWeek !== null
+                            ? daysOfWeek[dayOfWeek]
+                            : "Unscheduled",
+                    startTime: lesson.start_time || "Unscheduled",
+                    endTime: lesson.end_time || "Unscheduled",
                 },
             };
         });
@@ -436,15 +448,89 @@ export default function Timetable() {
             }
             fetchEvents();
         }
-    }, [selectedRoomId]);
+    }, [selectedRoomId, isChange]);
+
+    // Reschedule
+    const handleReschedule = async (eventId) => {
+        try {
+            const res = await axiosClient.post("/reschedule-lesson", {
+                lesson_id: eventId,
+            });
+
+            if (res.status == 200) {
+                // To update the ui state
+                setIsChange(!isChange);
+                setIsModalOpen(false);
+            }
+
+            // Update frontend state based on the response
+            const updatedLesson = res.data.lesson;
+            setSelectedEvents((prevEvents) =>
+                prevEvents.map((event) =>
+                    event.id === eventId
+                        ? {
+                              ...event,
+                              day: updatedLesson.day,
+                              startTime: updatedLesson.start_time,
+                              endTime: updatedLesson.end_time,
+                              roomId: updatedLesson.room_id,
+                          }
+                        : event
+                )
+            );
+
+            // Provide feedback to the user
+            setModal({
+                visible: true,
+                message:
+                    "Lesson reset successfully. You can now reschedule it.",
+                type: "success",
+            });
+
+            setTimeout(() => {
+                setModal({ visible: false, message: "", type: "" });
+            }, 3000);
+        } catch (error) {
+            console.error(error);
+
+            // Display error feedback to the user
+            setModal({
+                visible: true,
+                message: "Failed to reset the lesson. Please try again.",
+                type: "error",
+            });
+
+            setTimeout(() => {
+                setModal({ visible: false, message: "", type: "" });
+            }, 3000);
+        }
+    };
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState(null);
 
     const handleEventClick = (clickInfo) => {
-        setSelectedEvent(clickInfo.event); // Pass additional details here
-        console.log(clickInfo.event);
+        const { extendedProps } = clickInfo.event;
 
+        if (
+            !extendedProps.day ||
+            !extendedProps.startTime ||
+            !extendedProps.endTime
+        ) {
+            console.warn("Incomplete lesson data:", extendedProps);
+            setModal({
+                visible: true,
+                message:
+                    "This lesson is unscheduled and cannot be interacted with.",
+                type: "error",
+            });
+            setTimeout(() => {
+                setModal({ visible: false, message: "", type: "" });
+            }, 3000);
+            return;
+        }
+
+        setSelectedEvent(clickInfo.event);
         setIsModalOpen(true);
     };
 
@@ -452,6 +538,22 @@ export default function Timetable() {
         setIsModalOpen(false);
         setSelectedEvent(null);
     };
+
+    // Media query for calendar
+    const [isLargeScreen, setIsLargeScreen] = useState(
+        window.innerWidth > 1024
+    );
+
+    // Detect screen size change
+    useEffect(() => {
+        const handleResize = () => {
+            setIsLargeScreen(window.innerWidth > 1024);
+        };
+
+        window.addEventListener("resize", handleResize);
+
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
     return (
         <>
@@ -494,48 +596,55 @@ export default function Timetable() {
                     </select>
                 </div>
                 <div className="calendar-container">
-                    <FullCalendar
-                        id="calendar"
-                        className=""
-                        plugins={[
-                            dayGridPlugin,
-                            timeGridPlugin,
-                            interactionPlugin,
-                        ]}
-                        initialView="timeGridWeek"
-                        slotMinTime="08:00:00"
-                        slotMaxTime="19:00:00"
-                        editable={true}
-                        droppable={true}
-                        eventReceive={(info) => {
-                            // Remove or hide the dragged element after drop
-                            const draggableElement = document.querySelector(
-                                `[data-lesson-id="${info.event.id}"]`
-                            );
+                    {isLargeScreen ? (
+                        <FullCalendar
+                            id="calendar"
+                            className=""
+                            plugins={[
+                                dayGridPlugin,
+                                timeGridPlugin,
+                                interactionPlugin,
+                            ]}
+                            initialView="timeGridWeek"
+                            slotMinTime="08:00:00"
+                            slotMaxTime="19:00:00"
+                            editable={true}
+                            droppable={true}
+                            eventReceive={(info) => {
+                                // Remove or hide the dragged element after drop
+                                const draggableElement = document.querySelector(
+                                    `[data-lesson-id="${info.event.id}"]`
+                                );
 
-                            if (draggableElement) {
-                                // Option 1: Hide the element
-                                draggableElement.style.display = "none";
+                                if (draggableElement) {
+                                    // Option 1: Hide the element
+                                    draggableElement.style.display = "none";
 
-                                // Option 2: Remove the element entirely
-                                // draggableElement.remove();
-                            }
-                        }}
-                        drop={handleEventDrop}
-                        eventDrop={handleExistingEventDrop}
-                        events={timetableEvents}
-                        eventClick={handleEventClick}
-                        eventBackgroundColor="#E9FFEE"
-                        eventBorderColor="#0CB631"
-                        eventTextColor="#006A37"
-                        eventOverlap={false}
-                        eventDurationEditable={true}
-                        eventResizableFromStart={false}
-                        allDaySlot={false}
-                    />
+                                    // Option 2: Remove the element entirely
+                                    // draggableElement.remove();
+                                }
+                            }}
+                            drop={handleEventDrop}
+                            eventDrop={handleExistingEventDrop}
+                            events={timetableEvents}
+                            eventClick={handleEventClick}
+                            eventBackgroundColor="#E9FFEE"
+                            eventBorderColor="#0CB631"
+                            eventTextColor="#006A37"
+                            eventOverlap={false}
+                            eventDurationEditable={true}
+                            eventResizableFromStart={false}
+                            allDaySlot={false}
+                        />
+                    ) : (
+                        <p>
+                            Screen size is too small. Please switch to a bigger
+                            screen size to view the calender.
+                        </p>
+                    )}
                 </div>
 
-                <div className="d-flex justify-content-end mt-4">
+                <div className="d-flex justify-lg-content-end justify-content-center mt-4">
                     <Button
                         data-bs-toggle="modal"
                         data-bs-target="#confirmationModal"
@@ -585,6 +694,16 @@ export default function Timetable() {
                                     selectedEvent.extendedProps.endTime
                                 )}
                             </p>
+                            <div className="d-flex justify-content-center mt-3">
+                                <Button
+                                    color="yellow"
+                                    onClick={() =>
+                                        handleReschedule(selectedEvent.id)
+                                    }
+                                >
+                                    Reschedule
+                                </Button>
+                            </div>
                         </div>
                     </div>
                 </div>

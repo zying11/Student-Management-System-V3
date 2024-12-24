@@ -23,9 +23,11 @@
 }
 
 #announcement-detail {
-    .parents {
-        font-size: 12px;
-        color: #828282;
+    .recipients-container {
+        .parents {
+            font-size: 12px;
+            color: #828282;
+        }
     }
 
     .message-content {
@@ -49,6 +51,47 @@
     #make-announcement {
         .checkbox {
             font-size: 14px;
+        }
+    }
+    #announcement {
+        .message {
+            font-size: 12px;
+        }
+
+        .date {
+            font-size: 10px;
+            padding: 6px 10px;
+        }
+    }
+}
+
+/* media query for announcement details */
+@media only screen and (max-width: 768px) {
+    #announcement-detail {
+        .message-container h5,
+        .recipients-container h5 {
+            font-size: 16px;
+        }
+        .message-content {
+            font-size: 14px;
+        }
+
+        .details-container {
+            font-size: 12px;
+
+            p {
+                font-size: 10px;
+            }
+        }
+
+        .recipients-container {
+            .lesson {
+                font-size: 12px;
+            }
+
+            .parents {
+                font-size: 10px;
+            }
         }
     }
 }
