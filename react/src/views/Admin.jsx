@@ -5,6 +5,7 @@ import Button from "../components/Button/Button";
 import { ContentContainer } from "../components/ContentContainer/ContentContainer";
 import { Table } from "../components/Table/Table";
 import SearchBar from "../components/SearchBar";
+import "../css/Admin.css";
 
 export default function Admin() {
     const [adminData, setAdminData] = useState({
@@ -14,6 +15,16 @@ export default function Admin() {
 
     const [searchQuery, setSearchQuery] = useState("");
     const [error, setError] = useState("");
+
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth <= 768);
+        // Check initial screen size
+        handleResize();
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
     // Fetch admin data
     useEffect(() => {
@@ -87,11 +98,11 @@ export default function Admin() {
               admin.name || "-",
               admin.email || "-",
               admin.joining_date || "-",
-              <div className="actions">
+              <div className="actions d-flex">
                   {/*Edit action*/}
                   <Link
                       to={`/admin/edit/${admin.id}`}
-                      className="text-decoration-none"
+                      className="text-decoration-none items"
                   >
                       <img
                           className="me-2"
@@ -101,7 +112,7 @@ export default function Admin() {
                   </Link>
                   {/*Delete action*/}
                   <img
-                      className="me-2"
+                      className="me-2 items"
                       src="http://localhost:8000/icon/delete.png"
                       alt="Delete"
                       onClick={() => handleDelete(admin.id)}
@@ -110,7 +121,7 @@ export default function Admin() {
                   {/*Profile action*/}
                   <Link
                       to={`/admin/${admin.id}/profile`}
-                      className="text-decoration-none"
+                      className="text-decoration-none items"
                   >
                       <img
                           className="me-2"
@@ -137,7 +148,9 @@ export default function Admin() {
                 <SearchBar
                     searchQuery={searchQuery}
                     setSearchQuery={setSearchQuery}
-                    placeholder="Search admin by name"
+                    placeholder={
+                        isMobile ? "Search name" : "Search admin by name"
+                    }
                 />
 
                 {error && <div className="alert alert-danger">{error}</div>}

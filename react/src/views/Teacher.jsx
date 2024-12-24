@@ -6,6 +6,7 @@ import { ContentContainer } from "../components/ContentContainer/ContentContaine
 import { Table } from "../components/Table/Table";
 import SearchBar from "../components/SearchBar";
 import { useStateContext } from "../contexts/ContextProvider";
+import "../css/Teacher.css";
 
 export default function Teacher() {
     // Access the logged-in user with their role
@@ -18,6 +19,16 @@ export default function Teacher() {
 
     const [searchQuery, setSearchQuery] = useState("");
     const [error, setError] = useState("");
+
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth <= 768);
+        // Check initial screen size
+        handleResize();
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
     // Fetch teacher data
     useEffect(() => {
@@ -127,16 +138,13 @@ export default function Teacher() {
               teacher.joining_date || "-",
 
               // Actions column with conditional rendering based on user role
-              <div
-                  className="actions"
-                  style={{ display: "flex", justifyContent: "start" }}
-              >
+              <div className="actions d-flex">
                   {user.role_id === 1 && ( // Admin can Edit, Delete, Profile actions
                       <>
                           {/* Edit action */}
                           <Link
                               to={`/teacher/edit/${teacher.id}`}
-                              className="text-decoration-none"
+                              className="text-decoration-none items"
                           >
                               <img
                                   className="me-2"
@@ -146,7 +154,7 @@ export default function Teacher() {
                           </Link>
                           {/* Delete action */}
                           <img
-                              className="me-2"
+                              className="me-2 items"
                               src="http://localhost:8000/icon/delete.png"
                               alt="Delete"
                               onClick={() => handleDelete(teacher.id)}
@@ -160,7 +168,7 @@ export default function Teacher() {
                           {/* Edit action */}
                           <Link
                               to={`/teacher/edit/${teacher.id}`}
-                              className="text-decoration-none"
+                              className="text-decoration-none items"
                           >
                               <img
                                   className="me-2"
@@ -176,7 +184,7 @@ export default function Teacher() {
                   {/* Profile action */}
                   <Link
                       to={`/teacher/${teacher.id}/profile`}
-                      className="text-decoration-none"
+                      className="text-decoration-none items"
                   >
                       <img
                           className="me-2"
@@ -205,7 +213,9 @@ export default function Teacher() {
                     <SearchBar
                         searchQuery={searchQuery}
                         setSearchQuery={setSearchQuery}
-                        placeholder="Search teacher by name"
+                        placeholder={
+                            isMobile ? "Search name" : "Search teacher by name"
+                        }
                     />
                 )}
 

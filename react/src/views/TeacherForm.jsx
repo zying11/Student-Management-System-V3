@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import axiosClient from "../axiosClient";
 import Form from "react-bootstrap/Form";
 import Button from "../components/Button/Button";
@@ -325,14 +325,25 @@ export default function TeacherForm({ isEditing }) {
                         />
                     </ContentContainer>
 
-                    <div className="d-flex justify-content-end mt-4 mb-4">
-                        <Button
-                            className="btn-create-yellow"
-                            type="submit"
-                            variant="primary"
-                        >
-                            {isEditing ? "Save" : "Create"}
-                        </Button>
+                    <div className="d-flex justify-content-end mt-4">
+                        <div className="me-3">
+                            <Link
+                                to={`/teachers`}
+                                className="text-decoration-none"
+                            >
+                                <Button>Back</Button>
+                            </Link>
+                        </div>
+
+                        <div>
+                            <Button
+                                className="btn-create-yellow"
+                                type="submit"
+                                variant="primary"
+                            >
+                                {isEditing ? "Save" : "Create"}
+                            </Button>
+                        </div>
                     </div>
                 </Form>
             )}

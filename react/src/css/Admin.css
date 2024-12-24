@@ -1,17 +1,10 @@
-.highlight {
-    background-color: #f5aa39;
-    font-weight: bold;
-    padding: 2px;
-    border-radius: 2px;
-}
-
 @media (max-width: 768px) {
     .actions {
         flex-direction: column;
         align-items: center;
     }
 
-    .actions a {
+    .actions .items {
         margin-bottom: 5px;
     }
 }
