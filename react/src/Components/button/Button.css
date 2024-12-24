@@ -65,7 +65,7 @@
 
 @media only screen and (max-width: 450px) {
     .btn-create {
-        padding: 8px 18px;
+        padding: 8px 12px;
         font-size: 14px;
     }
 }

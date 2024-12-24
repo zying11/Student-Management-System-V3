@@ -151,6 +151,32 @@ class LessonController extends Controller
         ]);
     }
 
+    public function rescheduleLesson(Request $request)
+    {
+        // Validate the request
+        $request->validate([
+            'lesson_id' => 'required|exists:lessons,id',
+        ]);
+
+        // Find the lesson by ID
+        $lesson = Lesson::find($request->lesson_id);
+
+        // Reset the scheduling fields
+        $lesson->day = null;
+        $lesson->start_time = null;
+        $lesson->end_time = null;
+        $lesson->room_id = null;
+
+        // Save the changes
+        $lesson->save();
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Lesson rescheduled successfully',
+            'lesson' => $lesson,
+        ]);
+    }
+
 
     public function deleteLesson($id)
     {

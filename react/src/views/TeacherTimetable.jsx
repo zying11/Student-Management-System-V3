@@ -131,30 +131,53 @@ export default function TeacherTimetable() {
         setSelectedEvent(null);
     };
 
+    // Media query for calendar
+    const [isLargeScreen, setIsLargeScreen] = useState(
+        window.innerWidth > 1024
+    );
+
+    // Detect screen size change
+    useEffect(() => {
+        const handleResize = () => {
+            setIsLargeScreen(window.innerWidth > 1024);
+        };
+
+        window.addEventListener("resize", handleResize);
+
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
     return (
         <>
             <ContentContainer title="My Timetable">
                 <div className="calendar-container">
-                    <FullCalendar
-                        id="calendar"
-                        plugins={[
-                            dayGridPlugin,
-                            timeGridPlugin,
-                            interactionPlugin,
-                        ]}
-                        initialView="timeGridWeek"
-                        slotMinTime="08:00:00"
-                        slotMaxTime="19:00:00"
-                        events={timetableEvents}
-                        eventClick={handleEventClick}
-                        eventBackgroundColor="#E9FFEE"
-                        eventBorderColor="#0CB631"
-                        eventTextColor="#006A37"
-                        eventOverlap={false}
-                        eventDurationEditable={false}
-                        eventResizableFromStart={false}
-                        allDaySlot={false}
-                    />
+                    {isLargeScreen ? (
+                        <FullCalendar
+                            id="calendar"
+                            plugins={[
+                                dayGridPlugin,
+                                timeGridPlugin,
+                                interactionPlugin,
+                            ]}
+                            initialView="timeGridWeek"
+                            slotMinTime="08:00:00"
+                            slotMaxTime="19:00:00"
+                            events={timetableEvents}
+                            eventClick={handleEventClick}
+                            eventBackgroundColor="#E9FFEE"
+                            eventBorderColor="#0CB631"
+                            eventTextColor="#006A37"
+                            eventOverlap={false}
+                            eventDurationEditable={false}
+                            eventResizableFromStart={false}
+                            allDaySlot={false}
+                        />
+                    ) : (
+                        <p>
+                            Screen size is too small. Please switch to a bigger
+                            screen size to view the calender.
+                        </p>
+                    )}
                 </div>
             </ContentContainer>
 

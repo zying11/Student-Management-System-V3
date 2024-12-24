@@ -394,7 +394,7 @@ export default function AdminDashboard() {
 
               <div className="actions">
                   <img
-                      className="me-2"
+                      className="me-sm-2 me-0 mb-sm-0 mb-2"
                       src="http://localhost:8000/icon/edit.png"
                       alt="Edit"
                       data-bs-toggle="modal"
@@ -419,6 +419,21 @@ export default function AdminDashboard() {
                   />
               </div>,
           ]);
+
+    //
+    const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth > 400);
+
+    // Media query for Pie Chart
+    useEffect(() => {
+        const handleResize = () => {
+            setIsLargeScreen(window.innerWidth > 400);
+        };
+
+        window.addEventListener("resize", handleResize);
+
+        // Clean up event listener
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
     return (
         <>
@@ -452,10 +467,17 @@ export default function AdminDashboard() {
                 </div>
                 <div className="second-row d-flex flex-wrap gap-3 mt-3">
                     <ContentContainer title="Students Gender">
-                        <PieChart
-                            maleCount={maleCount}
-                            femaleCount={femaleCount}
-                        />
+                        {isLargeScreen ? (
+                            <PieChart
+                                maleCount={maleCount}
+                                femaleCount={femaleCount}
+                            />
+                        ) : (
+                            <p>
+                                Screen size is too small. Please switch to a
+                                bigger screen size to view the chart.
+                            </p>
+                        )}
                     </ContentContainer>
                     <ContentContainer title="Study Level" className="flex-fill">
                         <div className="d-flex justify-content-end mb-3">

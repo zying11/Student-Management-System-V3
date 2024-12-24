@@ -86,10 +86,19 @@ export default function AnnouncementDetail() {
                     `/announcement/lessons/${id}`
                 );
                 const data = res.data.lessons;
-                // console.log(data);
+
+                // Filter out lessons where day, start_time, end_time, or room_id is null
+                const filteredData = data.filter(
+                    (lesson) =>
+                        lesson.day !== null &&
+                        lesson.start_time !== null &&
+                        lesson.end_time !== null &&
+                        lesson.room_id !== null
+                );
+
                 setRecipients({
                     loading: false,
-                    recipients: data,
+                    recipients: filteredData,
                 });
             } catch (error) {
                 console.error("Error fetching recipients:", error);
@@ -106,8 +115,8 @@ export default function AnnouncementDetail() {
                 id="announcement-detail"
                 title="Announcement Detail"
             >
-                <div className="messsage-container mb-5">
-                    <h5 className="mb-3">Message</h5>
+                <div className="message-container mb-sm-5 mb-4">
+                    <h5 className="mb-sm-3 mb-2">Message</h5>
                     <p className="message-content">
                         {displayAnnouncement.loading ? (
                             <p>Loading...</p>
@@ -117,7 +126,7 @@ export default function AnnouncementDetail() {
                     </p>
                 </div>
                 <div className="recipients-container mb-4">
-                    <h5 className="mb-3">Recipients</h5>
+                    <h5 className="mb-sm-3 mb-2">Recipients</h5>
                     <div className="row">
                         {displayRecipients.loading ? (
                             <div>Loading...</div>
@@ -125,7 +134,12 @@ export default function AnnouncementDetail() {
                             displayRecipients.recipients.map((recipient) => (
                                 <div
                                     key={recipient.id}
-                                    className="col-6 mb-2 d-flex align-items-center gap-4"
+                                    className={`col-${
+                                        displayRecipients.recipients.length ===
+                                        1
+                                            ? "12"
+                                            : "6"
+                                    } mb-2 d-flex align-items-center gap-4`}
                                 >
                                     <div>
                                         <img
@@ -136,7 +150,7 @@ export default function AnnouncementDetail() {
                                         />
                                     </div>
                                     <div>
-                                        <div>
+                                        <div className="lesson">
                                             {recipient.subject_name},{" "}
                                             {recipient.level_name},{" "}
                                             {daysOfWeek[recipient.day]},{" "}
@@ -163,7 +177,7 @@ export default function AnnouncementDetail() {
                         )}
                     </div>
                 </div>
-                <div className="details-container d-flex justify-content-between">
+                <div className="details-container d-flex flex-sm-row flex-column justify-content-between">
                     <p>
                         Total Recipients:{" "}
                         <span style={{ color: "#828282" }}>{totalParents}</span>

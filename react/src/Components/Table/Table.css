@@ -80,3 +80,18 @@
         font-size: 12px;
     }
 }
+
+@media only screen and (max-width: 768px) {
+    .pagination {
+        .previous-btn,
+        .page-btn,
+        .next-btn {
+            font-size: 12px;
+        }
+
+        .page-btn {
+            width: 20px;
+            height: 20px;
+        }
+    }
+}
