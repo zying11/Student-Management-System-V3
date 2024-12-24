@@ -20,27 +20,6 @@ function SendAnnouncement({ selectedLessons, parentCounts }) {
 
         setIsSending(true);
 
-        // try {
-        //     const response = await axiosClient.post("/send-announcement", {
-        //         lesson_ids: selectedLessons,
-        //         message: message,
-        //     });
-
-        //     if (response.data.status === "success") {
-        //         alert("Announcement sent successfully!");
-        //         setMessage(""); // Clear message input after success
-        //     } else {
-        //         alert(
-        //             "Failed to send the announcement: " + response.data.message
-        //         );
-        //     }
-        // } catch (error) {
-        //     console.error("Error sending announcement:", error);
-        //     alert("An error occurred while sending the announcement.");
-        // } finally {
-        //     setIsSending(false);
-        // }
-
         try {
             const response = await axiosClient.post("/save-announcement", {
                 admin_id: user.id,
@@ -76,14 +55,14 @@ function SendAnnouncement({ selectedLessons, parentCounts }) {
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
             ></textarea>
-            <div className="d-flex justify-content-between mt-3">
+            <div className="d-flex flex-sm-row flex-column justify-content-between mt-3">
                 <p>
                     Total Recipients:{" "}
                     <span style={{ color: "#828282" }}>{parentCounts}</span>
                 </p>
                 <button
                     type="submit"
-                    className="btn-create"
+                    className="btn-create mt-sm-0 mt-3"
                     onClick={handleSendAnnouncement}
                     disabled={isSending}
                 >

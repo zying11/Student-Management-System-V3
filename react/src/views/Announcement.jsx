@@ -193,7 +193,7 @@ export default function Announcement() {
         }));
     };
 
-    // For Pagination
+    // For Lesson Pagination
     const [currentPage, setCurrentPage] = useState(1);
     const lessonsPerPage = 5; // Max 5 lessons per page
 
@@ -215,49 +215,99 @@ export default function Announcement() {
         }
     };
 
+    // For Announcement pagination
+    const [announcementPage, setAnnouncementPage] = useState(1); // Current page for announcements
+    const announcementsPerPage = 5; // Number of announcements per page
+
+    // Calculate the announcements to display on the current page
+    const indexOfLastAnnouncement = announcementPage * announcementsPerPage;
+    const indexOfFirstAnnouncement =
+        indexOfLastAnnouncement - announcementsPerPage;
+    const currentAnnouncements = displayAnnouncements.announcements.slice(
+        indexOfFirstAnnouncement,
+        indexOfLastAnnouncement
+    );
+
+    const totalAnnouncementPages = Math.ceil(
+        displayAnnouncements.announcements.length / announcementsPerPage
+    );
+
+    const goToAnnouncementPage = (pageNumber) => {
+        if (pageNumber > 0 && pageNumber <= totalAnnouncementPages) {
+            setAnnouncementPage(pageNumber);
+        }
+    };
+
     return (
         <>
             <div className="page-title">Announcement</div>
-            <ContentContainer id="announcement" title="Announcement Board">
+            <ContentContainer id="announcement" title="Announcement Boad">
                 <div className="announcement-list">
                     {displayAnnouncements.loading ? (
                         <div className="loading">Loading...</div>
                     ) : displayAnnouncements.announcements.length > 0 ? (
-                        displayAnnouncements.announcements.map(
-                            (announcement) => (
-                                <div
-                                    key={announcement.id}
-                                    className="item d-flex flex-column gap-3 py-3"
-                                >
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <div className="date">
-                                            {formatDate(
-                                                announcement.created_at
-                                            )}
-                                        </div>
-                                        <Link
-                                            to={`/announcement/${announcement.id}`}
-                                        >
-                                            <img
-                                                src={`${window.location.protocol}//${window.location.hostname}:8000/icon/more.png`}
-                                                alt="More options"
-                                            />
-                                        </Link>
+                        currentAnnouncements.map((announcement) => (
+                            <div
+                                key={announcement.id}
+                                className="item d-flex flex-column gap-3 py-3"
+                            >
+                                <div className="d-flex justify-content-between align-items-center">
+                                    <div className="date">
+                                        {formatDate(announcement.created_at)}
                                     </div>
-                                    <div className="message">
-                                        {announcement.message}
-                                    </div>
-                                    <div className="credits d-flex justify-content-end">
-                                        Created by: {announcement.admin_name}
-                                    </div>
+                                    <Link
+                                        to={`/announcement/${announcement.id}`}
+                                    >
+                                        <img
+                                            src={`${window.location.protocol}//${window.location.hostname}:8000/icon/more.png`}
+                                            alt="More options"
+                                        />
+                                    </Link>
                                 </div>
-                            )
-                        )
+                                <div className="message">
+                                    {announcement.message}
+                                </div>
+                                <div className="credits d-flex justify-content-end">
+                                    Created by: {announcement.admin_name}
+                                </div>
+                            </div>
+                        ))
                     ) : (
                         <div className="no-announcements">
                             No announcements available.
                         </div>
                     )}
+                </div>
+
+                {/* Pagination Controls for Announcements */}
+                <div className="pagination justify-content-end mt-3">
+                    <button
+                        className="previous-btn"
+                        onClick={() => goToPage(announcementPage - 1)}
+                        disabled={announcementPage === 1}
+                    >
+                        Previous
+                    </button>
+                    {[...Array(totalAnnouncementPages)].map((_, index) => (
+                        <button
+                            key={index}
+                            className={
+                                announcementPage === index + 1
+                                    ? "active page-btn"
+                                    : "page-btn"
+                            }
+                            onClick={() => goToPage(index + 1)}
+                        >
+                            {index + 1}
+                        </button>
+                    ))}
+                    <button
+                        className="next-btn"
+                        onClick={() => goToPage(announcementPage + 1)}
+                        disabled={announcementPage === totalAnnouncementPages}
+                    >
+                        Next
+                    </button>
                 </div>
             </ContentContainer>
             <ContentContainer
@@ -265,9 +315,9 @@ export default function Announcement() {
                 title="Make an Announcement"
             >
                 <div className="row">
-                    <div className="col-6">
+                    <div className="col-lg-6 col-12">
                         <h6>Recipients</h6>
-                        <div className="d-flex gap-2">
+                        <div className="d-flex flex-sm-row flex-column mb-sm-0 gap-2">
                             <select
                                 className="form-control"
                                 value={selectedSubject}
@@ -313,7 +363,7 @@ export default function Announcement() {
                             </Button>
                         </div>
                         <div>
-                            <div className="d-flex justify-content-end">
+                            <div className="d-flex mb-sm-0 mb-3 justify-content-end">
                                 <button
                                     onClick={clearFilter}
                                     style={{
@@ -335,7 +385,7 @@ export default function Announcement() {
                                         {currentLessons.map((lesson) => (
                                             <li
                                                 key={lesson.id}
-                                                className="mb-4"
+                                                className="mb-4 checkbox"
                                             >
                                                 <input
                                                     type="checkbox"
@@ -417,7 +467,7 @@ export default function Announcement() {
                             )}
                         </div>
                     </div>
-                    <div className="col-6">
+                    <div className="col-lg-6 col-12 mt-lg-0 mt-3">
                         <SendAnnouncement
                             selectedLessons={selectedLessons}
                             parentCounts={totalParents}

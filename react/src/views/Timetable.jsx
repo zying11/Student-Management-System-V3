@@ -165,9 +165,6 @@ export default function Timetable() {
         // UseEffect Hook will only run whenever the unassignedLessons variable changes
     }, [unassignedLessons]);
 
-    // Variable to catch multiple lesson times
-    const [selectedEvents, setSelectedEvents] = useState([]);
-
     // Variable to fetch all lesson data for clashing detection
     const [lessonData, setLessonData] = useState([]);
 
@@ -199,7 +196,10 @@ export default function Timetable() {
         type: "",
     });
 
-    // Catch event start and end time
+    // Variable to catch multiple lesson times
+    const [selectedEvents, setSelectedEvents] = useState([]);
+
+    // Catch new event start and end time
     const handleEventDrop = (eventInfo) => {
         // Get lesson ID from data attribute
         const lessonId = eventInfo.draggedEl.dataset.lessonId;
@@ -240,6 +240,8 @@ export default function Timetable() {
             endTime: endTime,
         };
 
+        console.log(newEvent);
+
         // Fetch all lessons for the same teacher from the current lessons array
         const teacherLessons = lessonData.filter(
             (lesson) =>
@@ -269,7 +271,7 @@ export default function Timetable() {
             setModal({
                 visible: true,
                 message:
-                    "Clashing Detected! The lesson you are trying to insert clashes with the teacher’s current timetable. Please select another time.",
+                    "The lesson you are trying to insert clashes with the teacher’s current timetable. Please select another time.",
                 type: "error",
             });
 
@@ -284,6 +286,63 @@ export default function Timetable() {
             // If no clash, append the new event to the selectedEvents array
             setSelectedEvents((prevEvents) => [...prevEvents, newEvent]);
             // Proceed with updating the backend, if necessary
+        }
+    };
+
+    // Catch existing event start and end time
+    const handleExistingEventDrop = async (eventInfo) => {
+        const { event } = eventInfo; // Extract event data
+        const updatedEvent = {
+            id: event.id,
+            day: event.start.getDay(), // Extract day
+            startTime: event.start.toTimeString().slice(0, 5), // Extract start time
+            endTime: event.end ? event.end.toTimeString().slice(0, 5) : null, // Extract end time
+            roomId: selectedRoomId, // Include room ID
+        };
+        console.log(updatedEvent);
+
+        // Validate for clashes
+        const teacherLessons = lessonData.filter(
+            (lesson) =>
+                lesson.teacher_id === parseInt(event.teacherId) &&
+                lesson.day == updatedEvent.day
+        );
+
+        let isClash = false;
+        teacherLessons.forEach((lesson) => {
+            if (
+                isTimeClashing(
+                    updatedEvent.startTime,
+                    updatedEvent.endTime,
+                    lesson.start_time,
+                    lesson.end_time
+                )
+            ) {
+                isClash = true;
+            }
+        });
+
+        if (isClash) {
+            setModal({
+                visible: true,
+                message:
+                    "The lesson you are trying to insert clashes with the teacher’s current timetable. Please select another time.",
+                type: "error",
+            });
+
+            // Hide modal after 3 seconds
+            setTimeout(() => {
+                setModal({ visible: false, message: "", type: "" });
+            }, 3000);
+
+            eventInfo.revert(); // Revert to the original position
+        } else {
+            // If no clash, append the new event to the selectedEvents array
+            setSelectedEvents((prevEvents) => [...prevEvents, updatedEvent]);
+            // Hide modal after 3 seconds
+            setTimeout(() => {
+                setModal({ visible: false, message: "", type: "" });
+            }, 3000);
         }
     };
 
@@ -343,8 +402,8 @@ export default function Timetable() {
 
             return {
                 id: lesson.id.toString(),
-                // title: `${lesson.subject.subject_name} - ${lesson.subject.study_level.level_name} `,
                 title: lesson.subject.subject_name,
+                teacherId: lesson.teacher.id,
                 startTime: startTime,
                 endTime: endTime,
                 daysOfWeek: [parseInt(lesson.day)], // Set the day of the week (0-6), repeating events
@@ -463,13 +522,14 @@ export default function Timetable() {
                             }
                         }}
                         drop={handleEventDrop}
+                        eventDrop={handleExistingEventDrop}
                         events={timetableEvents}
                         eventClick={handleEventClick}
                         eventBackgroundColor="#E9FFEE"
                         eventBorderColor="#0CB631"
                         eventTextColor="#006A37"
                         eventOverlap={false}
-                        eventDurationEditable={false}
+                        eventDurationEditable={true}
                         eventResizableFromStart={false}
                         allDaySlot={false}
                     />

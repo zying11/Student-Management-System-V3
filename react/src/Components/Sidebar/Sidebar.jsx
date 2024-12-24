@@ -83,6 +83,13 @@ const menuItems = [
         roles: ["admin"],
     },
     {
+        id: "teacher-timetable",
+        icon: "timetable.png",
+        title: "Timetable",
+        link: "/teacher/timetable", // No sub-items
+        roles: ["teacher"],
+    },
+    {
         id: "attendance",
         icon: "attendance.png",
         title: "Attendance",

@@ -183,14 +183,14 @@ export default function AttendanceReport() {
                   ? `${studentAttendanceData[index].toFixed(2)}%`
                   : "N/A",
               <div>
-                  {/* <Link to={`/student/attendance/${student.id}`}> */}
-                  <button
-                      type="button"
-                      className="btn-create btn-create-yellow"
-                  >
-                      View Details
-                  </button>
-                  {/* </Link> */}
+                  <Link to={`/student/attendance/${student.id}`}>
+                      <button
+                          type="button"
+                          className="btn-create btn-create-yellow"
+                      >
+                          View Details
+                      </button>
+                  </Link>
               </div>,
           ]);
 
