@@ -6,6 +6,8 @@ import { ContentContainer } from "../components/ContentContainer/ContentContaine
 import { Table } from "../components/Table/Table";
 import SearchBar from "../components/SearchBar";
 import Dropdown from "react-bootstrap/Dropdown";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 import "../css/Invoice.css";
 
 export default function Invoice() {
@@ -16,6 +18,15 @@ export default function Invoice() {
     const [searchQuery, setSearchQuery] = useState("");
     const [error, setError] = useState("");
     const [dateFilter, setDateFilter] = useState("this_month");
+
+    const [isMobile, setIsMobile] = useState(false);
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth <= 768);
+        // Check initial screen size
+        handleResize();
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
     // Fetch invoice data with date filter
     useEffect(() => {
@@ -139,60 +150,77 @@ export default function Invoice() {
 
     return (
         <>
-            <div className="page-title">Fees</div>
+            <div className="page-title text-center text-md-start mb-4">
+                Fees
+            </div>
 
-            <div className="d-flex justify-content-end">
+            {/* Add Invoice Button */}
+            <div className="d-flex justify-content-center justify-content-md-end mb-3">
                 <Link to="/invoice/create" className="text-decoration-none">
                     <Button>Add Invoice</Button>
                 </Link>
             </div>
 
-            {/* Date Filter */}
-            <div className="date-filter">
-                <button
-                    className={`btn ${
-                        dateFilter === "this_month"
-                            ? "btn-primary"
-                            : "btn-outline-primary"
-                    }`}
-                    onClick={() => setDateFilter("this_month")}
-                >
-                    This Month
-                </button>
-                <button
-                    className={`btn ms-3 ${
-                        dateFilter === "last_3_months"
-                            ? "btn-primary"
-                            : "btn-outline-primary"
-                    }`}
-                    onClick={() => setDateFilter("last_3_months")}
-                >
-                    Last 3 Months
-                </button>
-                {/* <Button
-                    className={`btn-create-yellow-border ${dateFilter === "this_month" }`}
-                    onClick={() => setDateFilter("this_month")}
-                >
-                    This Month
-                </Button>
-                <Button
-                    className={`btn-create-yellow ms-3 ${dateFilter === "last_3_months"}`}
-                    onClick={() => setDateFilter("last_3_months")}
-                >
-                    Last 3 Months
-                </Button> */}
-            </div>
-
-            {/* Search Bar */}
             <ContentContainer title="Student Fees Collection List">
-                {/* Search by student name */}
-                <SearchBar
-                    searchQuery={searchQuery}
-                    setSearchQuery={setSearchQuery}
-                    placeholder="Search student by name"
-                />
+                {/* Date Filters*/}
+                <Row className="g-3 mb-4">
+                    {/* Date Filter - This Month */}
+                    <Col xs={12} sm={6} md={3} lg={3}>
+                        <button
+                            className={`btn w-100 ${
+                                dateFilter === "this_month"
+                                    ? "btn-primary"
+                                    : "btn-outline-primary"
+                            }`}
+                            onClick={() => setDateFilter("this_month")}
+                        >
+                            <i className="bi bi-calendar3 me-2"></i> This Month
+                        </button>
+                    </Col>
 
-                {error && <div className="alert alert-danger">{error}</div>}
+                    <Col xs={12} sm={6} md={3} lg={3}>
+                        <button
+                            className={`btn w-100 ${
+                                dateFilter === "last_3_months"
+                                    ? "btn-primary"
+                                    : "btn-outline-primary"
+                            }`}
+                            onClick={() => setDateFilter("last_3_months")}
+                        >
+                            <i className="bi bi-calendar3-range me-2"></i> Last
+                            3 Months
+                        </button>
+                    </Col>
+                </Row>
+
+                {/* Search Bar*/}
+                <Row className="mb-4">
+                    <Col
+                        xs={12}
+                        sm={12}
+                        md={12}
+                        lg={12}
+                        className="position-relative"
+                    >
+                        <SearchBar
+                            searchQuery={searchQuery}
+                            setSearchQuery={setSearchQuery}
+                            placeholder={
+                                isMobile
+                                    ? "Search name"
+                                    : "Search student by name"
+                            }
+                        />
+                    </Col>
+                </Row>
+
+                {error && (
+                    <div className="alert alert-danger text-center">
+                        {error}
+                    </div>
+                )}
+
+                {/* Table */}
                 <Table
                     header={tableHeader}
                     data={tableData}
