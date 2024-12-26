@@ -131,6 +131,13 @@ export default function CenterProfile() {
                 }
             );
 
+            // Append either the new file or the existing logo URL
+            if (centerProfile.centerLogo instanceof File) {
+                formData.append("centerLogo", centerProfile.centerLogo); // New file
+            } else {
+                formData.append("existingLogo", centerProfile.centerLogo); // Existing logo URL
+            }
+
             if (res.status === 200) {
                 const { logo_url } = res.data;
 
@@ -157,6 +164,8 @@ export default function CenterProfile() {
                         src={
                             selectedImage
                                 ? selectedImage // Show the newly selected image preview
+                                : centerProfile.centerLogo?.startsWith("http")
+                                ? centerProfile.centerLogo // Use the full URL as is
                                 : `${window.location.protocol}//${
                                       window.location.hostname
                                   }:8000/profile/${

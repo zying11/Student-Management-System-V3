@@ -17,3 +17,21 @@
         color: #a3a3a3;
     }
 }
+
+@media only screen and (max-width: 450px) {
+    #mark-attendance {
+        .indicator {
+            font-size: 14px;
+        }
+    }
+
+    .attendance-report-data {
+        .box-data > div {
+            font-size: 12px;
+        }
+
+        .box-data p {
+            font-size: 13px;
+        }
+    }
+}

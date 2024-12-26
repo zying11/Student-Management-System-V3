@@ -51,7 +51,7 @@ export const Table = ({ header, data, itemsPerPage }) => {
                 </tbody>
             </table>
             {/* Pagination controls */}
-            <div className="pagination justify-content-end">
+            <div className="pagination justify-content-end mb-sm-0 mb-3">
                 <button
                     className="previous-btn"
                     onClick={handlePreviousPage}

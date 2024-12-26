@@ -368,7 +368,6 @@ export default function Timetable() {
                     "/set-lesson-time",
                     eventData
                 );
-                console.log("Saved successfully!");
             }
             // Trigger success modal
             setModal({
@@ -644,7 +643,7 @@ export default function Timetable() {
                     )}
                 </div>
 
-                <div className="d-flex justify-lg-content-end justify-content-center mt-4">
+                <div className="d-flex justify-content-lg-end justify-content-center mt-4">
                     <Button
                         data-bs-toggle="modal"
                         data-bs-target="#confirmationModal"

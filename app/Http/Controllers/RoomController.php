@@ -36,7 +36,7 @@ class RoomController extends Controller
         if ($room) {
             return response()->json($room);
         } else {
-            return response()->json(['message' => 'Room not found'], 404);
+            return response()->json(['message' => 'Room not found'], status: 404);
         }
     }
 
@@ -47,7 +47,7 @@ class RoomController extends Controller
             $room->room_name = $request->input('roomName');
             $room->capacity = $request->input('roomCapacity');
             $room->save();
-            return response()->json(['message' => 'Room updated successfully']);
+            return response()->json(['status' => 200, 'message' => 'Room updated successfully']);
         } else {
             return response()->json(['message' => 'Room not found'], 404);
         }
@@ -59,7 +59,7 @@ class RoomController extends Controller
 
         if ($room) {
             $room->delete();
-            return response()->json(['message' => 'Room deleted successfully'], 200);
+            return response()->json(['message' => 'Room deleted successfully'], status: 200);
         } else {
             return response()->json(['message' => 'Room not found'], 404);
         }

@@ -7,6 +7,13 @@ import ConfirmationModal from "../components/Modal/ConfirmationModal";
 import "../css/Lesson.css";
 
 export default function Lesson() {
+    // Modal for user feedback
+    const [modal, setModal] = useState({
+        visible: false,
+        message: "",
+        type: "",
+    });
+
     // Variable for fetching subject data
     const [subjects, setSubject] = useState([]);
 
@@ -80,12 +87,27 @@ export default function Lesson() {
         try {
             const res = await axiosClient.post("/add-lesson", lessonData);
             // console.log(res.data);
-            console.log("Lesson saved successfully!");
+            if (res.status === 200) {
+                setModal({
+                    visible: true,
+                    message: "Lesson added successfully!",
+                    type: "success",
+                });
+            }
         } catch (error) {
             console.error("Error:", error.response.data); //use err.response.data to display more info about the err
+            setModal({
+                visible: true,
+                message: "There's a problem adding the lesson.",
+                type: "error",
+            });
         }
 
         setIsChange(!isChange);
+
+        setTimeout(() => {
+            setModal({ visible: false, message: "", type: "" });
+        }, 3000);
 
         // Clear the form and error message
         setLessonData({
@@ -131,7 +153,13 @@ export default function Lesson() {
     const handleDelete = async (id) => {
         try {
             const res = await axiosClient.delete(`/delete-lesson/${id}`);
-            console.log(res.data);
+            if (res.status === 200) {
+                setModal({
+                    visible: true,
+                    message: "Lesson deleted successfully!",
+                    type: "success",
+                });
+            }
             setDisplayLesson((prevData) => {
                 if (Array.isArray(prevData.lessons)) {
                     return {
@@ -147,6 +175,11 @@ export default function Lesson() {
             });
         } catch (error) {
             console.error("Error deleting lesson:", error);
+            setModal({
+                visible: true,
+                message: "There's a problem deleting the lesson.",
+                type: "error",
+            });
         }
     };
 
@@ -190,23 +223,33 @@ export default function Lesson() {
         // console.log(lessonData.teacher);
 
         try {
-            const response = await axiosClient.put(
+            const res = await axiosClient.put(
                 `/edit-lesson/${selectedLesson.id}`,
                 { teacher: editLessonData.teacherId }
             );
 
-            if (response.status === 200) {
+            if (res.status === 200) {
                 // alert("Lesson updated successfully!");
-                console.log("Lesson updated successfully!");
-            } else {
-                alert("Failed to update the lesson.");
+                setModal({
+                    visible: true,
+                    message: "Lesson updated successfully!",
+                    type: "success",
+                });
             }
 
             setIsChange(!isChange);
         } catch (error) {
             console.error("Error updating lesson:", error.response.data);
-            alert("An error occurred while updating the lesson.");
+            setModal({
+                visible: true,
+                message: "There's a problem updating the lesson.",
+                type: "error",
+            });
         }
+
+        setTimeout(() => {
+            setModal({ visible: false, message: "", type: "" });
+        }, 3000);
     };
 
     // Error handling
@@ -523,13 +566,21 @@ export default function Lesson() {
                             </div>
 
                             <div className="button-container d-flex justify-content-end gap-3">
-                                <Button color="yellow">Create</Button>
+                                <Button color="yellow" data-bs-dismiss="modal">
+                                    Create
+                                </Button>
                                 <Button data-bs-dismiss="modal">Cancel</Button>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
+
+            {modal.visible && (
+                <div className={`modal-feedback ${modal.type}`}>
+                    <p>{modal.message}</p>
+                </div>
+            )}
 
             <ConfirmationModal
                 id="confirmationModal"

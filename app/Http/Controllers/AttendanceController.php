@@ -46,7 +46,7 @@ class AttendanceController extends Controller
             );
         }
 
-        return response()->json(['message' => 'Attendance records saved successfully'], 200);
+        return response()->json(['status' => 200, 'message' => 'Attendance records saved successfully']);
     }
 
     public function checkAttendance($lessonId, Request $request)
@@ -161,10 +161,5 @@ class AttendanceController extends Controller
 
         return response()->json($result);
     }
-
-
-
-
-
 
 }
