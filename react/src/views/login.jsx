@@ -4,6 +4,7 @@ import axiosClient from "../axiosClient";
 import { useStateContext } from "../contexts/ContextProvider";
 import { Form, Alert, Col } from "react-bootstrap";
 import Button from "../components/Button/Button";
+import { Eye, EyeOff } from "lucide-react";
 import "../css/Login.css";
 
 export default function Login() {
@@ -23,6 +24,10 @@ export default function Login() {
 
     // Get navigate function from react-router-dom
     const navigate = useNavigate();
+
+    // Add state for password visibility
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     // Function to handle form submission
     const Submit = (ev) => {
@@ -149,20 +154,44 @@ export default function Login() {
                             controlId="formPassword"
                         >
                             <Form.Label>Password</Form.Label>
-                            <Form.Control
-                                ref={passwordRef}
-                                type="password"
-                                placeholder="Enter your password"
-                                value={password}
-                                onChange={(e) => {
-                                    setPassword(e.target.value);
-                                    clearError("password");
-                                }}
-                                isInvalid={!!errors.password}
-                            />
-                            <Form.Control.Feedback type="invalid">
-                                {errors.password}
-                            </Form.Control.Feedback>
+                            <div className="position-relative">
+                                <Form.Control
+                                    ref={passwordRef}
+                                    type={showPassword ? "text" : "password"}
+                                    placeholder="Enter your password"
+                                    value={password}
+                                    onChange={(e) => {
+                                        setPassword(e.target.value);
+                                        clearError("password");
+                                    }}
+                                    isInvalid={!!errors.password}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        setShowPassword(!showPassword)
+                                    }
+                                    style={{
+                                        position: "absolute",
+                                        right: "10px",
+                                        top: "50%",
+                                        transform: "translateY(-50%)",
+                                        border: "none",
+                                        background: "none",
+                                        cursor: "pointer",
+                                        padding: "0 5px",
+                                    }}
+                                >
+                                    {showPassword ? (
+                                        <Eye size={22} className="h-4 w-4 text-gray-500" />
+                                    ) : (
+                                        <EyeOff size={22} className="h-4 w-4 text-gray-500" />
+                                    )}
+                                </button>
+                                <Form.Control.Feedback type="invalid">
+                                    {errors.password}
+                                </Form.Control.Feedback>
+                            </div>
                         </Form.Group>
 
                         <Form.Group
