@@ -19,6 +19,15 @@ export default function RecordPayment() {
     const [error, setError] = useState("");
     const [dateFilter, setDateFilter] = useState("this_month");
 
+    const [isMobile, setIsMobile] = useState(false);
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth <= 768);
+        // Check initial screen size
+        handleResize();
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
     // Fetch record payment data
     useEffect(() => {
         async function fetchRecordPayments() {
@@ -35,7 +44,7 @@ export default function RecordPayment() {
             } catch (error) {
                 console.error("Error fetching record payment:", error);
                 setRecordPaymentData({
-                    record_payments: [], 
+                    record_payments: [],
                     loading: false,
                 });
                 setError(
@@ -177,36 +186,41 @@ export default function RecordPayment() {
 
     return (
         <>
-            <div className="page-title">Fees</div>
-
-            {/* Date Filter */}
-            <div className="date-filter mt-5">
-                <button
-                    className={`btn ${
-                        dateFilter === "this_month"
-                            ? "btn-primary"
-                            : "btn-outline-primary"
-                    }`}
-                    onClick={() => setDateFilter("this_month")}
-                >
-                    This Month
-                </button>
-                <button
-                    className={`btn ms-3 ${
-                        dateFilter === "last_3_months"
-                            ? "btn-primary"
-                            : "btn-outline-primary"
-                    }`}
-                    onClick={() => setDateFilter("last_3_months")}
-                >
-                    Last 3 Months
-                </button>
+            <div className="page-title text-center text-md-start mb-4">
+                Fees
             </div>
 
-            {/* Display record payment list table */}
+            {/* Payment Collection List */}
             <ContentContainer title="Payment Collection List">
-                <Row className="mb-3">
-                    <Col md={4}>
+                {/* Date Filter */}
+                <Row className="g-3 mb-4">
+                    <Col xs={12} sm={6} md={3} lg={3}>
+                        <button
+                            className={`btn w-100 ${
+                                dateFilter === "this_month"
+                                    ? "btn-primary"
+                                    : "btn-outline-primary"
+                            }`}
+                            onClick={() => setDateFilter("this_month")}
+                        >
+                            This Month
+                        </button>
+                    </Col>
+                    <Col xs={12} sm={6} md={3} lg={3}>
+                        <button
+                            className={`btn w-100 ${
+                                dateFilter === "last_3_months"
+                                    ? "btn-primary"
+                                    : "btn-outline-primary"
+                            }`}
+                            onClick={() => setDateFilter("last_3_months")}
+                        >
+                            Last 3 Months
+                        </button>
+                    </Col>
+                </Row>
+                <Row className="g-3 mb-4">
+                    <Col xs={12} sm={12} md={4} lg={4}>
                         {/* Filter by status */}
                         <Form>
                             <Form.Group controlId="statusFilter">
@@ -228,17 +242,29 @@ export default function RecordPayment() {
                         </Form>
                     </Col>
 
-                    <Col md={8}>
+                    <Col xs={12} sm={12} md={8} lg={8}>
                         {/* Search by student name */}
-                        <SearchBar
-                            searchQuery={searchQuery}
-                            setSearchQuery={setSearchQuery}
-                            placeholder="Search student by name"
-                        />
+                        <div className="position-relative">
+                            <SearchBar
+                                searchQuery={searchQuery}
+                                setSearchQuery={setSearchQuery}
+                                placeholder={
+                                    isMobile
+                                        ? "Search name"
+                                        : "Search student by name"
+                                }
+                            />
+                        </div>
                     </Col>
                 </Row>
 
-                {error && <div className="alert alert-danger">{error}</div>}
+                {error && (
+                    <div className="alert alert-danger text-center">
+                        {error}
+                    </div>
+                )}
+
+                {/* Table */}
                 <Table
                     header={tableHeader}
                     data={tableData}
