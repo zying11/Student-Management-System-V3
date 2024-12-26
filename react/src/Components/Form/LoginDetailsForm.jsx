@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
+import { Eye, EyeOff } from "lucide-react";
 import { useStateContext } from "../../contexts/ContextProvider";
 
 export default function LoginDetailsForm({
@@ -15,6 +16,10 @@ export default function LoginDetailsForm({
 
     // Check if the logged-in user is a teacher or admin to conditionally set readOnly
     const isReadOnly = user.role_id === 2; // Assuming role_id of 2 is for teacher
+
+    // Add state for password visibility
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     return (
         <>
@@ -102,33 +107,79 @@ export default function LoginDetailsForm({
                 <Col className="mt-3" md={6} sm={12}>
                     <Form.Group controlId="formPassword">
                         <Form.Label>Password</Form.Label>
-                        <Form.Control
-                            type="password"
-                            name="password"
-                            value={loginDetails.password}
-                            onChange={handleLoginChange}
-                            placeholder="Enter password"
-                            isInvalid={!!errors.password}
-                        />
-                        <Form.Control.Feedback type="invalid">
-                            {errors.password}
-                        </Form.Control.Feedback>
+                        <div className="position-relative">
+                            <Form.Control
+                                type={showPassword ? "text" : "password"}
+                                name="password"
+                                value={loginDetails.password}
+                                onChange={handleLoginChange}
+                                placeholder="Enter password"
+                                isInvalid={!!errors.password}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                style={{
+                                    position: "absolute",
+                                    right: "10px",
+                                    top: "50%",
+                                    transform: "translateY(-50%)",
+                                    border: "none",
+                                    background: "none",
+                                    cursor: "pointer",
+                                    padding: "0 5px",
+                                }}
+                            >
+                                {showPassword ? (
+                                    <Eye size={22} className="h-4 w-4 text-gray-500" />
+                                ) : (
+                                    <EyeOff size={22} className="h-4 w-4 text-gray-500" />
+                                )}
+                            </button>
+                            <Form.Control.Feedback type="invalid">
+                                {errors.password}
+                            </Form.Control.Feedback>
+                        </div>
                     </Form.Group>
                 </Col>
                 <Col className="mt-3" md={6} sm={12}>
                     <Form.Group controlId="formConfirmPassword">
                         <Form.Label>Confirm Password</Form.Label>
-                        <Form.Control
-                            type="password"
-                            name="confirmPassword"
-                            value={loginDetails.confirmPassword}
-                            onChange={handleLoginChange}
-                            placeholder="Enter confirm password"
-                            isInvalid={!!errors.confirmPassword}
-                        />
-                        <Form.Control.Feedback type="invalid">
-                            {errors.confirmPassword}
-                        </Form.Control.Feedback>
+                        <div className="position-relative">
+                            <Form.Control
+                                type={showConfirmPassword ? "text" : "password"}
+                                name="confirmPassword"
+                                value={loginDetails.confirmPassword}
+                                onChange={handleLoginChange}
+                                placeholder="Enter confirm password"
+                                isInvalid={!!errors.confirmPassword}
+                            />
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    setShowConfirmPassword(!showConfirmPassword)
+                                }
+                                style={{
+                                    position: "absolute",
+                                    right: "10px",
+                                    top: "50%",
+                                    transform: "translateY(-50%)",
+                                    border: "none",
+                                    background: "none",
+                                    cursor: "pointer",
+                                    padding: "0 5px",
+                                }}
+                            >
+                                {showConfirmPassword ? (
+                                    <Eye size={22} className="h-4 w-4 text-gray-500" />
+                                ) : (
+                                    <EyeOff size={22} className="h-4 w-4 text-gray-500" />
+                                )}
+                            </button>
+                            <Form.Control.Feedback type="invalid">
+                                {errors.confirmPassword}
+                            </Form.Control.Feedback>
+                        </div>
                     </Form.Group>
                 </Col>
             </Row>
