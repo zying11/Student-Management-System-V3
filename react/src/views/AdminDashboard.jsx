@@ -12,6 +12,13 @@ export default function AdminDashboard() {
     // Error handling
     const [error, setError] = useState("");
 
+    // Modal for user feedback
+    const [modal, setModal] = useState({
+        visible: false,
+        message: "",
+        type: "",
+    });
+
     // Generalized handleInput function
     const handleInput = (setterFunction) => (e) => {
         // Destructure name and value from the event target (the input element that triggered the change)
@@ -151,12 +158,27 @@ export default function AdminDashboard() {
                 studyLevelData
             );
             // console.log(res.data);
-            console.log("Study Level added successfully!");
+
+            if (res.status === 200) {
+                setModal({
+                    visible: true,
+                    message: "Study Level added successfully!",
+                    type: "success",
+                });
+            }
         } catch (error) {
             console.error("Error:", error.response.data); //use err.response.data to display more info about the err
+            setModal({
+                visible: true,
+                message: "There's a problem adding the study level",
+                type: "error",
+            });
         }
 
         setIsChange(!isChange);
+        setTimeout(() => {
+            setModal({ visible: false, message: "", type: "" });
+        }, 3000);
 
         // Clear the form and error message
         setStudyLevelData({
@@ -175,7 +197,11 @@ export default function AdminDashboard() {
             // console.log(res.data);
             // Check if the status code is 200
             if (res.status === 200) {
-                console.log("Study level deleted successfully");
+                setModal({
+                    visible: true,
+                    message: "Study Level deleted successfully!",
+                    type: "success",
+                });
             }
             setDisplayStudyLevel((prevData) => {
                 if (Array.isArray(prevData.studyLevels)) {
@@ -192,7 +218,16 @@ export default function AdminDashboard() {
             });
         } catch (error) {
             console.error("Error deleting study level:", error);
+            setModal({
+                visible: true,
+                message: "Study Level deleting study level!",
+                type: "success",
+            });
         }
+
+        setTimeout(() => {
+            setModal({ visible: false, message: "", type: "" });
+        }, 3000);
     };
 
     //Study level table data
@@ -267,6 +302,14 @@ export default function AdminDashboard() {
             );
             // console.log(res.data);
 
+            if (res.status === 200) {
+                setModal({
+                    visible: true,
+                    message: "Subject deleted successfully!",
+                    type: "success",
+                });
+            }
+
             setDisplaySubject((prevData) => {
                 if (Array.isArray(prevData.subjects)) {
                     return {
@@ -282,7 +325,16 @@ export default function AdminDashboard() {
             });
         } catch (error) {
             console.error("Error deleting subject:", error);
+            setModal({
+                visible: true,
+                message: "There's a problem deleting the subject.",
+                type: "error",
+            });
         }
+
+        setTimeout(() => {
+            setModal({ visible: false, message: "", type: "" });
+        }, 3000);
     };
 
     // Variable for posting subject data
@@ -312,12 +364,27 @@ export default function AdminDashboard() {
                 subjectData
             );
             // console.log(res.data);
-            console.log("Subject added successfully!");
+            if (res.status === 200) {
+                setModal({
+                    visible: true,
+                    message: "Subject added successfully!",
+                    type: "success",
+                });
+            }
         } catch (error) {
             console.error("Error:", error.response.data); //use err.response.data to display more info about the err
+            setModal({
+                visible: true,
+                message: "There's a problem adding the subject.",
+                type: "error",
+            });
         }
 
         setIsChange(!isChange);
+
+        setTimeout(() => {
+            setModal({ visible: false, message: "", type: "" });
+        }, 3000);
 
         // Clear the form and error message
         setSubjectData({
@@ -366,13 +433,24 @@ export default function AdminDashboard() {
                 updateSubjectData
             );
             if (res.status === 200) {
-                console.log("Subject updated successfully");
+                setModal({
+                    visible: true,
+                    message: "Subject updated successfully!",
+                    type: "success",
+                });
             }
             setIsChange(!isChange);
         } catch (error) {
-            setError("Error updating subject");
             console.error("Error:", error.response.data);
+            setModal({
+                visible: true,
+                message: "There's a problem updating the subject.",
+                type: "error",
+            });
         }
+        setTimeout(() => {
+            setModal({ visible: false, message: "", type: "" });
+        }, 3000);
     };
 
     const subjectHeader = ["Subject Name", "Study Year", "Fee", "Action"];
@@ -560,7 +638,11 @@ export default function AdminDashboard() {
                             </div>
 
                             <div className="button-container d-flex justify-content-end gap-3">
-                                <Button type="submit" color="yellow">
+                                <Button
+                                    type="submit"
+                                    color="yellow"
+                                    data-bs-dismiss="modal"
+                                >
                                     Add
                                 </Button>
                                 <Button type="button" data-bs-dismiss="modal">
@@ -738,7 +820,11 @@ export default function AdminDashboard() {
                             </div>
 
                             <div className="button-container d-flex justify-content-end gap-3">
-                                <Button type="submit" className="btn">
+                                <Button
+                                    type="submit"
+                                    className="btn"
+                                    data-bs-dismiss="modal"
+                                >
                                     Save
                                 </Button>
                                 <Button
@@ -754,6 +840,12 @@ export default function AdminDashboard() {
                     </div>
                 </div>
             </div>
+
+            {modal.visible && (
+                <div className={`modal-feedback ${modal.type}`}>
+                    <p>{modal.message}</p>
+                </div>
+            )}
 
             <ConfirmationModal
                 id="confirmationStudyLevel"

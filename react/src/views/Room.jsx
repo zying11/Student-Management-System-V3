@@ -12,6 +12,13 @@ import interactionPlugin, { Draggable } from "@fullcalendar/interaction";
 // import "../css/Timetable.css";
 
 export default function Room() {
+    // Modal for user feedback
+    const [modal, setModal] = useState({
+        visible: false,
+        message: "",
+        type: "",
+    });
+
     const handleInput = (setterFunction) => (e) => {
         // Destructure name and value from the event target (the input element that triggered the change)
         const { name, value } = e.target;
@@ -41,7 +48,7 @@ export default function Room() {
                 const res = await axiosClient.get(
                     "http://127.0.0.1:8000/api/rooms"
                 );
-                // console.log(res.data.rooms);
+                console.log(res.data.rooms);
 
                 setDisplayRoom({
                     rooms: res.data.rooms,
@@ -77,12 +84,27 @@ export default function Room() {
                 roomData
             );
             // console.log(res.data);
-            console.log("Room added successfully!");
+            if (res.status === 200) {
+                setModal({
+                    visible: true,
+                    message: "Room added successfully!",
+                    type: "success",
+                });
+            }
         } catch (error) {
             console.error("Error:", error.response.data); //use err.response.data to display more info about the err
+            setModal({
+                visible: true,
+                message: "There's a problem adding the room.",
+                type: "error",
+            });
         }
 
         setIsChange(!isChange);
+
+        setTimeout(() => {
+            setModal({ visible: false, message: "", type: "" });
+        }, 3000);
 
         // Clear the form and error message
         setRoomData({
@@ -97,16 +119,30 @@ export default function Room() {
     // Function to handle deletion of the room
     const handleDeleteRoom = async () => {
         try {
-            await axiosClient.delete(
+            const res = await axiosClient.delete(
                 `http://127.0.0.1:8000/api/rooms/${selectedRoomId}`
             );
             // Re-fetch room data to update the table after deletion
             setIsChange(!isChange);
-            alert("Room deleted successfully");
+            if (res.status === 200) {
+                setModal({
+                    visible: true,
+                    message: "Room deleted successfully!",
+                    type: "success",
+                });
+            }
         } catch (error) {
             console.error("Error deleting room:", error);
-            alert("Failed to delete room.");
+            setModal({
+                visible: true,
+                message: "There's a problem deleting the room",
+                type: "error",
+            });
         }
+
+        setTimeout(() => {
+            setModal({ visible: false, message: "", type: "" });
+        }, 3000);
     };
 
     // Variable to update data
@@ -122,8 +158,8 @@ export default function Room() {
             const room = displayRoom.rooms.find(
                 (room) => room.id === selectedRoomId
             );
-            // console.log(displayRoom.rooms);
-            // console.log(room);
+            console.log(displayRoom.rooms);
+            console.log(room);
             // Set to current room data for posting edited room purposes
             setUpdateRoomData({
                 roomName: room.room_name,
@@ -142,30 +178,177 @@ export default function Room() {
                 updateRoomData
             );
             if (res.status === 200) {
-                console.log("Room updated successfully");
+                setModal({
+                    visible: true,
+                    message: "Room updated successfully!",
+                    type: "success",
+                });
             }
             setIsChange(!isChange);
         } catch (error) {
-            setError("Error updating room");
             console.error("Error:", error.response.data);
+            setModal({
+                visible: true,
+                message: "There's a problem deleting the room.",
+                type: "error",
+            });
         }
     };
 
-    // // Function to updating room information -> non working function
-    // const handleEditRoom = async () => {
-    //     e.preventDefault(); // Prevents page refresh
-    //     try {
-    //         await axiosClient.put(
-    //             `/edit-room/${selectedRoomId}`,
-    //             updateRoomData
-    //         );
-    //         setIsChange(!isChange); // Update the state
-    //         alert("Room updated successfully");
-    //     } catch (error) {
-    //         console.error("Error updating room:", error);
-    //         alert("Failed to update room.");
-    //     }
-    // };
+    const [timetableRoomId, setTimetableRoomId] = useState(null);
+    const [rooms, setRooms] = useState([]);
+
+    // Displaying calendar
+    const handleRoomChange = (event) => {
+        setTimetableRoomId(event.target.value);
+    };
+
+    const daysOfWeek = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+    ];
+
+    // Helper function to convert 24-hour time to 12-hour format
+    function formatTimeTo12Hour(time) {
+        let [hour, minute] = time.split(":"); // Split the time into hour and minute
+        hour = parseInt(hour, 10); // Convert hour string to an integer
+
+        const ampm = hour >= 12 ? "pm" : "am"; // Determine AM or PM
+        hour = hour % 12 || 12; // Convert to 12-hour format, 0 becomes 12
+
+        return `${hour}${ampm}`; // Return formatted time
+    }
+
+    // Fetch room data
+    useEffect(() => {
+        async function fetchRooms() {
+            try {
+                const res = await axiosClient.get(
+                    "http://127.0.0.1:8000/api/rooms"
+                );
+                const roomsData = res.data.rooms;
+                setRooms(roomsData);
+                if (roomsData.length > 0) {
+                    setTimetableRoomId(roomsData[0].id); // Set the first room's ID as the default
+                }
+            } catch (error) {
+                console.error("Error fetching rooms:", error);
+            }
+        }
+
+        fetchRooms();
+    }, []);
+
+    // Variable to display timetable events
+    const [timetableEvents, setTimetableEvents] = useState([]);
+
+    // Format the fetched data into FullCalendar event format
+    const formatEventData = (lessons) => {
+        return lessons.map((lesson) => {
+            // Check for null values and provide fallback defaults
+            const startTime = lesson.start_time
+                ? lesson.start_time.slice(0, 5)
+                : null;
+            const endTime = lesson.end_time
+                ? lesson.end_time.slice(0, 5)
+                : null;
+            const dayOfWeek = lesson.day !== null ? parseInt(lesson.day) : null;
+
+            return {
+                id: lesson.id.toString(),
+                title: lesson.subject?.subject_name || "No Subject",
+                teacherId: lesson.teacher?.id || null,
+                startTime: startTime,
+                endTime: endTime,
+                daysOfWeek: dayOfWeek !== null ? [dayOfWeek] : undefined, // Avoid adding undefined days
+                extendedProps: {
+                    subject: lesson.subject?.subject_name || "No Subject",
+                    studyLevel:
+                        lesson.subject?.study_level?.level_name || "No Level",
+                    teacher: lesson.teacher?.user?.name || "No Teacher",
+                    day:
+                        dayOfWeek !== null
+                            ? daysOfWeek[dayOfWeek]
+                            : "Unscheduled",
+                    startTime: lesson.start_time || "Unscheduled",
+                    endTime: lesson.end_time || "Unscheduled",
+                },
+            };
+        });
+    };
+
+    // Fetch events based on the selected room
+    useEffect(() => {
+        if (timetableRoomId) {
+            async function fetchEvents() {
+                try {
+                    const res = await axiosClient.get(
+                        `/timetable-lessons?room_id=${timetableRoomId}`
+                    );
+                    // console.log(res.data); // To check data format
+                    const formattedEvents = formatEventData(res.data.lessons);
+                    setTimetableEvents(formattedEvents);
+                } catch (error) {
+                    console.error("Error fetching events:", error);
+                }
+            }
+            fetchEvents();
+        }
+    }, [timetableRoomId, isChange]);
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedEvent, setSelectedEvent] = useState(null);
+
+    const handleEventClick = (clickInfo) => {
+        const { extendedProps } = clickInfo.event;
+
+        if (
+            !extendedProps.day ||
+            !extendedProps.startTime ||
+            !extendedProps.endTime
+        ) {
+            console.warn("Incomplete lesson data:", extendedProps);
+            setModal({
+                visible: true,
+                message:
+                    "This lesson is unscheduled and cannot be interacted with.",
+                type: "error",
+            });
+            setTimeout(() => {
+                setModal({ visible: false, message: "", type: "" });
+            }, 3000);
+            return;
+        }
+
+        setSelectedEvent(clickInfo.event);
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+        setSelectedEvent(null);
+    };
+
+    // Media query for calendar
+    const [isLargeScreen, setIsLargeScreen] = useState(
+        window.innerWidth > 1024
+    );
+
+    // Detect screen size change
+    useEffect(() => {
+        const handleResize = () => {
+            setIsLargeScreen(window.innerWidth > 1024);
+        };
+
+        window.addEventListener("resize", handleResize);
+
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
     // Error handling
     const [error, setError] = useState("");
@@ -228,6 +411,53 @@ export default function Room() {
                     data={tableData}
                     itemsPerPage={5}
                 ></Table>
+            </ContentContainer>
+
+            <ContentContainer title="Room Timetable">
+                <div className="room-selection d-flex justify-content-end my-3">
+                    <select
+                        className="room-select"
+                        name="roomID"
+                        value={timetableRoomId || ""}
+                        onChange={handleRoomChange}
+                    >
+                        {rooms.map((room) => (
+                            <option key={room.id} value={room.id}>
+                                {room.room_name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                <div className="calendar-container">
+                    {isLargeScreen ? (
+                        <FullCalendar
+                            id="calendar"
+                            className=""
+                            plugins={[
+                                dayGridPlugin,
+                                timeGridPlugin,
+                                interactionPlugin,
+                            ]}
+                            initialView="timeGridWeek"
+                            slotMinTime="08:00:00"
+                            slotMaxTime="19:00:00"
+                            events={timetableEvents}
+                            eventClick={handleEventClick}
+                            eventBackgroundColor="#E9FFEE"
+                            eventBorderColor="#0CB631"
+                            eventTextColor="#006A37"
+                            eventOverlap={false}
+                            eventDurationEditable={true}
+                            eventResizableFromStart={false}
+                            allDaySlot={false}
+                        />
+                    ) : (
+                        <p>
+                            Screen size is too small. Please switch to a bigger
+                            screen size to view the calender.
+                        </p>
+                    )}
+                </div>
             </ContentContainer>
 
             <div
@@ -344,13 +574,65 @@ export default function Room() {
                             </div>
 
                             <div className="button-container d-flex justify-content-end gap-3">
-                                <Button color="yellow">Create</Button>
+                                <Button color="yellow" data-bs-dismiss="modal">
+                                    Create
+                                </Button>
                                 <Button data-bs-dismiss="modal">Cancel</Button>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
+
+            {isModalOpen && selectedEvent && (
+                <div className="modal-overlay">
+                    <div className="modal-details">
+                        <button
+                            className="close-btn btn-close d-flex align-items-center justify-content-center"
+                            onClick={closeModal}
+                        >
+                            ×
+                        </button>
+                        <div className="modal-header p-3">
+                            <h5>Lesson Details</h5>
+                        </div>
+                        <div className="p-3">
+                            <p className="mb-3">
+                                <strong>Subject:</strong>{" "}
+                                {selectedEvent.extendedProps.subject}
+                            </p>
+                            <p className="mb-3">
+                                <strong>Level:</strong>{" "}
+                                {selectedEvent.extendedProps.studyLevel}
+                            </p>
+                            <p className="mb-3">
+                                <strong>Teacher:</strong>{" "}
+                                {selectedEvent.extendedProps.teacher}
+                            </p>
+                            <p className="mb-3">
+                                <strong>Day:</strong>{" "}
+                                {selectedEvent.extendedProps.day}
+                            </p>
+                            <p>
+                                <strong>Time:</strong>{" "}
+                                {formatTimeTo12Hour(
+                                    selectedEvent.extendedProps.startTime
+                                )}{" "}
+                                -{" "}
+                                {formatTimeTo12Hour(
+                                    selectedEvent.extendedProps.endTime
+                                )}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {modal.visible && (
+                <div className={`modal-feedback ${modal.type}`}>
+                    <p>{modal.message}</p>
+                </div>
+            )}
 
             <ConfirmationModal
                 id="confirmationModal"

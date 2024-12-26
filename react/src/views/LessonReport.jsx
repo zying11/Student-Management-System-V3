@@ -252,12 +252,25 @@ export default function LessonReport() {
             setNoDataFound(true); // Set no data found when no lesson is selected
         }
     };
+    // Media query for Bar Chart
+    const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth > 450);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsLargeScreen(window.innerWidth > 450);
+        };
+
+        window.addEventListener("resize", handleResize);
+
+        // Clean up event listener
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
     return (
         <>
             <div className="page-title">Lesson Report</div>
             <ContentContainer title="View Detailed Report">
-                <div className="d-flex gap-3">
+                <div className="d-flex flex-sm-row flex-column gap-3">
                     <select
                         className="form-control"
                         value={selectedLesson}
@@ -325,16 +338,16 @@ export default function LessonReport() {
                         </div>
                     )
                 )}
-                <div className="d-flex justify-content-between gap-2">
-                    <div className="box-data p-4">
+                <div className="d-flex justify-content-xl-between gap-2 flex-wrap">
+                    <div className="box-data p-sm-4 p-3">
                         <div>Total Classes Held</div>
                         <p>{totalClasses !== null ? totalClasses : "-"}</p>
                     </div>
-                    <div className="box-data p-4">
+                    <div className="box-data p-sm-4 p-3">
                         <div>Total Students</div>
                         <p>{totalStudents !== null ? totalStudents : "-"}</p>
                     </div>
-                    <div className="box-data p-4">
+                    <div className="box-data p-sm-4 p-3">
                         <div>Average Attendance Rate</div>
                         <p>
                             {averageAttendanceRate !== null
@@ -343,26 +356,34 @@ export default function LessonReport() {
                         </p>
                     </div>
                 </div>
-                <div className="d-flex w-100 mt-5 gap-2">
-                    <BarChart
-                        chartTitle="Daily Attendance Rate (%)"
-                        xAxis="Lesson Dates"
-                        yAxis="Attendance Rate (%)"
-                        xData={lessonDates}
-                        yData={attendanceRates}
-                        stepSize="10"
-                        maxBars="4"
-                    />
-                    <BarChart
-                        chartTitle="Number of Absence"
-                        xAxis="Student"
-                        yAxis="Number of Absence"
-                        xData={studentNames}
-                        yData={absenceCounts}
-                        stepSize="1"
-                        maxBars="4"
-                    />
-                </div>
+                {isLargeScreen ? (
+                    <div className="d-flex flex-lg-row flex-column w-100 mt-5 gap-2">
+                        <BarChart
+                            chartTitle="Daily Attendance Rate (%)"
+                            xAxis="Lesson Dates"
+                            yAxis="Attendance Rate (%)"
+                            xData={lessonDates}
+                            yData={attendanceRates}
+                            stepSize="10"
+                            maxBars="4"
+                        />
+                        <BarChart
+                            chartTitle="Number of Absence"
+                            xAxis="Student"
+                            yAxis="Number of Absence"
+                            xData={studentNames}
+                            yData={absenceCounts}
+                            stepSize="1"
+                            maxBars="4"
+                        />
+                    </div>
+                ) : (
+                    <p className="mt-5">
+                        Screen size is too small. Please switch to a bigger
+                        screen size to view the chart.
+                    </p>
+                )}
+
                 <div className="mt-5">
                     <Table
                         header={[

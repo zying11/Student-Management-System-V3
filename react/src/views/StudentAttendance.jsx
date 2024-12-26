@@ -176,6 +176,20 @@ export default function StudentAttendance() {
               enrollment.lesson.teacher.user.name || "-",
           ]);
 
+    // Media query for Bar Chart
+    const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth > 450);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsLargeScreen(window.innerWidth > 450);
+        };
+
+        window.addEventListener("resize", handleResize);
+
+        // Clean up event listener
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
     return (
         <>
             <ContentContainer title={studentName}>
@@ -239,39 +253,46 @@ export default function StudentAttendance() {
                         </div>
                     )
                 )}
-                <div className="d-flex justify-content-between gap-2">
-                    <div className="box-data p-4">
+                <div className="d-flex justify-content-xl-between gap-2 flex-wrap">
+                    <div className="box-data p-sm-4 p-3">
                         <div>Total Present Days</div>
                         <p>{attendanceData.totalPresent}</p>
                     </div>
-                    <div className="box-data p-4">
+                    <div className="box-data p-sm-4 p-3">
                         <div>Total Absent Days</div>
                         <p>{attendanceData.totalAbsent}</p>
                     </div>
-                    <div className="box-data p-4">
+                    <div className="box-data p-sm-4 p-3">
                         <div>Average Attendance Rate</div>
                         <p>{attendanceData.attendanceRate}%</p>
                     </div>
                 </div>
 
-                <div className="d-flex w-100 mt-5 gap-2">
-                    <BarChart
-                        chartTitle="Attendance Rate per Subject"
-                        xAxis="Subjects"
-                        yAxis="Attendance Rate (%)"
-                        xData={subjectNames}
-                        yData={attendanceRates}
-                        stepSize="10"
-                    />
-                    <BarChart
-                        chartTitle="Absence Count per Subject"
-                        xAxis="Subjects"
-                        yAxis="Absence Count"
-                        xData={subjectNames}
-                        yData={absenceCounts}
-                        stepSize="1"
-                    />
-                </div>
+                {isLargeScreen ? (
+                    <div className="d-flex w-100 mt-5 gap-2">
+                        <BarChart
+                            chartTitle="Attendance Rate per Subject"
+                            xAxis="Subjects"
+                            yAxis="Attendance Rate (%)"
+                            xData={subjectNames}
+                            yData={attendanceRates}
+                            stepSize="10"
+                        />
+                        <BarChart
+                            chartTitle="Absence Count per Subject"
+                            xAxis="Subjects"
+                            yAxis="Absence Count"
+                            xData={subjectNames}
+                            yData={absenceCounts}
+                            stepSize="1"
+                        />
+                    </div>
+                ) : (
+                    <p className="mt-5">
+                        Screen size is too small. Please switch to a bigger
+                        screen size to view the chart.
+                    </p>
+                )}
             </ContentContainer>
         </>
     );

@@ -4,8 +4,16 @@ import axiosClient from "../axiosClient";
 import { ContentContainer } from "../components/ContentContainer/ContentContainer";
 import { Table } from "../components/Table/Table";
 import Button from "../components/Button/Button";
+import "../css/Attendance.css";
 
 export default function Attendance() {
+    // Modal for user feedback
+    const [modal, setModal] = useState({
+        visible: false,
+        message: "",
+        type: "",
+    });
+
     // Get current teacher
     const { token, user } = useStateContext();
     const [lessons, setLessons] = useState([]);
@@ -166,16 +174,28 @@ export default function Attendance() {
         }));
 
         try {
-            await axiosClient.post("/mark-attendance", {
+            const res = await axiosClient.post("/mark-attendance", {
                 records: attendanceRecords,
             });
+
+            if (res.status === 200) {
+                setModal({
+                    visible: true,
+                    message: "Attendance saved successfully!",
+                    type: "success",
+                });
+            }
 
             // Clear the attendance data to reset the form
             setAttendanceData([]);
             alert("Attendance saved successfully!");
         } catch (error) {
             console.error("Error saving attendance:", error.response);
-            alert("Error saving attendance.");
+            setModal({
+                visible: true,
+                message: "There's a problem saving attendance.",
+                type: "error",
+            });
         }
     }
 
@@ -244,14 +264,18 @@ export default function Attendance() {
     return (
         <>
             <div className="page-title">Attendance</div>
-            <ContentContainer title="Mark Attendance">
+            <ContentContainer id="mark-attendance" title="Mark Attendance">
                 <div>Hi, {userName}</div>
                 {attendanceMarked ? (
-                    <div>You have marked the attendance for today!</div>
+                    <div className="indicator mb-2">
+                        You have marked the attendance for today!
+                    </div>
                 ) : (
-                    <div>You have not marked the attendance for today!</div>
+                    <div className="indicator mb-2">
+                        You have not marked the attendance for today!
+                    </div>
                 )}
-                <div className="search-container d-flex gap-3 mb-5">
+                <div className="search-container d-flex flex-sm-row flex-column gap-3 mb-5">
                     <select
                         className="form-control"
                         value={selectedLesson}
@@ -286,7 +310,7 @@ export default function Attendance() {
                     data={tableData}
                     itemsPerPage={10}
                 ></Table>
-                <div className="d-flex justify-content-end mt-5">
+                <div className="d-flex justify-content-sm-end justify-content-center mt-5">
                     <Button
                         type="submit "
                         onClick={saveAttendance}
@@ -296,6 +320,12 @@ export default function Attendance() {
                     </Button>
                 </div>
             </ContentContainer>
+
+            {modal.visible && (
+                <div className={`modal-feedback ${modal.type}`}>
+                    <p>{modal.message}</p>
+                </div>
+            )}
         </>
     );
 }
