@@ -45,6 +45,27 @@ export default function AssessmentFeedbackReviewForm() {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(true);
 
+    const [center, setCenter] = useState({});
+
+    // Fetch center data
+    useEffect(() => {
+        async function fetchCenterProfile() {
+            try {
+                const res = await axiosClient.get(`/center-profile`);
+                setCenter(res.data.centerProfile[0]);
+            } catch (err) {
+                console.error("Error fetching center profile data:", err);
+                setError(
+                    "Error fetching center profile data. Please try again."
+                );
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        fetchCenterProfile();
+    }, []);
+
     // Fetch feedback details
     useEffect(() => {
         async function fetchFeedbackDetails() {
@@ -212,7 +233,11 @@ export default function AssessmentFeedbackReviewForm() {
     };
 
     // Function to handle sending the review form (Send PDF via email)
-    const handleSendReviewForm = async (studentDetails, feedbackDetails) => {
+    const handleSendReviewForm = async (
+        studentDetails,
+        feedbackDetails,
+        center
+    ) => {
         // Check if the form is saved
         if (!isSaved) {
             // Save the form first
@@ -237,7 +262,7 @@ export default function AssessmentFeedbackReviewForm() {
 
             // Document Title
             doc.setFontSize(18);
-            doc.text("XXX Tuition Center", 10, 10);
+            doc.text(`${center.center_name || "Tuition Center"}`, 10, 10);
 
             // Review Form and Student Details
             doc.setFontSize(12);
@@ -339,7 +364,8 @@ export default function AssessmentFeedbackReviewForm() {
                                 onClick={() =>
                                     handleSendReviewForm(
                                         studentDetails,
-                                        feedbackDetails
+                                        feedbackDetails,
+                                        center
                                     )
                                 }
                                 disabled={loading}

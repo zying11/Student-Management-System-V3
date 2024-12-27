@@ -16,17 +16,21 @@ export default function ReceiptTemplate() {
 
     // Fetch center data
     useEffect(() => {
-        setLoading(true);
-        axiosClient
-            .get(`/center-profile`)
-            .then(({ data }) => {
+        async function fetchCenterProfile() {
+            try {
+                const res = await axiosClient.get(`/center-profile`);
+                setCenter(res.data.centerProfile[0]);
+            } catch (err) {
+                console.error("Error fetching center profile data:", err);
+                setError(
+                    "Error fetching center profile data. Please try again."
+                );
+            } finally {
                 setLoading(false);
-                setCenter(data.centerProfile[0]);
-            })
-            .catch((error) => {
-                setLoading(false);
-                console.error("Error fetching center profile data:", error);
-            });
+            }
+        }
+
+        fetchCenterProfile();
     }, []);
 
     // Fetch specific record payment data based on id
@@ -176,7 +180,7 @@ export default function ReceiptTemplate() {
     };
 
     // Function to handle sending the receipt (Send PDF via email)
-    const handleSendReceipt = async (payment) => {
+    const handleSendReceipt = async (payment, center) => {
         const parentEmails =
             payment?.invoice?.student?.parents?.map((parent) => parent.email) ||
             [];
@@ -191,7 +195,8 @@ export default function ReceiptTemplate() {
 
             // Title
             doc.setFontSize(18);
-            doc.text("XXX Tuition Center", 10, 10);
+            doc.text(`${center.center_name || "Tuition Center"}`, 10, 10);
+            // doc.text(`${center.center_name || "Tuition Center"}`, 10, 10);
 
             // Receipt and Invoice Information
             doc.setFontSize(12);
@@ -368,7 +373,7 @@ export default function ReceiptTemplate() {
                                     <Button
                                         className="btn-create-yellow-border"
                                         onClick={() =>
-                                            handleSendReceipt(payment)
+                                            handleSendReceipt(payment, center)
                                         }
                                         disabled={loading}
                                     >

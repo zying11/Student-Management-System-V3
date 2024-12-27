@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Resources\InvoiceResource;
 use App\Models\Invoice;
+use App\Models\CenterProfile;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\InvoiceMail;
 use Carbon\Carbon;
@@ -145,13 +146,16 @@ class InvoiceController extends Controller
             'pdf' => 'required|file|mimes:pdf|max:2048',
         ]);
 
+        // Fetch the center profile 
+        $centerData = CenterProfile::first(); 
+
         // Save the uploaded PDF temporarily
         $pdfPath = $request->file('pdf')->store('invoices');
 
         $absolutePath = storage_path("app/{$pdfPath}");
 
         foreach ($request->emails as $email) {
-            Mail::to($email)->send(new InvoiceMail($absolutePath));
+            Mail::to($email)->send(new InvoiceMail($absolutePath, $centerData));
         }
 
         return response()->json(['message' => 'Invoice sent successfully.']);
@@ -162,7 +166,7 @@ class InvoiceController extends Controller
     {
         try {
             // Default to 'this_month'
-            $dateFilter = $request->query('date_filter', 'this_month'); 
+            $dateFilter = $request->query('date_filter', 'this_month');
 
             // Define the start date based on the selected filter
             switch ($dateFilter) {
@@ -184,7 +188,7 @@ class InvoiceController extends Controller
 
             return response()->json([
                 'success' => true,
-                'invoices' => InvoiceResource::collection($invoices) 
+                'invoices' => InvoiceResource::collection($invoices)
             ]);
         } catch (\Exception $e) {
             return response()->json([
