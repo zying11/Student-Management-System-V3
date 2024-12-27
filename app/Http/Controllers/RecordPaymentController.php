@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Resources\RecordPaymentResource;
 use App\Models\RecordPayment;
+use App\Models\CenterProfile;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\PaymentReceiptMail;
 use Carbon\Carbon;
@@ -126,13 +127,16 @@ class RecordPaymentController extends Controller
             'pdf' => 'required|file|mimes:pdf|max:2048',
         ]);
 
+        // Fetch the center profile
+        $centerData = CenterProfile::first();
+
         // Save the uploaded PDF temporarily
         $pdfPath = $request->file('pdf')->store('receipts');
 
         $absolutePath = storage_path("app/{$pdfPath}");
 
         foreach ($request->emails as $email) {
-            Mail::to($email)->send(new PaymentReceiptMail($absolutePath));
+            Mail::to($email)->send(new PaymentReceiptMail($absolutePath, $centerData));
         }
 
         return response()->json(['message' => 'Payment receipts sent successfully.']);

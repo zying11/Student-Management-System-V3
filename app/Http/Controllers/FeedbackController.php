@@ -6,6 +6,7 @@ use App\Models\Feedback;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use App\Models\Teacher;
+use App\Models\CenterProfile;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ReviewFormMail;
 
@@ -241,13 +242,16 @@ class FeedbackController extends Controller
             'pdf' => 'required|file|mimes:pdf|max:2048',
         ]);
 
+        // Fetch the center profile 
+        $centerData = CenterProfile::first(); 
+
         // Save the uploaded PDF temporarily
         $pdfPath = $request->file('pdf')->store('review_forms');
 
         $absolutePath = storage_path("app/{$pdfPath}");
 
         foreach ($request->emails as $email) {
-            Mail::to($email)->send(new ReviewFormMail($absolutePath));
+            Mail::to($email)->send(new ReviewFormMail($absolutePath, $centerData));
         }
 
         return response()->json(['message' => 'Review forms sent successfully.']);

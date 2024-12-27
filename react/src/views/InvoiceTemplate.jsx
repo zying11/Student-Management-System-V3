@@ -17,17 +17,21 @@ export default function InvoiceTemplate() {
 
     // Fetch center data
     useEffect(() => {
-        setLoading(true);
-        axiosClient
-            .get(`/center-profile`)
-            .then(({ data }) => {
+        async function fetchCenterProfile() {
+            try {
+                const res = await axiosClient.get(`/center-profile`);
+                setCenter(res.data.centerProfile[0]);
+            } catch (err) {
+                console.error("Error fetching center profile data:", err);
+                setError(
+                    "Error fetching center profile data. Please try again."
+                );
+            } finally {
                 setLoading(false);
-                setCenter(data.centerProfile[0]);
-            })
-            .catch((error) => {
-                setLoading(false);
-                console.error("Error fetching center profile data:", error);
-            });
+            }
+        }
+
+        fetchCenterProfile();
     }, []);
 
     // Fetch specific invoice data based on id
@@ -115,7 +119,7 @@ export default function InvoiceTemplate() {
     };
 
     // Function to handle sending the invoice (Send PDF via email)
-    const handleSendInvoice = async (invoice) => {
+    const handleSendInvoice = async (invoice, center) => {
         const parentEmails =
             invoice?.student?.parents?.map((parent) => parent.email) || [];
 
@@ -129,7 +133,7 @@ export default function InvoiceTemplate() {
 
             // Document Title
             doc.setFontSize(18);
-            doc.text("XXX Tuition Center", 10, 10);
+            doc.text(`${center.center_name || "Tuition Center"}`, 10, 10);
 
             // Invoice and Student Details
             doc.setFontSize(12);
@@ -210,206 +214,6 @@ export default function InvoiceTemplate() {
         }
     };
 
-    // return (
-    //     <>
-    //         <div className="page-title">Fees</div>
-
-    //         <Container className="invoice-container px-0 py-3">
-    //             <Card className="invoice-card p-4">
-    //                 <Card.Body>
-    //                     <Container className="invoice-header mb-2 mt-3">
-    //                         <Row className="d-flex align-items-baseline">
-    //                             <Col xs="12" md="9">
-    //                                 <p className="invoice-path">
-    //                                     Invoice &gt; &gt;{" "}
-    //                                     <strong>ID: {invoice.id}</strong>
-    //                                 </p>
-    //                             </Col>
-    //                             <Col
-    //                                 xs="12"
-    //                                 md="3"
-    //                                 className="text-md-end text-center mt-2 mt-md-0"
-    //                             >
-    //                                 {/* <Button className="btn-create-yellow-border">
-    //                                     <i className="fas fa-print me-1"></i>{" "}
-    //                                     Print
-    //                                 </Button> */}
-    //                                 {/* Send Button */}
-    //                                 <Button
-    //                                     className="btn-create-yellow-border"
-    //                                     onClick={() =>
-    //                                         handleSendInvoice(invoice)
-    //                                     }
-    //                                     disabled={loading}
-    //                                 >
-    //                                     <i className="fas fa-print me-1"></i>{" "}
-    //                                     {loading ? "Sending..." : "Send"}
-    //                                 </Button>
-    //                             </Col>
-    //                         </Row>
-    //                     </Container>
-
-    //                     <Container className="invoice-center text-center mt-5">
-    //                         <i className="fab fa-react fa-4x invoice-icon"></i>
-    //                         <p className="pt-0 invoice-center-text">
-    //                             {center.center_name}
-    //                         </p>
-    //                     </Container>
-
-    //                     <Row>
-    //                         <Col xs="12" md="8">
-    //                             <ul className="list-unstyled invoice-student-info">
-    //                                 <li className="text-muted">
-    //                                     To:{" "}
-    //                                     <span className="invoice-student-name">
-    //                                         {invoice.student.name}
-    //                                     </span>
-    //                                 </li>
-    //                                 <li className="text-muted">
-    //                                     {invoice.student.address}
-    //                                 </li>
-    //                                 <li className="text-muted">
-    //                                     Postal Code:{" "}
-    //                                     {invoice.student.postal_code}
-    //                                 </li>
-    //                                 <li className="text-muted">
-    //                                     <i className="fas fa-phone-alt"></i>{" "}
-    //                                     {invoice.student.nationality}
-    //                                 </li>
-    //                             </ul>
-    //                         </Col>
-    //                         <Col xs="12" md="4">
-    //                             <p className="text-muted">Invoice</p>
-    //                             <ul className="list-unstyled invoice-details">
-    //                                 <li className="text-muted">
-    //                                     <i className="fas fa-circle invoice-detail-icon"></i>
-    //                                     <span className="fw-bold ms-1">
-    //                                         Invoice Number:
-    //                                     </span>{" "}
-    //                                     {invoice.invoice_number}
-    //                                 </li>
-    //                                 <li className="text-muted">
-    //                                     <i className="fas fa-circle invoice-detail-icon"></i>
-    //                                     <span className="fw-bold ms-1">
-    //                                         Issue Date:
-    //                                     </span>{" "}
-    //                                     {invoice.issue_date}
-    //                                 </li>
-    //                                 <li className="text-muted">
-    //                                     <i className="fas fa-circle invoice-detail-icon"></i>
-    //                                     <span className="fw-bold ms-1">
-    //                                         Due Date:
-    //                                     </span>{" "}
-    //                                     {invoice.due_date}
-    //                                 </li>
-    //                             </ul>
-    //                         </Col>
-    //                     </Row>
-
-    //                     <Row className="my-2">
-    //                         <Table
-    //                             striped
-    //                             bordered
-    //                             hover
-    //                             responsive
-    //                             className="invoice-table"
-    //                         >
-    //                             <thead className="invoice-table-header">
-    //                                 <tr>
-    //                                     <th>#</th>
-    //                                     <th>Item Name</th>
-    //                                     <th>Quantity</th>
-    //                                     <th>Unit Price (RM)</th>
-    //                                     <th>Discount (%)</th>
-    //                                     <th>Total (RM)</th>
-    //                                 </tr>
-    //                             </thead>
-    //                             <tbody>
-    //                                 {invoice.items.map((item, index) => (
-    //                                     <tr key={item.id}>
-    //                                         <td>{index + 1}</td>
-    //                                         <td>{item.item_name}</td>
-    //                                         <td>{item.quantity}</td>
-    //                                         <td>{item.price}</td>
-    //                                         <td>{item.discount}</td>
-    //                                         <td>{item.total}</td>
-    //                                     </tr>
-    //                                 ))}
-    //                             </tbody>
-    //                         </Table>
-    //                     </Row>
-
-    //                     <Row>
-    //                         <Col xs="12" md="8">
-    //                             <Row>
-    //                                 <Col xs="12" md="6">
-    //                                     <p>Payment method info</p>{" "}
-    //                                     {invoice.payment_method}
-    //                                 </Col>
-    //                             </Row>
-
-    //                             <Row className="mt-3">
-    //                                 <Col xs="12" md="6">
-    //                                     <p>Additional notes</p>{" "}
-    //                                     {invoice.add_notes}
-    //                                 </Col>
-    //                             </Row>
-    //                         </Col>
-
-    //                         <Col xs="12" md="4">
-    //                             <ul className="list-unstyled invoice-summary">
-    //                                 <li className="text-muted">
-    //                                     <span className="me-4">SubTotal</span>RM{" "}
-    //                                     {invoice.total_payable}
-    //                                 </li>
-    //                                 <li className="text-muted mt-2">
-    //                                     <span className="me-4">Tax (0%)</span>RM{" "}
-    //                                     {(invoice.total_payable * 0).toFixed(2)}
-    //                                 </li>
-    //                             </ul>
-    //                             <p className="fw-bold invoice-total">
-    //                                 <span className="me-3">Total Amount</span>
-    //                                 <span className="invoice-total-amount">
-    //                                     RM{" "}
-    //                                     {(invoice.total_payable * 1).toFixed(2)}
-    //                                 </span>
-    //                             </p>
-    //                         </Col>
-    //                     </Row>
-
-    //                     <hr />
-    //                     <Row>
-    //                         <Col xs="10">
-    //                             <p>Thank you!</p>
-    //                         </Col>
-    //                     </Row>
-
-    //                     <Row className="d-flex justify-content-end align-items-center">
-    //                         <Col xs="12" md="3" className="text-end">
-    //                             {/* Export Button */}
-    //                             <Button
-    //                                 className="btn-create-purple ms-2"
-    //                                 onClick={handlePrintPDF}
-    //                             >
-    //                                 <i className="far fa-file-pdf me-1"></i>{" "}
-    //                                 Export
-    //                             </Button>
-
-    //                             {/* Pay Now Button */}
-    //                             <Link
-    //                                 to={`/record-payment-for/invoice/${invoice.id}`}
-    //                             >
-    //                                 <Button className="btn-create-yellow ms-2">
-    //                                     Pay
-    //                                 </Button>
-    //                             </Link>
-    //                         </Col>
-    //                     </Row>
-    //                 </Card.Body>
-    //             </Card>
-    //         </Container>
-    //     </>
-    // );
     return (
         <>
             <div className="page-title text-center text-md-start">Fees</div>
@@ -437,7 +241,7 @@ export default function InvoiceTemplate() {
                                     <Button
                                         className="btn-create-yellow-border"
                                         onClick={() =>
-                                            handleSendInvoice(invoice)
+                                            handleSendInvoice(invoice, center)
                                         }
                                         disabled={loading}
                                     >
