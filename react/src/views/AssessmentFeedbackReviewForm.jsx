@@ -299,9 +299,9 @@ export default function AssessmentFeedbackReviewForm() {
             // Create FormData to send the PDF
             const formData = new FormData();
             // Append each email
-            parentEmails.forEach((email) => formData.append("emails[]", email)); 
+            parentEmails.forEach((email) => formData.append("emails[]", email));
             // Attach the PDF
-            formData.append("pdf", pdfBlob, "review-form.pdf"); 
+            formData.append("pdf", pdfBlob, "review-form.pdf");
 
             const response = await axiosClient.post(
                 "/send-review-form-pdf-email",
@@ -332,7 +332,7 @@ export default function AssessmentFeedbackReviewForm() {
             <ContentContainer title={`Feedback Details`}>
                 <div className="d-flex justify-content-end mt-3">
                     <Row className="mb-3">
-                        <Col>
+                        <Col xs="auto">
                             {/* Send Button */}
                             <Button
                                 className="btn-create-yellow-border"
@@ -352,16 +352,16 @@ export default function AssessmentFeedbackReviewForm() {
                 </div>
 
                 <Row className="mb-4">
-                    <Col>
+                    <Col xs="12" md="6" lg="3">
                         <p>Student Name: {feedbackDetails.student_name}</p>
                     </Col>
-                    <Col>
+                    <Col xs="12" md="6" lg="3">
                         <p>Subject: {feedbackDetails.subject_name}</p>
                     </Col>
-                    <Col>
+                    <Col xs="12" md="6" lg="3">
                         <p>Study Level: {feedbackDetails.study_level}</p>
                     </Col>
-                    <Col>
+                    <Col xs="12" md="6" lg="3">
                         <p>Month: {feedbackDetails.month} </p>
                     </Col>
                 </Row>
@@ -398,7 +398,7 @@ export default function AssessmentFeedbackReviewForm() {
                             </Form.Group>
                         </Col>
 
-                        <Col>
+                        <Col xs="12" md="6">
                             {/* Review Date */}
                             <Form.Group>
                                 <Form.Label>Review Date</Form.Label>
@@ -434,7 +434,7 @@ export default function AssessmentFeedbackReviewForm() {
                         <React.Fragment key={index}>
                             <h6 className="mt-2">Topic {index + 1}</h6>
                             <Row className="mb-3">
-                                <Col>
+                                <Col xs="12" md="6">
                                     <Form.Group>
                                         <Form.Label>Topic Name</Form.Label>
                                         <Form.Control
@@ -463,7 +463,7 @@ export default function AssessmentFeedbackReviewForm() {
                                         </Form.Control.Feedback>
                                     </Form.Group>
                                 </Col>
-                                <Col>
+                                <Col xs="12" md="6">
                                     <Form.Group>
                                         <Form.Label>
                                             Competency Level
@@ -511,7 +511,7 @@ export default function AssessmentFeedbackReviewForm() {
                             </Row>
 
                             <Row className="mb-3">
-                                <Col>
+                                <Col xs="12" md="6">
                                     <Form.Group>
                                         <Form.Label>
                                             Class Participation
@@ -553,7 +553,7 @@ export default function AssessmentFeedbackReviewForm() {
                                         )}
                                     </Form.Group>
                                 </Col>
-                                <Col>
+                                <Col xs="12" md="6">
                                     <Form.Group>
                                         <Form.Label>
                                             Problem-Solving Skills
@@ -596,7 +596,7 @@ export default function AssessmentFeedbackReviewForm() {
                             </Row>
 
                             <Row className="mb-3">
-                                <Col>
+                                <Col xs="12" md="6">
                                     <Form.Group>
                                         <Form.Label>
                                             {" "}
@@ -639,7 +639,7 @@ export default function AssessmentFeedbackReviewForm() {
                                         )}
                                     </Form.Group>
                                 </Col>
-                                <Col>
+                                <Col xs="12" md="6">
                                     <Form.Group>
                                         <Form.Label>
                                             {" "}
@@ -685,7 +685,7 @@ export default function AssessmentFeedbackReviewForm() {
                             </Row>
 
                             <Row className="mb-3">
-                                <Col>
+                                <Col xs="12" md="6">
                                     <Form.Group>
                                         <Form.Label>
                                             {" "}
@@ -728,7 +728,7 @@ export default function AssessmentFeedbackReviewForm() {
                                         )}
                                     </Form.Group>
                                 </Col>
-                                <Col>
+                                <Col xs="12" md="6">
                                     <Form.Group>
                                         <Form.Label>
                                             {" "}
@@ -772,7 +772,7 @@ export default function AssessmentFeedbackReviewForm() {
                             </Row>
 
                             <Row className="mb-3">
-                                <Col>
+                                <Col xs="12" md="6">
                                     <Form.Group>
                                         <Form.Label> Comment</Form.Label>
                                         <Form.Control

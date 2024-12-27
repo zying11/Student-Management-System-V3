@@ -65,107 +65,71 @@ export default function TeacherDashboard() {
         fetchDashboardCounts();
     }, [user.id]);
 
-    // return (
-    //     <>
-    //         <div className="page-title">Teacher Dashboard</div>
-    //         <div className="mt-3">
-    //             <p>Welcome, Teacher {user.name || "Teacher"}</p>
-    //         </div>
-
-    //         <div className="wrapper d-flex flex-column">
-    //             <div className="first-row d-flex gap-3 flex-wrap justify-content-between mt-3">
-    //                 <OverviewItem
-    //                     iconSrc="student-num.png"
-    //                     title="Total Student Teach"
-    //                     text={studentCount}
-    //                     lineColor="#904dbc"
-    //                 />
-    //                 <OverviewItem
-    //                     iconSrc="subject-num.png"
-    //                     title="Subjects Taught"
-    //                     text={subjectTeachCount}
-    //                     lineColor="#904dbc"
-    //                 />
-    //                 <OverviewItem
-    //                     iconSrc="teacher-num.png"
-    //                     title="Total Feedback Completed"
-    //                     text={feedbackCount}
-    //                     lineColor="#904dbc"
-    //                 />
-    //             </div>
-    //         </div>
-
-    //         <div className="second-row d-flex flex-wrap gap-3 mt-3">
-    //             <ContentContainer title="Attendance Rate" >
-    //                 <div className="pie-chart-container">
-    //                     <AttendancePieChart
-    //                         attendanceRate={attendanceRate}
-    //                         absentRate={absentRate}
-    //                     />
-    //                 </div>
-    //             </ContentContainer>
-
-    //             <ContentContainer title="Students Gender" className="flex-fill">
-    //             <div className="pie-chart-container">
-    //                 <PieChart maleCount={maleCount} femaleCount={femaleCount} />
-    //             </div>
-    //             </ContentContainer>
-    //         </div>
-    //     </>
-    // );
     return (
         <>
             <div className="page-title">Teacher Dashboard</div>
             <div className="mt-3">
                 <p>Welcome, Teacher {user.name || "Teacher"}</p>
             </div>
-    
+
             <div className="wrapper d-flex flex-column">
-                <div className="first-row d-flex gap-3 flex-wrap justify-content-between mt-3">
-                    <OverviewItem
-                        iconSrc="student-num.png"
-                        title="Total Student Teach"
-                        text={studentCount}
-                        lineColor="#904dbc"
-                    />
-                    <OverviewItem
-                        iconSrc="subject-num.png"
-                        title="Subjects Taught"
-                        text={subjectTeachCount}
-                        lineColor="#904dbc"
-                    />
-                    <OverviewItem
-                        iconSrc="teacher-num.png"
-                        title="Total Feedback Completed"
-                        text={feedbackCount}
-                        lineColor="#904dbc"
-                    />
-                </div>
-            </div>
-    
-            <div className="second-row d-flex flex-wrap gap-3 mt-3">
-                <ContentContainer
-                    title="Attendance Rate"
-                    className="dashboard-pie-chart-container"
-                >
-                    <div className="dashboard-pie-chart">
-                        <AttendancePieChart
-                            attendanceRate={attendanceRate}
-                            absentRate={absentRate}
+                <div className="first-row d-flex flex-wrap gap-3 mt-3">
+                    <div className="col-12 col-md-6 col-lg-4 mb-3">
+                        <OverviewItem
+                            iconSrc="student-num.png"
+                            title="Total Student Teach"
+                            text={studentCount}
+                            lineColor="#904dbc"
                         />
                     </div>
-                </ContentContainer>
-    
-                <ContentContainer
-                    title="Students Gender"
-                    className="dashboard-pie-chart-container"
-                >
-                    <div className="dashboard-pie-chart">
-                        <PieChart maleCount={maleCount} femaleCount={femaleCount} />
+                    <div className="col-12 col-md-6 col-lg-4 mb-3">
+                        <OverviewItem
+                            iconSrc="subject-num.png"
+                            title="Subjects Taught"
+                            text={subjectTeachCount}
+                            lineColor="#904dbc"
+                        />
                     </div>
-                </ContentContainer>
+                    <div className="col-12 col-md-6 col-lg-4 mb-3">
+                        <OverviewItem
+                            iconSrc="teacher-num.png"
+                            title="Total Feedback Completed"
+                            text={feedbackCount}
+                            lineColor="#904dbc"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <div className="row mt-3 g-3">
+                <div className="col-12 col-lg-6 mb-3">
+                    <ContentContainer
+                        title="Attendance Rate"
+                        className="dashboard-pie-chart-container"
+                    >
+                        <div className="dashboard-pie-chart">
+                            <AttendancePieChart
+                                attendanceRate={attendanceRate}
+                                absentRate={absentRate}
+                            />
+                        </div>
+                    </ContentContainer>
+                </div>
+
+                <div className="col-12 col-lg-6 mb-3">
+                    <ContentContainer
+                        title="Students Gender"
+                        className="dashboard-pie-chart-container"
+                    >
+                        <div className="dashboard-pie-chart">
+                            <PieChart
+                                maleCount={maleCount}
+                                femaleCount={femaleCount}
+                            />
+                        </div>
+                    </ContentContainer>
+                </div>
             </div>
         </>
     );
-    
 }

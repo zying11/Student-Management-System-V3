@@ -6,6 +6,8 @@ import { ContentContainer } from "../components/ContentContainer/ContentContaine
 import { Table } from "../components/Table/Table";
 import SearchBar from "../components/SearchBar";
 import { useStateContext } from "../contexts/ContextProvider";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 
 export default function AssessmentFeedback() {
     // Access the logged-in user with their role
@@ -19,6 +21,16 @@ export default function AssessmentFeedback() {
     const [searchQuery, setSearchQuery] = useState("");
     const [error, setError] = useState("");
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // Default to the current year
+
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth <= 768);
+        // Check initial screen size
+        handleResize();
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
     // Fetch specific feedbacks
     useEffect(() => {
@@ -160,14 +172,21 @@ export default function AssessmentFeedback() {
         <>
             <div className="page-title">Feedback</div>
             <ContentContainer title="Assessment Feedback List">
-                <div className="d-flex justify-content-between align-items-center mb-3">
-                    <SearchBar
-                        searchQuery={searchQuery}
-                        setSearchQuery={setSearchQuery}
-                        placeholder="Search student by name"
-                    />
-
-                    <div className="year-selector">
+                <Row className="mb-3">
+                    <Col xs="12" md="6" lg="8">
+                        {/* Search Bar */}
+                        <SearchBar
+                            searchQuery={searchQuery}
+                            setSearchQuery={setSearchQuery}
+                            placeholder={
+                                isMobile
+                                    ? "Search name"
+                                    : "Search student by name"
+                            }
+                        />
+                    </Col>
+                    <Col xs="12" md="6" lg="4">
+                        {/* Year Filter */}
                         <select
                             value={selectedYear}
                             onChange={(e) =>
@@ -184,8 +203,8 @@ export default function AssessmentFeedback() {
                                 </option>
                             ))}
                         </select>
-                    </div>
-                </div>
+                    </Col>
+                </Row>
 
                 {error && <div className="alert alert-danger">{error}</div>}
 
