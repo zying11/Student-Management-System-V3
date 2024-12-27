@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import axiosClient from "../axiosClient";
 import { Form } from "react-bootstrap";
 import Button from "../components/Button/Button";
@@ -159,194 +159,189 @@ export default function RecordPaymentForm() {
             ) : (
                 invoiceDetails && (
                     <Form onSubmit={handleSubmit}>
-                        <div>
+                        {/* <div>
                             {isEditing ? "Edit Payment" : "Create Payment"}
-                        </div>
+                        </div> */}
 
                         <ContentContainer title="Record Payment">
-                            <Row className="mb-3">
-                                <Form.Group
-                                    as={Col}
-                                    controlId="formReceiptNumber"
-                                >
-                                    <Form.Label>Receipt Number</Form.Label>
-                                    <Form.Control
-                                        type="text"
-                                        name="receipt_number"
-                                        value={paymentDetails.receipt_number}
-                                        placeholder="Generated Receipt Number"
-                                        isInvalid={!!errors.receipt_number}
-                                        readOnly
-                                    />
-                                    <Form.Control.Feedback type="invalid">
-                                        {errors.receipt_number}
-                                    </Form.Control.Feedback>
-                                </Form.Group>
-
-                                <Form.Group
-                                    as={Col}
-                                    controlId="formPaymentDate"
-                                >
-                                    <Form.Label>Payment Date</Form.Label>
-                                    <Form.Control
-                                        type="date"
-                                        name="payment_date"
-                                        value={paymentDetails.payment_date}
-                                        onChange={handlePaymentChange}
-                                        placeholder="Select payment date"
-                                        isInvalid={!!errors.payment_date}
-                                    />
-                                    <Form.Control.Feedback type="invalid">
-                                        {errors.payment_date}
-                                    </Form.Control.Feedback>
-                                </Form.Group>
+                            <Row>
+                                <Col className="mt-3" xs={12} md={6}>
+                                    <Form.Group controlId="formReceiptNumber">
+                                        <Form.Label>Receipt Number</Form.Label>
+                                        <Form.Control
+                                            type="text"
+                                            name="receipt_number"
+                                            value={
+                                                paymentDetails.receipt_number
+                                            }
+                                            placeholder="Generated Receipt Number"
+                                            isInvalid={!!errors.receipt_number}
+                                            readOnly
+                                        />
+                                        <Form.Control.Feedback type="invalid">
+                                            {errors.receipt_number}
+                                        </Form.Control.Feedback>
+                                    </Form.Group>
+                                </Col>
+                                <Col className="mt-3" xs={12} md={6}>
+                                    <Form.Group controlId="formPaymentDate">
+                                        <Form.Label>Payment Date</Form.Label>
+                                        <Form.Control
+                                            type="date"
+                                            name="payment_date"
+                                            value={paymentDetails.payment_date}
+                                            onChange={handlePaymentChange}
+                                            placeholder="Select payment date"
+                                            isInvalid={!!errors.payment_date}
+                                        />
+                                        <Form.Control.Feedback type="invalid">
+                                            {errors.payment_date}
+                                        </Form.Control.Feedback>
+                                    </Form.Group>
+                                </Col>
                             </Row>
 
-                            <Row className="mb-3">
-                                <Form.Group
-                                    as={Col}
-                                    controlId="formpaymentAmount"
-                                >
-                                    <Form.Label>Amount Paid (RM)</Form.Label>
-                                    <Form.Control
-                                        type="number"
-                                        name="amount"
-                                        value={paymentDetails.amount}
-                                        onChange={handlePaymentChange}
-                                        placeholder="Enter amount paid"
-                                        isInvalid={!!errors.amount}
-                                    />
-                                    <Form.Control.Feedback type="invalid">
-                                        {errors.amount}
-                                    </Form.Control.Feedback>
-                                </Form.Group>
-
-                                <Form.Group
-                                    as={Col}
-                                    controlId="formPaymentStatus"
-                                >
-                                    <Form.Label>Payment Status</Form.Label>
-                                    <Form.Select
-                                        name="payment_status"
-                                        value={paymentDetails.payment_status}
-                                        onChange={handlePaymentChange}
-                                        isInvalid={!!errors.payment_status}
-                                    >
-                                        <option value="" disabled>
-                                            Select payment status
-                                        </option>
-                                        <option value="paid">Paid</option>
-                                        <option value="pending">Pending</option>
-                                        <option value="overdue">Overdue</option>
-                                    </Form.Select>
-                                    <Form.Control.Feedback type="invalid">
-                                        {errors.payment_status}
-                                    </Form.Control.Feedback>
-                                </Form.Group>
+                            <Row>
+                                <Col className="mt-3" xs={12} md={6}>
+                                    <Form.Group controlId="formpaymentAmount">
+                                        <Form.Label>
+                                            Amount Paid (RM)
+                                        </Form.Label>
+                                        <Form.Control
+                                            type="number"
+                                            name="amount"
+                                            value={paymentDetails.amount}
+                                            onChange={handlePaymentChange}
+                                            isInvalid={!!errors.amount}
+                                            placeholder="Enter amount paid"
+                                        />
+                                        <Form.Control.Feedback type="invalid">
+                                            {errors.amount}
+                                        </Form.Control.Feedback>
+                                    </Form.Group>
+                                </Col>
+                                <Col className="mt-3" xs={12} md={6}>
+                                    <Form.Group controlId="formPaymentStatus">
+                                        <Form.Label>Payment Status</Form.Label>
+                                        <Form.Select
+                                            name="payment_status"
+                                            value={
+                                                paymentDetails.payment_status
+                                            }
+                                            onChange={handlePaymentChange}
+                                            isInvalid={!!errors.payment_status}
+                                        >
+                                            <option value="" disabled>
+                                                Select payment status
+                                            </option>
+                                            <option value="paid">Paid</option>
+                                            <option value="pending">
+                                                Pending
+                                            </option>
+                                            <option value="overdue">
+                                                Overdue
+                                            </option>
+                                        </Form.Select>
+                                        <Form.Control.Feedback type="invalid">
+                                            {errors.payment_status}
+                                        </Form.Control.Feedback>
+                                    </Form.Group>
+                                </Col>
                             </Row>
 
-                            <Row className="mb-3">
-                                <Form.Group
-                                    as={Col}
-                                    controlId="formPaymentMethod"
-                                >
-                                    <Form.Label>Payment Method</Form.Label>
-                                    <Form.Control
-                                        as="textarea"
-                                        name="payment_method"
-                                        value={paymentDetails.payment_method}
-                                        onChange={handlePaymentChange}
-                                        placeholder="Enter payment method"
-                                        isInvalid={!!errors.payment_method}
-                                    />
-                                    <Form.Control.Feedback type="invalid">
-                                        {errors.payment_method && (
-                                            <p className="error-message">
-                                                {errors.payment_method}
-                                            </p>
-                                        )}
-                                    </Form.Control.Feedback>
-                                </Form.Group>
-
-                                <Form.Group as={Col} controlId="formNotes">
-                                    <Form.Label>Additional Notes</Form.Label>
-                                    <Form.Control
-                                        as="textarea"
-                                        name="add_notes"
-                                        value={paymentDetails.add_notes}
-                                        onChange={handlePaymentChange}
-                                        placeholder="Enter additional notes"
-                                        isInvalid={!!errors.add_notes}
-                                    />
-                                    <Form.Control.Feedback type="invalid">
-                                        {errors.add_notes}
-                                    </Form.Control.Feedback>
-                                </Form.Group>
+                            <Row>
+                                <Col className="mt-3" xs={12} md={6}>
+                                    <Form.Group controlId="formPaymentMethod">
+                                        <Form.Label>Payment Method</Form.Label>
+                                        <Form.Control
+                                            as="textarea"
+                                            name="payment_method"
+                                            value={
+                                                paymentDetails.payment_method
+                                            }
+                                            onChange={handlePaymentChange}
+                                            placeholder="Enter payment method"
+                                            isInvalid={!!errors.payment_method}
+                                            rows={3}
+                                        />
+                                        <Form.Control.Feedback type="invalid">
+                                            {errors.payment_method}
+                                        </Form.Control.Feedback>
+                                    </Form.Group>
+                                </Col>
+                                <Col className="mt-3" xs={12} md={6}>
+                                    <Form.Group controlId="formNotes">
+                                        <Form.Label>
+                                            Additional Notes
+                                        </Form.Label>
+                                        <Form.Control
+                                            as="textarea"
+                                            name="add_notes"
+                                            value={paymentDetails.add_notes}
+                                            onChange={handlePaymentChange}
+                                            placeholder="Enter additional notes"
+                                            isInvalid={!!errors.add_notes}
+                                            rows={3}
+                                        />
+                                        <Form.Control.Feedback type="invalid">
+                                            {errors.add_notes}
+                                        </Form.Control.Feedback>
+                                    </Form.Group>
+                                </Col>
                             </Row>
 
                             <Row className="mt-5">
                                 <hr />
                             </Row>
 
+                            <h5 className="mb-3">Invoice Details</h5>
                             <Row>
-                                <h5 className="mb-3">Invoice Details</h5>
-                                <Row>
-                                    <Col xs="12" md="8">
-                                        <ul className="list-unstyled invoice-student-info">
-                                            <li className="text-muted">
-                                                To:{" "}
-                                                <span className="invoice-student-name">
-                                                    {
-                                                        invoiceDetails.student
-                                                            .name
-                                                    }
-                                                </span>
-                                            </li>
-                                            <li className="text-muted">
-                                                {invoiceDetails.student.address}
-                                            </li>
-                                            <li className="text-muted">
-                                                Postal Code:{" "}
-                                                {
-                                                    invoiceDetails.student
-                                                        .postal_code
-                                                }
-                                            </li>
-                                            <li className="text-muted">
-                                                <i className="fas fa-phone-alt"></i>{" "}
-                                                {
-                                                    invoiceDetails.student
-                                                        .nationality
-                                                }
-                                            </li>
-                                        </ul>
-                                    </Col>
-                                    <Col xs="12" md="4">
-                                        <ul className="list-unstyled invoice-details">
-                                            <li className="text-muted">
-                                                <i className="fas fa-circle invoice-detail-icon"></i>
-                                                <span className="fw-bold ms-1">
-                                                    Invoice Number:
-                                                </span>{" "}
-                                                {invoiceDetails.invoice_number}
-                                            </li>
-                                            <li className="text-muted">
-                                                <i className="fas fa-circle invoice-detail-icon"></i>
-                                                <span className="fw-bold ms-1">
-                                                    Issue Date:
-                                                </span>{" "}
-                                                {invoiceDetails.issue_date}
-                                            </li>
-                                            <li className="text-muted">
-                                                <i className="fas fa-circle invoice-detail-icon"></i>
-                                                <span className="fw-bold ms-1">
-                                                    Due Date:
-                                                </span>{" "}
-                                                {invoiceDetails.due_date}
-                                            </li>
-                                        </ul>
-                                    </Col>
-                                </Row>
+                                <Col xs={12} md={8}>
+                                    <ul className="list-unstyled invoice-student-info">
+                                        <li className="text-muted">
+                                            To:{" "}
+                                            <span className="invoice-student-name">
+                                                {invoiceDetails.student.name}
+                                            </span>
+                                        </li>
+                                        <li className="text-muted">
+                                            {invoiceDetails.student.address}
+                                        </li>
+                                        <li className="text-muted">
+                                            Postal Code:{" "}
+                                            {invoiceDetails.student.postal_code}
+                                        </li>
+                                        <li className="text-muted">
+                                            <i className="fas fa-phone-alt"></i>{" "}
+                                            {invoiceDetails.student.nationality}
+                                        </li>
+                                    </ul>
+                                </Col>
+                                <Col xs={12} md={4}>
+                                    <ul className="list-unstyled invoice-details">
+                                        <li className="text-muted">
+                                            <i className="fas fa-circle invoice-detail-icon"></i>
+                                            <span className="fw-bold ms-1">
+                                                Invoice Number:
+                                            </span>{" "}
+                                            {invoiceDetails.invoice_number}
+                                        </li>
+                                        <li className="text-muted">
+                                            <i className="fas fa-circle invoice-detail-icon"></i>
+                                            <span className="fw-bold ms-1">
+                                                Issue Date:
+                                            </span>{" "}
+                                            {invoiceDetails.issue_date}
+                                        </li>
+                                        <li className="text-muted">
+                                            <i className="fas fa-circle invoice-detail-icon"></i>
+                                            <span className="fw-bold ms-1">
+                                                Due Date:
+                                            </span>{" "}
+                                            {invoiceDetails.due_date}
+                                        </li>
+                                    </ul>
+                                </Col>
                             </Row>
 
                             <Row className="my-2">
@@ -385,7 +380,7 @@ export default function RecordPaymentForm() {
                             </Row>
 
                             <Row>
-                                <Col xs="12">
+                                <Col xs={12}>
                                     <ul className="list-unstyled invoice-summary">
                                         <li className="text-muted d-flex justify-content-end">
                                             <span className="me-4">
@@ -414,17 +409,20 @@ export default function RecordPaymentForm() {
                                     </ul>
                                 </Col>
                             </Row>
-                        </ContentContainer>
 
-                        <div className="d-flex justify-content-end mt-4 mb-4">
-                            <Button
-                                className="btn-create-yellow"
-                                type="submit"
-                                variant="primary"
-                            >
-                                {isEditing ? "Save" : "Create"}
-                            </Button>
-                        </div>
+                            <div className="d-flex justify-content-end mt-4">
+                                <Link to="/record-payments" className="me-3">
+                                    <Button>Back</Button>
+                                </Link>
+                                <Button
+                                    className="btn-create-yellow"
+                                    type="submit"
+                                    variant="primary"
+                                >
+                                    {isEditing ? "Save" : "Create"}
+                                </Button>
+                            </div>
+                        </ContentContainer>
                     </Form>
                 )
             )}

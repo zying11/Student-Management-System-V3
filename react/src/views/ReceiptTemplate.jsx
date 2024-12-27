@@ -12,6 +12,22 @@ export default function ReceiptTemplate() {
     const { id } = useParams();
     const [payment, setPayment] = useState({});
     const [loading, setLoading] = useState(false);
+    const [center, setCenter] = useState({});
+
+    // Fetch center data
+    useEffect(() => {
+        setLoading(true);
+        axiosClient
+            .get(`/center-profile`)
+            .then(({ data }) => {
+                setLoading(false);
+                setCenter(data.centerProfile[0]);
+            })
+            .catch((error) => {
+                setLoading(false);
+                console.error("Error fetching center profile data:", error);
+            });
+    }, []);
 
     // Fetch specific record payment data based on id
     useEffect(() => {
@@ -36,12 +52,16 @@ export default function ReceiptTemplate() {
         return <div>Payment not found.</div>;
     }
 
+    if (!center) {
+        return <div>Center profile not found.</div>;
+    }
+
     const handlePrintPDF = () => {
         const doc = new jsPDF();
 
         // Title
         doc.setFontSize(18);
-        doc.text("XXX Tuition Center", 10, 10);
+        doc.text(`${center.center_name || "Tuition Center"}`, 10, 10);
 
         // Receipt and Invoice Information
         doc.setFontSize(12);
@@ -323,14 +343,18 @@ export default function ReceiptTemplate() {
 
     return (
         <>
-            <div className="page-title">Fees</div>
+            <div className="page-title text-center text-md-start">Fees</div>
 
-            <Container className="invoice-container px-0 py-3">
-                <Card className="invoice-card p-4">
+            <Container className="invoice-container px-3 px-md-0 py-3">
+                <Card className="invoice-card p-3 p-md-4">
                     <Card.Body>
-                        <Container className="invoice-header mb-2 mt-3">
-                            <Row className="d-flex align-items-baseline">
-                                <Col xs="12" md="9">
+                        <Container className="invoice-header mb-3">
+                            <Row className="d-flex align-items-center">
+                                <Col
+                                    xs="12"
+                                    md="9"
+                                    className="text-center text-md-start"
+                                >
                                     <p className="invoice-path">
                                         Receipt &gt; &gt;{" "}
                                         <strong>ID: {payment.id}</strong>
@@ -339,13 +363,8 @@ export default function ReceiptTemplate() {
                                 <Col
                                     xs="12"
                                     md="3"
-                                    className="text-md-end text-center mt-2 mt-md-0"
+                                    className="text-center text-md-end mt-2 mt-md-0"
                                 >
-                                    {/* <Button className="btn-create-yellow-border">
-                                        <i className="fas fa-print me-1"></i>{" "}
-                                        Print
-                                    </Button> */}
-                                    {/* Send Button */}
                                     <Button
                                         className="btn-create-yellow-border"
                                         onClick={() =>
@@ -353,17 +372,17 @@ export default function ReceiptTemplate() {
                                         }
                                         disabled={loading}
                                     >
-                                        <i className="fas fa-print me-1"></i>{" "}
+                                        <i className="fas fa-paper-plane me-1"></i>{" "}
                                         {loading ? "Sending..." : "Send"}
                                     </Button>
                                 </Col>
                             </Row>
                         </Container>
 
-                        <Container className="invoice-center text-center mt-5">
+                        <Container className="invoice-center text-center my-4">
                             <i className="fab fa-react fa-4x invoice-icon"></i>
                             <p className="pt-0 invoice-center-text">
-                                XXX Tuition Center
+                                {center.center_name}
                             </p>
                         </Container>
 
@@ -390,32 +409,28 @@ export default function ReceiptTemplate() {
                                 </ul>
                             </Col>
                             <Col xs="12" md="4">
-                                <p className="text-muted">Receipt</p>
+                                <p className="text-muted">Receipt Details</p>
                                 <ul className="list-unstyled invoice-details">
                                     <li className="text-muted">
-                                        <i className="fas fa-circle invoice-detail-icon"></i>
-                                        <span className="fw-bold ms-1">
+                                        <span className="fw-bold">
                                             Receipt Number:
                                         </span>{" "}
                                         {payment.receipt_number}
                                     </li>
                                     <li className="text-muted">
-                                        <i className="fas fa-circle invoice-detail-icon"></i>
-                                        <span className="fw-bold ms-1">
+                                        <span className="fw-bold">
                                             Invoice Number:
                                         </span>{" "}
                                         {payment?.invoice?.invoice_number}
                                     </li>
                                     <li className="text-muted">
-                                        <i className="fas fa-circle invoice-detail-icon"></i>
-                                        <span className="fw-bold ms-1">
+                                        <span className="fw-bold">
                                             Payment Date:
                                         </span>{" "}
                                         {payment.payment_date}
                                     </li>
                                     <li className="text-muted">
-                                        <i className="fas fa-circle invoice-detail-icon"></i>
-                                        <span className="fw-bold ms-1">
+                                        <span className="fw-bold">
                                             Due Date:
                                         </span>{" "}
                                         {payment?.invoice?.due_date}
@@ -424,12 +439,12 @@ export default function ReceiptTemplate() {
                             </Col>
                         </Row>
 
-                        <Row className="my-2">
+                        <Row className="my-3">
                             <Table
                                 striped
                                 bordered
                                 hover
-                                responsive
+                                responsive="sm"
                                 className="invoice-table"
                             >
                                 <thead className="invoice-table-header">
@@ -463,20 +478,20 @@ export default function ReceiptTemplate() {
                             <Col xs="12" md="8">
                                 <Row>
                                     <Col xs="12" md="6">
-                                        <p>Payment method info</p>{" "}
+                                        <p>Payment Method:</p>{" "}
                                         {payment.payment_method}
                                     </Col>
                                 </Row>
 
                                 <Row className="mt-3">
                                     <Col xs="12" md="6">
-                                        <p>Additional notes</p>{" "}
+                                        <p>Additional Notes:</p>{" "}
                                         {payment.add_notes}
                                     </Col>
                                 </Row>
                             </Col>
 
-                            <Col xs="12" md="4">
+                            <Col xs="12" md="4" className="mt-4 mt-md-0">
                                 <ul className="list-unstyled invoice-summary">
                                     <li className="text-muted">
                                         <span className="me-4">SubTotal</span>RM{" "}
@@ -499,40 +514,42 @@ export default function ReceiptTemplate() {
                                     </li>
                                 </ul>
                                 <p className="fw-bold invoice-total">
-                                    <span className="me-3">Total Paid</span>
-                                    <span className="invoice-total-amount">
-                                        RM {(payment?.amount * 1).toFixed(2)}
-                                    </span>
+                                    <span className="me-3">Total Paid</span>RM{" "}
+                                    {(payment?.amount * 1).toFixed(2)}
                                 </p>
                                 <p className="fw-bold invoice-total">
-                                    <span className="me-3">Balance</span>
-                                    <span className="invoice-total-amount">
-                                        RM{" "}
-                                        {payment?.invoice?.total_payable &&
-                                        payment?.amount
-                                            ? (
-                                                  payment.invoice
-                                                      .total_payable -
-                                                  payment.amount
-                                              ).toFixed(2)
-                                            : "0.00"}
-                                    </span>
+                                    <span className="me-3">Balance</span>RM{" "}
+                                    {payment?.invoice?.total_payable &&
+                                    payment?.amount
+                                        ? (
+                                              payment.invoice.total_payable -
+                                              payment.amount
+                                          ).toFixed(2)
+                                        : "0.00"}
                                 </p>
                             </Col>
                         </Row>
 
                         <hr />
-                        <Row>
-                            <Col xs="10">
+                        <Row className="d-flex justify-content-center justify-content-md-start">
+                            <Col
+                                xs="12"
+                                md="10"
+                                className="text-center text-md-start"
+                            >
                                 <p>Thank you!</p>
                             </Col>
                         </Row>
 
-                        <Row className="d-flex justify-content-end align-items-center">
-                            <Col xs="12" md="3" className="text-end">
+                        <Row className="d-flex justify-content-center justify-content-md-end align-items-center">
+                            <Col
+                                xs="12"
+                                md="auto"
+                                className="text-center text-md-end mt-3 mt-md-0"
+                            >
                                 {/* Export Button */}
                                 <Button
-                                    className="btn-create-purple ms-2"
+                                    className="btn-create-purple me-2 mb-2 mb-md-0"
                                     onClick={handlePrintPDF}
                                 >
                                     <i className="far fa-file-pdf me-1"></i>{" "}
@@ -541,7 +558,7 @@ export default function ReceiptTemplate() {
 
                                 {/* Back Button */}
                                 <Link to={`/record-payments`}>
-                                    <Button className="btn-create-yellow ms-2">
+                                    <Button className="btn-create-yellow">
                                         Back
                                     </Button>
                                 </Link>

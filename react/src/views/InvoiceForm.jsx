@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import axiosClient from "../axiosClient";
 import { Form, Spinner } from "react-bootstrap";
 import Button from "../components/Button/Button";
@@ -341,84 +341,101 @@ export default function InvoiceForm({ isEditing }) {
             ) : (
                 <Form onSubmit={handleSubmit}>
                     <ContentContainer title="Invoice Details">
-                        <Row className="mb-3">
-                            <Form.Group as={Col} controlId="formInvoiceNumber">
-                                <Form.Label>Invoice Number</Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    name="invoice_number"
-                                    value={invoiceDetails.invoice_number}
-                                    placeholder="Generated Invoice Number"
-                                    isInvalid={!!errors.invoice_number}
-                                    readOnly
-                                />
-                                <Form.Control.Feedback type="invalid">
-                                    {errors.invoice_number}
-                                </Form.Control.Feedback>
-                            </Form.Group>
+                        {/* Invoice Number, Issue Date, Due Date */}
+                        <Row>
+                            <Col className="mt-3" md={4} sm={12}>
+                                <Form.Group controlId="formInvoiceNumber">
+                                    <Form.Label>Invoice Number</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="invoice_number"
+                                        value={invoiceDetails.invoice_number}
+                                        placeholder="Generated Invoice Number"
+                                        isInvalid={!!errors.invoice_number}
+                                        readOnly
+                                    />
+                                    <Form.Control.Feedback type="invalid">
+                                        {errors.invoice_number}
+                                    </Form.Control.Feedback>
+                                </Form.Group>
+                            </Col>
 
-                            <Form.Group as={Col} controlId="formIssueDate">
-                                <Form.Label>Issue Date</Form.Label>
-                                <Form.Control
-                                    type="date"
-                                    name="issue_date"
-                                    value={invoiceDetails.issue_date}
-                                    onChange={handleInvoiceChange}
-                                    placeholder="Select issue date"
-                                    isInvalid={!!errors.issue_date}
-                                />
-                                <Form.Control.Feedback type="invalid">
-                                    {errors.issue_date}
-                                </Form.Control.Feedback>
-                            </Form.Group>
+                            <Col className="mt-3" md={4} sm={12}>
+                                <Form.Group controlId="formIssueDate">
+                                    <Form.Label>Issue Date</Form.Label>
+                                    <Form.Control
+                                        type="date"
+                                        name="issue_date"
+                                        value={invoiceDetails.issue_date}
+                                        onChange={handleInvoiceChange}
+                                        placeholder="Select issue date"
+                                        isInvalid={!!errors.issue_date}
+                                    />
+                                    <Form.Control.Feedback type="invalid">
+                                        {errors.issue_date}
+                                    </Form.Control.Feedback>
+                                </Form.Group>
+                            </Col>
 
-                            <Form.Group as={Col} controlId="formDueDate">
-                                <Form.Label>Due Date</Form.Label>
-                                <Form.Control
-                                    type="date"
-                                    name="due_date"
-                                    value={invoiceDetails.due_date}
-                                    onChange={handleInvoiceChange}
-                                    placeholder="Select due date"
-                                    isInvalid={!!errors.due_date}
-                                />
-                                <Form.Control.Feedback type="invalid">
-                                    {errors.due_date}
-                                </Form.Control.Feedback>
-                            </Form.Group>
+                            <Col className="mt-3" md={4} sm={12}>
+                                <Form.Group controlId="formDueDate">
+                                    <Form.Label>Due Date</Form.Label>
+                                    <Form.Control
+                                        type="date"
+                                        name="due_date"
+                                        value={invoiceDetails.due_date}
+                                        onChange={handleInvoiceChange}
+                                        placeholder="Select due date"
+                                        isInvalid={!!errors.due_date}
+                                    />
+                                    <Form.Control.Feedback type="invalid">
+                                        {errors.due_date}
+                                    </Form.Control.Feedback>
+                                </Form.Group>
+                            </Col>
                         </Row>
 
+                        {/* Customer Name */}
                         <Row className="mb-3">
-                            <Form.Group as={Col} controlId="formCustomerName">
-                                <Form.Label>Customer Name</Form.Label>
-                                <Form.Select
-                                    name="student_id"
-                                    value={invoiceDetails.student_id}
-                                    onChange={handleInvoiceChange}
-                                    isInvalid={!!errors.student_id}
-                                >
-                                    <option value="" disabled>
-                                        Select a student
-                                    </option>
-                                    {students.map((student) => (
-                                        <option
-                                            key={student.id}
-                                            value={student.id}
-                                        >
-                                            {student.name}
+                            <Col className="mt-3" md={6} sm={12}>
+                                <Form.Group controlId="formCustomerName">
+                                    <Form.Label>Customer Name</Form.Label>
+                                    <Form.Select
+                                        name="student_id"
+                                        value={invoiceDetails.student_id}
+                                        onChange={handleInvoiceChange}
+                                        isInvalid={!!errors.student_id}
+                                    >
+                                        <option value="" disabled>
+                                            Select a student
                                         </option>
-                                    ))}
-                                </Form.Select>
-                                <Form.Control.Feedback type="invalid">
-                                    {errors.student_id}
-                                </Form.Control.Feedback>
-                            </Form.Group>
+                                        {students.map((student) => (
+                                            <option
+                                                key={student.id}
+                                                value={student.id}
+                                            >
+                                                {student.name}
+                                            </option>
+                                        ))}
+                                    </Form.Select>
+                                    <Form.Control.Feedback type="invalid">
+                                        {errors.student_id}
+                                    </Form.Control.Feedback>
+                                </Form.Group>
+                            </Col>
                         </Row>
 
+                        {/* Items Section */}
                         <h5 className="mt-5">Items</h5>
                         {invoiceItems.length > 0 && (
                             <div className="table-responsive">
-                                <Table bordered striped className="mt-2">
+                                <Table
+                                    bordered
+                                    striped
+                                    className="mt-2 d-none d-md-table"
+                                >
+                                    {" "}
+                                    {/* Hide on small screens */}
                                     <thead>
                                         <tr>
                                             <th>Item Name</th>
@@ -451,6 +468,7 @@ export default function InvoiceForm({ isEditing }) {
                                                         disabled={
                                                             !item.isManual
                                                         } // Disable if it's not manually added
+                                                        className="form-control-sm" // Smaller form control
                                                     />
                                                     <Form.Control.Feedback type="invalid">
                                                         {errors[
@@ -478,6 +496,7 @@ export default function InvoiceForm({ isEditing }) {
                                                                 `items.${index}.quantity`
                                                             ]
                                                         }
+                                                        className="form-control-sm"
                                                     />
                                                     <Form.Control.Feedback type="invalid">
                                                         {errors[
@@ -508,6 +527,7 @@ export default function InvoiceForm({ isEditing }) {
                                                         disabled={
                                                             !item.isManual
                                                         } // Disable if it's not manually added
+                                                        className="form-control-sm"
                                                     />
                                                     <Form.Control.Feedback type="invalid">
                                                         {errors[
@@ -535,6 +555,7 @@ export default function InvoiceForm({ isEditing }) {
                                                                 `items.${index}.discount`
                                                             ]
                                                         }
+                                                        className="form-control-sm"
                                                     />
                                                     <Form.Control.Feedback type="invalid">
                                                         {errors[
@@ -552,6 +573,7 @@ export default function InvoiceForm({ isEditing }) {
                                                         name="total"
                                                         value={item.total}
                                                         disabled
+                                                        className="form-control-sm"
                                                     />
                                                 </td>
                                                 <td>
@@ -573,8 +595,6 @@ export default function InvoiceForm({ isEditing }) {
                                                 </td>
                                             </tr>
                                         ))}
-
-                                        {/* Add a row for the total payable */}
                                         <tr>
                                             <td
                                                 colSpan="4"
@@ -592,63 +612,238 @@ export default function InvoiceForm({ isEditing }) {
                                                         invoiceDetails.total_payable
                                                     }
                                                     readOnly
+                                                    className="form-control-sm"
                                                 />
                                             </td>
-                                            <td></td>{" "}
-                                            {/* Empty cell for alignment */}
+                                            <td></td>
                                         </tr>
                                     </tbody>
                                 </Table>
+
+                                {/* Responsive Design for Small Screens */}
+                                <div className="d-md-none">
+                                    {invoiceItems.map((item, index) => (
+                                        <div
+                                            key={index}
+                                            className="border rounded p-3 mb-3 bg-light shadow-sm"
+                                        >
+                                            <Form.Group>
+                                                <Form.Label>
+                                                    Item Name
+                                                </Form.Label>
+
+                                                <Form.Control
+                                                    type="text"
+                                                    name="item_name"
+                                                    value={item.item_name}
+                                                    onChange={(ev) =>
+                                                        handleItemChange(
+                                                            index,
+                                                            ev
+                                                        )
+                                                    }
+                                                    isInvalid={
+                                                        !!errors[
+                                                            `items.${index}.item_name`
+                                                        ]
+                                                    }
+                                                    disabled={!item.isManual}
+                                                    className="form-control-sm"
+                                                />
+                                                <Form.Control.Feedback type="invalid">
+                                                    {errors[
+                                                        `items.${index}.item_name`
+                                                    ]?.[0] || ""}
+                                                </Form.Control.Feedback>
+                                            </Form.Group>
+
+                                            <Form.Group>
+                                                <Form.Label>
+                                                    Quantity
+                                                </Form.Label>
+                                                <Form.Control
+                                                    type="number"
+                                                    name="quantity"
+                                                    value={item.quantity}
+                                                    onChange={(ev) =>
+                                                        handleItemChange(
+                                                            index,
+                                                            ev
+                                                        )
+                                                    }
+                                                    isInvalid={
+                                                        !!errors[
+                                                            `items.${index}.quantity`
+                                                        ]
+                                                    }
+                                                    className="form-control-sm"
+                                                />
+                                                <Form.Control.Feedback type="invalid">
+                                                    {errors[
+                                                        `items.${index}.quantity`
+                                                    ]?.[0] || ""}
+                                                </Form.Control.Feedback>
+                                            </Form.Group>
+
+                                            <Form.Group>
+                                                <Form.Label>
+                                                    Price (RM)
+                                                </Form.Label>
+                                                <Form.Control
+                                                    type="number"
+                                                    name="price"
+                                                    value={item.price}
+                                                    onChange={(ev) =>
+                                                        handleItemChange(
+                                                            index,
+                                                            ev
+                                                        )
+                                                    }
+                                                    isInvalid={
+                                                        !!errors[
+                                                            `items.${index}.price`
+                                                        ]
+                                                    }
+                                                    disabled={!item.isManual}
+                                                    className="form-control-sm"
+                                                />
+                                                <Form.Control.Feedback type="invalid">
+                                                    {errors[
+                                                        `items.${index}.price`
+                                                    ]?.[0] || ""}
+                                                </Form.Control.Feedback>
+                                            </Form.Group>
+
+                                            <Form.Group>
+                                                <Form.Label>
+                                                    Discount (%)
+                                                </Form.Label>
+                                                <Form.Control
+                                                    type="number"
+                                                    name="discount"
+                                                    value={item.discount}
+                                                    onChange={(ev) =>
+                                                        handleItemChange(
+                                                            index,
+                                                            ev
+                                                        )
+                                                    }
+                                                    isInvalid={
+                                                        !!errors[
+                                                            `items.${index}.discount`
+                                                        ]
+                                                    }
+                                                    className="form-control-sm"
+                                                />
+                                                <Form.Control.Feedback type="invalid">
+                                                    {errors[
+                                                        `items.${index}.discount`
+                                                    ]?.[0] || ""}
+                                                </Form.Control.Feedback>
+                                            </Form.Group>
+
+                                            <Form.Group>
+                                                <Form.Label>
+                                                    Total (RM)
+                                                </Form.Label>
+                                                <Form.Control
+                                                    type="number"
+                                                    name="total"
+                                                    value={item.total}
+                                                    disabled
+                                                    className="form-control-sm"
+                                                />
+                                            </Form.Group>
+
+                                            {item.isManual && (
+                                                <img
+                                                    className="me-2 mt-2"
+                                                    src="http://localhost:8000/icon/delete.png"
+                                                    alt="Delete"
+                                                    onClick={() =>
+                                                        removeInvoiceItem(index)
+                                                    }
+                                                    style={{
+                                                        cursor: "pointer",
+                                                        width: "35px",
+                                                    }}
+                                                />
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                                {/* Mobile-specific Total Payable */}
+                                <div className="border rounded p-3 mb-3 bg-light shadow-sm text-end d-md-none">
+                                    <strong>Total Payable (RM):</strong>
+                                    <Form.Control
+                                        type="number"
+                                        name="total_payable"
+                                        value={invoiceDetails.total_payable}
+                                        readOnly
+                                        className="form-control-sm mt-2"
+                                    />
+                                </div>
                             </div>
                         )}
 
                         {/* Button to manually add items */}
                         <img
-                            className="ms-2"
+                            className="mt-2 ms-2"
                             src="http://localhost:8000/icon/add.png"
                             alt="Add"
                             onClick={() => addInvoiceItem()}
                             style={{ cursor: "pointer" }}
                         />
-
-                        <Row className="mt-5 mb-3">
-                            <Form.Group as={Col} controlId="formPaymentMethod">
-                                <Form.Label>Payment Method</Form.Label>
-                                <Form.Control
-                                    as="textarea"
-                                    name="payment_method"
-                                    value={invoiceDetails.payment_method}
-                                    onChange={handleInvoiceChange}
-                                    placeholder="Enter payment method"
-                                    isInvalid={!!errors.payment_method}
-                                />
-                                <Form.Control.Feedback type="invalid">
-                                    {errors.payment_method && (
-                                        <p className="error-message">
-                                            {errors.payment_method}
-                                        </p>
-                                    )}
-                                </Form.Control.Feedback>
-                            </Form.Group>
-
-                            <Form.Group as={Col} controlId="formNotes">
-                                <Form.Label>Additional Notes</Form.Label>
-                                <Form.Control
-                                    as="textarea"
-                                    name="add_notes"
-                                    value={invoiceDetails.add_notes}
-                                    onChange={handleInvoiceChange}
-                                    placeholder="Enter additional notes"
-                                    isInvalid={!!errors.add_notes}
-                                />
-                                <Form.Control.Feedback type="invalid">
-                                    {errors.add_notes}
-                                </Form.Control.Feedback>
-                            </Form.Group>
+                        {/* Payment Method and Additional Notes */}
+                        <Row className="mt-3">
+                            <Col className="mt-3" md={6} sm={12}>
+                                <Form.Group controlId="formPaymentMethod">
+                                    <Form.Label>Payment Method</Form.Label>
+                                    <Form.Control
+                                        as="textarea"
+                                        name="payment_method"
+                                        value={invoiceDetails.payment_method}
+                                        onChange={handleInvoiceChange}
+                                        placeholder="Enter payment method"
+                                        isInvalid={!!errors.payment_method}
+                                    />
+                                    <Form.Control.Feedback type="invalid">
+                                        {errors.payment_method && (
+                                            <p className="error-message">
+                                                {errors.payment_method}
+                                            </p>
+                                        )}
+                                    </Form.Control.Feedback>
+                                </Form.Group>
+                            </Col>
+                            <Col className="mt-3" md={6} sm={12}>
+                                <Form.Group controlId="formNotes">
+                                    <Form.Label>Additional Notes</Form.Label>
+                                    <Form.Control
+                                        as="textarea"
+                                        name="add_notes"
+                                        value={invoiceDetails.add_notes}
+                                        onChange={handleInvoiceChange}
+                                        placeholder="Enter additional notes"
+                                        isInvalid={!!errors.add_notes}
+                                    />
+                                    <Form.Control.Feedback type="invalid">
+                                        {errors.add_notes}
+                                    </Form.Control.Feedback>
+                                </Form.Group>
+                            </Col>
                         </Row>
                     </ContentContainer>
 
-                    <div className="d-flex justify-content-end mt-4 mb-4">
+                    <div className="d-flex justify-content-end mt-4">
+                    <div className="me-3">
+                            <Link
+                                to={`/invoices`}
+                                className="text-decoration-none"
+                            >
+                                <Button>Back</Button>
+                            </Link>
+                        </div>
                         <Button
                             className="btn-create-yellow"
                             type="submit"
@@ -657,6 +852,7 @@ export default function InvoiceForm({ isEditing }) {
                             {isEditing ? "Save" : "Create"}
                         </Button>
                     </div>
+                
                 </Form>
             )}
         </>
