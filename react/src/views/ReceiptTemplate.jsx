@@ -181,6 +181,8 @@ export default function ReceiptTemplate() {
 
     // Function to handle sending the receipt (Send PDF via email)
     const handleSendReceipt = async (payment, center) => {
+        setLoading(true);
+
         const parentEmails =
             payment?.invoice?.student?.parents?.map((parent) => parent.email) ||
             [];
@@ -343,6 +345,8 @@ export default function ReceiptTemplate() {
         } catch (error) {
             console.error("Error sending receipt:", error);
             alert("Failed to send receipt.");
+        } finally {
+            setLoading(false);
         }
     };
 

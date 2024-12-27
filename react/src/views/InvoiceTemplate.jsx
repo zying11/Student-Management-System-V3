@@ -120,6 +120,8 @@ export default function InvoiceTemplate() {
 
     // Function to handle sending the invoice (Send PDF via email)
     const handleSendInvoice = async (invoice, center) => {
+        setLoading(true);
+
         const parentEmails =
             invoice?.student?.parents?.map((parent) => parent.email) || [];
 
@@ -211,6 +213,8 @@ export default function InvoiceTemplate() {
         } catch (error) {
             console.error("Error sending invoice:", error);
             alert("Failed to send invoice.");
+        } finally {
+            setLoading(false);
         }
     };
 
