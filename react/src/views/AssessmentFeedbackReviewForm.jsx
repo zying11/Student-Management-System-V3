@@ -5,7 +5,7 @@ import { Form } from "react-bootstrap";
 import Button from "../components/Button/Button";
 import { ContentContainer } from "../components/ContentContainer/ContentContainer";
 import { Row, Col } from "react-bootstrap";
-import ReactStars from "react-rating-stars-component";
+import { Rating } from "react-simple-star-rating";
 import jsPDF from "jspdf";
 
 export default function AssessmentFeedbackReviewForm() {
@@ -551,19 +551,21 @@ export default function AssessmentFeedbackReviewForm() {
                                                     : ""
                                             }
                                         >
-                                            <ReactStars
-                                                count={5}
+                                            <Rating
                                                 size={34}
-                                                value={
+                                                initialValue={
                                                     topic.class_participation
                                                 }
-                                                onChange={(newRating) =>
+                                                onClick={(newRating) =>
                                                     handleFieldChange(
                                                         index,
                                                         "class_participation",
                                                         newRating
                                                     )
                                                 }
+                                                fillColor="#f5aa39"
+                                                emptyColor="#ccc"
+                                                allowHover
                                             />
                                         </div>
                                         {validationErrors[
@@ -593,17 +595,21 @@ export default function AssessmentFeedbackReviewForm() {
                                                     : ""
                                             }
                                         >
-                                            <ReactStars
-                                                count={5}
+                                            <Rating
                                                 size={34}
-                                                value={topic.problem_solving}
-                                                onChange={(newRating) =>
+                                                initialValue={
+                                                    topic.problem_solving
+                                                }
+                                                onClick={(newRating) =>
                                                     handleFieldChange(
                                                         index,
                                                         "problem_solving",
                                                         newRating
                                                     )
                                                 }
+                                                fillColor="#f5aa39"
+                                                emptyColor="#ccc"
+                                                allowHover
                                             />
                                         </div>
                                         {validationErrors[
@@ -625,7 +631,6 @@ export default function AssessmentFeedbackReviewForm() {
                                 <Col xs="12" md="6">
                                     <Form.Group>
                                         <Form.Label>
-                                            {" "}
                                             Assignment Completion
                                         </Form.Label>
                                         <div
@@ -637,19 +642,21 @@ export default function AssessmentFeedbackReviewForm() {
                                                     : ""
                                             }
                                         >
-                                            <ReactStars
-                                                count={5}
+                                            <Rating
                                                 size={34}
-                                                value={
+                                                initialValue={
                                                     topic.assignment_completion
                                                 }
-                                                onChange={(newRating) =>
+                                                onClick={(newRating) =>
                                                     handleFieldChange(
                                                         index,
                                                         "assignment_completion",
                                                         newRating
                                                     )
                                                 }
+                                                fillColor="#f5aa39"
+                                                emptyColor="#ccc"
+                                                allowHover
                                             />
                                         </div>
                                         {validationErrors[
@@ -680,19 +687,21 @@ export default function AssessmentFeedbackReviewForm() {
                                                     : ""
                                             }
                                         >
-                                            <ReactStars
-                                                count={5}
+                                            <Rating
                                                 size={34}
-                                                value={
+                                                initialValue={
                                                     topic.communication_skills
                                                 }
-                                                onChange={(newRating) =>
+                                                onClick={(newRating) =>
                                                     handleFieldChange(
                                                         index,
                                                         "communication_skills",
                                                         newRating
                                                     )
                                                 }
+                                                fillColor="#f5aa39"
+                                                emptyColor="#ccc"
+                                                allowHover
                                             />
                                         </div>
                                         {validationErrors[
@@ -726,19 +735,21 @@ export default function AssessmentFeedbackReviewForm() {
                                                     : ""
                                             }
                                         >
-                                            <ReactStars
-                                                count={5}
+                                            <Rating
                                                 size={34}
-                                                value={
+                                                initialValue={
                                                     topic.behavior_discipline
                                                 }
-                                                onChange={(newRating) =>
+                                                onClick={(newRating) =>
                                                     handleFieldChange(
                                                         index,
                                                         "behavior_discipline",
                                                         newRating
                                                     )
                                                 }
+                                                fillColor="#f5aa39"
+                                                emptyColor="#ccc"
+                                                allowHover
                                             />
                                         </div>
                                         {validationErrors[
@@ -769,17 +780,21 @@ export default function AssessmentFeedbackReviewForm() {
                                                     : ""
                                             }
                                         >
-                                            <ReactStars
-                                                count={5}
+                                            <Rating
                                                 size={34}
-                                                value={topic.effort_motivation}
-                                                onChange={(newRating) =>
+                                                initialValue={
+                                                    topic.effort_motivation
+                                                }
+                                                onClick={(newRating) =>
                                                     handleFieldChange(
                                                         index,
                                                         "effort_motivation",
                                                         newRating
                                                     )
                                                 }
+                                                fillColor="#f5aa39"
+                                                emptyColor="#ccc"
+                                                allowHover
                                             />
                                         </div>
                                         {validationErrors[
