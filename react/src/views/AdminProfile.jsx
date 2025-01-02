@@ -158,7 +158,7 @@ export default function CenterProfile() {
         <>
             <div className="page-title">Settings</div>
             <div className="profile-container mt-5 p-5">
-                <div className="pic-container mb-3 d-flex justify-content-center">
+                {/* <div className="pic-container mb-3 d-flex justify-content-center">
                     <img
                         className="profile-pic"
                         src={
@@ -173,7 +173,7 @@ export default function CenterProfile() {
                         }
                         alt="Center Logo"
                     />
-                </div>
+                </div> */}
                 <div className="bottom-section">
                     <div className="page-content">
                         <h3>Tuition Center Profile</h3>
@@ -191,7 +191,7 @@ export default function CenterProfile() {
                                         required
                                     />
                                 </div>
-                                <div className="input-group d-flex align-items-center">
+                                {/* <div className="input-group d-flex align-items-center">
                                     <div className="label">Center Logo</div>
                                     <input
                                         name="centerLogo"
@@ -200,7 +200,7 @@ export default function CenterProfile() {
                                         onChange={handleFileChange}
                                         disabled={!isEditing} // File selection handler
                                     />
-                                </div>
+                                </div> */}
                                 {/* <div className="input-group d-flex align-items-center">
                                     <div className="label">Favicon</div>
                                     <input
