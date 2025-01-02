@@ -23,10 +23,7 @@ const ConfirmationModal = ({ id, icon, headerText, bodyText, onConfirm }) => {
                     </div>
                     <div className="modal-body d-flex justify-content-center gap-4 pt-0">
                         <div className="left-content">
-                            <img
-                                src={`${window.location.protocol}//${window.location.hostname}:8000/icon/${icon}`}
-                                alt="Icon"
-                            />
+                            <img src={`/icon/${icon}`} alt="Icon" />
                         </div>
                         <div className="right-content">
                             <h1>{headerText}</h1>

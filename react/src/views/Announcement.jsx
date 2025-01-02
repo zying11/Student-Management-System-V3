@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ContentContainer } from "../components/ContentContainer/ContentContainer";
+import { useStateContext } from "../contexts/ContextProvider";
 import { Link } from "react-router-dom";
 import ParentCount from "../components/Announcement/ParentCount";
 import SendAnnouncement from "./SendAnnouncement";
@@ -36,6 +37,9 @@ export default function Announcement() {
         return `${hour}:${minute} ${ampm}`; // Return formatted time with minutes
     }
 
+    // Variable to update table instantly
+    const [isChange, setIsChange] = useState(false);
+
     useEffect(() => {
         async function fetchAnnouncements() {
             try {
@@ -54,7 +58,7 @@ export default function Announcement() {
         }
 
         fetchAnnouncements();
-    }, []);
+    }, [isChange]);
 
     // Filtering function
     const [lessons, setLessons] = useState([]);
@@ -238,6 +242,135 @@ export default function Announcement() {
         }
     };
 
+    // Modal for user feedback
+    const [modal, setModal] = useState({
+        visible: false,
+        message: "",
+        type: "",
+    });
+
+    // Save and sent announcement
+    const { token, user } = useStateContext();
+    const [message, setMessage] = useState("");
+    const [isSending, setIsSending] = useState(false);
+
+    const handleSendAnnouncement = async () => {
+        if (selectedLessons.length === 0) {
+            // alert("Please select at least one lesson.");
+            setModal({
+                visible: true,
+                message: "Please select at least one lesson.",
+                type: "error",
+            });
+            setTimeout(() => {
+                setModal({ visible: false, message: "", type: "" });
+            }, 3000);
+            return;
+        }
+
+        if (!message.trim()) {
+            // alert("Please enter a message.");
+            setModal({
+                visible: true,
+                message: "Please enter a message.",
+                type: "error",
+            });
+            setTimeout(() => {
+                setModal({ visible: false, message: "", type: "" });
+            }, 3000);
+            return;
+        }
+
+        setIsSending(true);
+
+        try {
+            const endpoints = [
+                {
+                    url: "/save-announcement",
+                    payload: {
+                        admin_id: user.id,
+                        lesson_ids: selectedLessons,
+                        message: message,
+                    },
+                },
+                {
+                    url: "/send-announcement",
+                    payload: {
+                        lesson_ids: selectedLessons,
+                        message: message,
+                    },
+                },
+            ];
+
+            for (const endpoint of endpoints) {
+                const res = await axiosClient.post(
+                    endpoint.url,
+                    endpoint.payload
+                );
+                if (res.data.status !== "success") {
+                    throw new Error(
+                        `Failed at ${endpoint.url}: ${res.data.message}`
+                    );
+                }
+            }
+            setIsChange(!isChange);
+
+            setModal({
+                visible: true,
+                message: "Announcement sent and saved successfully!",
+                type: "success",
+            });
+
+            setTimeout(() => {
+                setModal({ visible: false, message: "", type: "" });
+            }, 3000);
+
+            setMessage("");
+        } catch (error) {
+            console.error("Error handling announcement:", error);
+
+            setModal({
+                visible: true,
+                message:
+                    "There's a problem sending and saving the announcement.",
+                type: "error",
+            });
+
+            setTimeout(() => {
+                setModal({ visible: false, message: "", type: "" });
+            }, 3000);
+        } finally {
+            setIsSending(false);
+        }
+    };
+
+    // twilio testing
+    // const [phoneNumber, setPhoneNumber] = useState("");
+    // const [message, setMessage] = useState("");
+    // const [status, setStatus] = useState("");
+
+    // const handleSubmit = async (e) => {
+    //     e.preventDefault();
+    //     setStatus("Sending...");
+
+    //     try {
+    //         const response = await axiosClient.post("/send-whatsapp", {
+    //             phone_number: phoneNumber,
+    //             message: message,
+    //         });
+
+    //         if (response.data.success) {
+    //             setStatus("Message sent successfully!");
+    //         } else {
+    //             setStatus("Failed to send message.");
+    //         }
+    //     } catch (error) {
+    //         setStatus(
+    //             `Error: ${error.response?.data?.message || error.message}`
+    //         );
+    //     }
+    // };
+
     return (
         <>
             <div className="page-title">Announcement</div>
@@ -259,7 +392,7 @@ export default function Announcement() {
                                         to={`/announcement/${announcement.id}`}
                                     >
                                         <img
-                                            src={`${window.location.protocol}//${window.location.hostname}:8000/icon/more.png`}
+                                            src={`/icon/more.png`}
                                             alt="More options"
                                         />
                                     </Link>
@@ -283,7 +416,9 @@ export default function Announcement() {
                 <div className="pagination justify-content-end mt-3">
                     <button
                         className="previous-btn"
-                        onClick={() => goToPage(announcementPage - 1)}
+                        onClick={() =>
+                            goToAnnouncementPage(announcementPage - 1)
+                        }
                         disabled={announcementPage === 1}
                     >
                         Previous
@@ -296,14 +431,16 @@ export default function Announcement() {
                                     ? "active page-btn"
                                     : "page-btn"
                             }
-                            onClick={() => goToPage(index + 1)}
+                            onClick={() => goToAnnouncementPage(index + 1)}
                         >
                             {index + 1}
                         </button>
                     ))}
                     <button
                         className="next-btn"
-                        onClick={() => goToPage(announcementPage + 1)}
+                        onClick={() =>
+                            goToAnnouncementPage(announcementPage + 1)
+                        }
                         disabled={announcementPage === totalAnnouncementPages}
                     >
                         Next
@@ -468,13 +605,69 @@ export default function Announcement() {
                         </div>
                     </div>
                     <div className="col-lg-6 col-12 mt-lg-0 mt-3">
-                        <SendAnnouncement
-                            selectedLessons={selectedLessons}
-                            parentCounts={totalParents}
-                        />
+                        <div>
+                            <h6>Message</h6>
+                            <textarea
+                                className="form-control"
+                                rows="6"
+                                cols="50"
+                                value={message}
+                                onChange={(e) => setMessage(e.target.value)}
+                            ></textarea>
+                            <div className="d-flex flex-sm-row flex-column justify-content-between mt-3">
+                                <p>
+                                    Total Recipients:{" "}
+                                    <span style={{ color: "#828282" }}>
+                                        {totalParents}
+                                    </span>
+                                </p>
+                                <button
+                                    type="submit"
+                                    className="btn-create mt-sm-0 mt-3"
+                                    onClick={handleSendAnnouncement}
+                                    disabled={isSending}
+                                >
+                                    {isSending
+                                        ? "Sending..."
+                                        : "Send Announcement"}
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* <form onSubmit={handleSubmit}>
+                            <div>
+                                <label>Phone Number:</label>
+                                <input
+                                    type="text"
+                                    value={phoneNumber}
+                                    onChange={(e) =>
+                                        setPhoneNumber(e.target.value)
+                                    }
+                                    placeholder="Enter recipient's number"
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label>Message:</label>
+                                <textarea
+                                    value={message}
+                                    onChange={(e) => setMessage(e.target.value)}
+                                    placeholder="Enter your message"
+                                    required
+                                />
+                            </div>
+                            <button type="submit">Send Message</button>
+                        </form>
+                        {status && <p>{status}</p>} */}
                     </div>
                 </div>
             </ContentContainer>
+
+            {modal.visible && (
+                <div className={`modal-feedback ${modal.type}`}>
+                    <p>{modal.message}</p>
+                </div>
+            )}
         </>
     );
 }

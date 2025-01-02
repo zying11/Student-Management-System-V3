@@ -60,7 +60,7 @@ class UserSeeder extends Seeder
 
         // Create a specific user and assign the admin role
         $user1 = User::create([
-            'name' => 'Testing Admin',
+            'name' => 'Admin A',
             'email' => 'admin@example.com',
             'password' => bcrypt('Test1234'), // Encrypt the password here
             'role_id' => $adminRole->id, // Assign the admin role ID

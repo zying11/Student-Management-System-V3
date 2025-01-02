@@ -9,6 +9,7 @@ use App\Models\Enrollment;
 use App\Models\Recipient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Twilio\Rest\Client;
 use Exception;
 
@@ -70,7 +71,36 @@ class AnnouncementController extends Controller
         ]);
     }
 
-    function sendAnnouncement(Request $request)
+    //Testing
+    public function sendMessage(Request $request)
+    {
+        $validated = $request->validate([
+            'phone_number' => 'required|string',
+            'message' => 'required|string',
+        ]);
+
+        $sid = env('TWILIO_SID');
+        $token = env('TWILIO_AUTH_TOKEN');
+        $from = 'whatsapp:' . env('TWILIO_WHATSAPP_NUMBER'); // Your Twilio WhatsApp number
+
+        try {
+            $client = new Client($sid, $token);
+
+            $client->messages->create(
+                'whatsapp:' . $validated['phone_number'], // Recipient's WhatsApp number
+                [
+                    'from' => $from,
+                    'body' => $validated['message'],
+                ]
+            );
+
+            return response()->json(['success' => true, 'message' => 'Message sent successfully']);
+        } catch (Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function sendAnnouncement(Request $request)
     {
         // Retrieve Twilio credentials
         $twilioSid = env('TWILIO_SID');
@@ -115,6 +145,12 @@ class AnnouncementController extends Controller
 
             return response()->json(['status' => 'success', 'message' => 'Messages sent successfully.']);
         } catch (Exception $e) {
+            // return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+            Log::error('Error sending WhatsApp message', [
+                'error' => $e->getMessage(),
+                'lesson_ids' => $lessonIds,
+                'formatted_numbers' => $formattedNumbers,
+            ]);
             return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
         }
 

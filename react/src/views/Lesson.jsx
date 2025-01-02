@@ -23,7 +23,7 @@ export default function Lesson() {
             try {
                 const res = await axiosClient.get("/subjects");
 
-                console.log(res.data.subjects);
+                // console.log(res.data.subjects);
 
                 setSubject(res.data.subjects);
             } catch (error) {
@@ -132,7 +132,7 @@ export default function Lesson() {
         async function fetchLessons() {
             try {
                 const res = await axiosClient.get("/timetable-lessons");
-                console.log(res.data.lessons);
+                // console.log(res.data.lessons);
 
                 setDisplayLesson({
                     lessons: res.data.lessons,
@@ -313,7 +313,7 @@ export default function Lesson() {
               <div className="actions">
                   <img
                       className="me-2 mb-xl-0 mb-2"
-                      src="http://localhost:8000/icon/edit.png"
+                      src="/icon/edit.png"
                       alt="Edit"
                       data-bs-toggle="modal"
                       data-bs-target="#editLessonModal"
@@ -325,7 +325,7 @@ export default function Lesson() {
                   />
                   <img
                       className="me-2"
-                      src="http://localhost:8000/icon/delete.png"
+                      src="/icon/delete.png"
                       alt="Delete"
                       data-bs-toggle="modal"
                       data-bs-target="#confirmationModal"

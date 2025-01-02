@@ -21,24 +21,45 @@ function SendAnnouncement({ selectedLessons, parentCounts }) {
         setIsSending(true);
 
         try {
-            const response = await axiosClient.post("/save-announcement", {
-                admin_id: user.id,
-                lesson_ids: selectedLessons,
-                message: message,
-            });
+            // Define the endpoints and their respective payloads
+            const endpoints = [
+                {
+                    url: "/save-announcement",
+                    payload: {
+                        admin_id: user.id,
+                        lesson_ids: selectedLessons,
+                        message: message,
+                    },
+                },
+                {
+                    url: "/send-announcement",
+                    payload: {
+                        lesson_ids: selectedLessons,
+                        message: message,
+                    },
+                },
+            ];
 
-            if (response.data.status === "success") {
-                console.log("Attendance saved successfully!");
-            } else {
-                alert(
-                    "Failed to save the announcement: " + response.data.message
+            // Make API calls sequentially
+            for (const endpoint of endpoints) {
+                const response = await axiosClient.post(
+                    endpoint.url,
+                    endpoint.payload
                 );
+                if (response.data.status !== "success") {
+                    throw new Error(
+                        `Failed at ${endpoint.url}: ${response.data.message}`
+                    );
+                }
             }
+
+            console.log("Announcement saved and sent successfully!");
             setMessage("");
         } catch (error) {
-            console.error("Error saving announcement:", error);
+            console.error("Error handling announcement:", error);
             alert(
-                "An error occurred while saving the announcement in the database."
+                "An error occurred while processing the announcement: " +
+                    error.message
             );
         } finally {
             setIsSending(false);

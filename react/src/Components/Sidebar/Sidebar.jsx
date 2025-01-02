@@ -209,7 +209,7 @@ const SidebarItem = ({
                 >
                     <img
                         className="sidebar-icon"
-                        src={`${window.location.protocol}//${window.location.hostname}:8000/icon/${item.icon}`}
+                        src={`/icon/${item.icon}`}
                         alt=""
                         width="auto"
                         height="20"
@@ -255,7 +255,7 @@ const SidebarItem = ({
                 >
                     <img
                         className="sidebar-icon"
-                        src={`${window.location.protocol}//${window.location.hostname}:8000/icon/${item.icon}`}
+                        src={`/icon/${item.icon}`}
                         alt=""
                         width="20"
                         height="20"

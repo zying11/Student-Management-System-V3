@@ -114,6 +114,7 @@ Route::get('/announcement/lessons/{id}', [LessonController::class, 'getLessonsBy
 Route::get('/announcement/parents/{lessonId}', [AnnouncementController::class, 'getParentCount']);
 Route::post('/send-announcement', [AnnouncementController::class, 'sendAnnouncement']);
 Route::post('/save-announcement', [AnnouncementController::class, 'saveAnnouncement']);
+Route::post('/send-whatsapp', [AnnouncementController::class, 'sendMessage']);
 
 // USER
 // Route::apiResource('/users', UserController::class);
