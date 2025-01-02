@@ -148,14 +148,14 @@ export default function Teacher() {
                           >
                               <img
                                   className="me-2"
-                                  src="http://localhost:8000/icon/edit.png"
+                                  src="/icon/edit.png"
                                   alt="Edit"
                               />
                           </Link>
                           {/* Delete action */}
                           <img
                               className="me-2 items"
-                              src="http://localhost:8000/icon/delete.png"
+                              src="/icon/delete.png"
                               alt="Delete"
                               onClick={() => handleDelete(teacher.id)}
                               style={{ cursor: "pointer" }}
@@ -172,7 +172,7 @@ export default function Teacher() {
                           >
                               <img
                                   className="me-2"
-                                  src="http://localhost:8000/icon/edit.png"
+                                  src="/icon/edit.png"
                                   alt="Edit"
                               />
                           </Link>
@@ -188,7 +188,7 @@ export default function Teacher() {
                   >
                       <img
                           className="me-2"
-                          src="http://localhost:8000/icon/profile.png"
+                          src="/icon/profile.png"
                           alt="Profile"
                       />
                   </Link>

@@ -580,7 +580,7 @@ export default function InvoiceForm({ isEditing }) {
                                                     {item.isManual && (
                                                         <img
                                                             className="me-2"
-                                                            src="http://localhost:8000/icon/delete.png"
+                                                            src="/icon/delete.png"
                                                             alt="Delete"
                                                             onClick={() =>
                                                                 removeInvoiceItem(
@@ -758,7 +758,7 @@ export default function InvoiceForm({ isEditing }) {
                                             {item.isManual && (
                                                 <img
                                                     className="me-2 mt-2"
-                                                    src="http://localhost:8000/icon/delete.png"
+                                                    src="/icon/delete.png"
                                                     alt="Delete"
                                                     onClick={() =>
                                                         removeInvoiceItem(index)
@@ -789,7 +789,7 @@ export default function InvoiceForm({ isEditing }) {
                         {/* Button to manually add items */}
                         <img
                             className="mt-2 ms-2"
-                            src="http://localhost:8000/icon/add.png"
+                            src="/icon/add.png"
                             alt="Add"
                             onClick={() => addInvoiceItem()}
                             style={{ cursor: "pointer" }}

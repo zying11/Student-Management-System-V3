@@ -55,7 +55,7 @@ export default function ForgotPassword() {
             <div className="col p-5">
                 <div className="row ">
                     <img
-                        src="http://localhost:8000/images/padlock-element.png"
+                        src="/images/padlock-element.png"
                         alt="Forgot password illustration"
                         className="forgot-password-illustration mb-4"
                     />

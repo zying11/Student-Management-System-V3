@@ -848,14 +848,14 @@ export default function AssessmentFeedbackReviewForm() {
                                 <Col className="d-flex justify-content-end">
                                     <img
                                         className="ms-2"
-                                        src="http://localhost:8000/icon/add.png"
+                                        src="/icon/add.png"
                                         alt="Add"
                                         onClick={addNewTopic}
                                         style={{ cursor: "pointer" }}
                                     />
                                     <img
                                         className="ms-2"
-                                        src="http://localhost:8000/icon/delete.png"
+                                        src="/icon/delete.png"
                                         alt="Delete"
                                         onClick={() => removeTopic(index)}
                                         style={{ cursor: "pointer" }}
