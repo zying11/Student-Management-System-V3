@@ -46,6 +46,8 @@ export default function StudentAttendance() {
                     loading: false,
                     enrollments: data,
                 });
+
+                console.log(res);
             } catch (error) {
                 console.error(
                     "Error fetching students enrollments:",

@@ -372,7 +372,7 @@ export default function Room() {
               <div className="actions">
                   <img
                       className="me-sm-2 me-0 mb-2 mb-sm-0"
-                      src="http://localhost:8000/icon/edit.png"
+                      src="/icon/edit.png"
                       alt="Edit"
                       data-bs-toggle="modal"
                       data-bs-target="#editRoomModal"
@@ -383,7 +383,7 @@ export default function Room() {
                   />
                   <img
                       className="me-sm-2 me-0 mb-2 mb-sm-0"
-                      src="http://localhost:8000/icon/delete.png"
+                      src="/icon/delete.png"
                       alt="Delete"
                       data-bs-toggle="modal"
                       data-bs-target="#confirmationModal"

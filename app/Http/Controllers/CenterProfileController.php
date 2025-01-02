@@ -27,6 +27,9 @@ class CenterProfileController extends Controller
         $centerProfile->city = $request->input('city');
         $centerProfile->state = $request->input('state');
 
+        // Define the path to the React public/profile directory
+        $destinationPath = base_path('/react/public/profile');
+
         // Handle the logo upload if a file is provided
         if ($request->hasFile('centerLogo')) {
             // Validate the file
@@ -39,7 +42,7 @@ class CenterProfileController extends Controller
             $fileName = time() . '.' . $file->getClientOriginalExtension();
 
             // Move the file to the public/images/ directory
-            $file->move(public_path('profile'), $fileName);
+            $file->move($destinationPath, $fileName);
 
             // Save the file name to the database
             $centerProfile->center_logo = $fileName;

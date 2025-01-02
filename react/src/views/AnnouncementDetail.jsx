@@ -145,7 +145,7 @@ export default function AnnouncementDetail() {
                                         <img
                                             width="15"
                                             height="15"
-                                            src={`${window.location.protocol}//${window.location.hostname}:8000/icon/orange-tick.png`}
+                                            src={`/icon/orange-tick.png`}
                                             alt="Tick"
                                         />
                                     </div>

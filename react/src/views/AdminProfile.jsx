@@ -166,9 +166,7 @@ export default function CenterProfile() {
                                 ? selectedImage // Show the newly selected image preview
                                 : centerProfile.centerLogo?.startsWith("http")
                                 ? centerProfile.centerLogo // Use the full URL as is
-                                : `${window.location.protocol}//${
-                                      window.location.hostname
-                                  }:8000/profile/${
+                                : `/profile/${
                                       centerProfile.centerLogo ||
                                       "center-profile-default.png"
                                   }`

@@ -6,10 +6,7 @@ const OverviewItem = ({ iconSrc, title, text, lineColor }) => {
         <div className="overview d-flex flex-fill">
             <div className="d-flex p-3 gap-3">
                 <div className="left">
-                    <img
-                        src={`${window.location.protocol}//${window.location.hostname}:8000/icon/${iconSrc}`}
-                        alt={title}
-                    />
+                    <img src={`/icon/${iconSrc}`} alt={title} />
                 </div>
                 <div className="right ps-3 d-flex flex-column justify-content-center">
                     <h6 className="mb-0 pb-1">{title}</h6>

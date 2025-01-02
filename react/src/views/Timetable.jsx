@@ -185,11 +185,16 @@ export default function Timetable() {
     }, [isChange]); // Dependency array should be an array of dependencies
 
     // Function to check if two time ranges overlap
-    const isTimeClashing = (start1, end1, start2, end2) => {
-        return (
-            start1 < end2 && start2 < end1 && start1 !== end2 && start2 !== end1
-        );
-    };
+    function isTimeClashing(startTime1, endTime1, startTime2, endTime2) {
+        // Convert time strings to Date objects for comparison
+        const start1 = new Date(`1970-01-01T${startTime1}`);
+        const end1 = new Date(`1970-01-01T${endTime1}`);
+        const start2 = new Date(`1970-01-01T${startTime2}`);
+        const end2 = new Date(`1970-01-01T${endTime2}`);
+
+        // Check if the timings overlap
+        return start1 < end2 && start2 < end1;
+    }
 
     // Modal for user feedback
     const [modal, setModal] = useState({

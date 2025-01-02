@@ -188,7 +188,6 @@ export default function Attendance() {
 
             // Clear the attendance data to reset the form
             setAttendanceData([]);
-            alert("Attendance saved successfully!");
         } catch (error) {
             console.error("Error saving attendance:", error.response);
             setModal({
@@ -197,6 +196,10 @@ export default function Attendance() {
                 type: "error",
             });
         }
+
+        setTimeout(() => {
+            setModal({ visible: false, message: "", type: "" });
+        }, 3000);
     }
 
     const tableHeader = ["ID", "Name", "Attendance Status"];
