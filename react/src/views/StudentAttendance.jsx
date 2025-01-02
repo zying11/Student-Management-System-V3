@@ -277,6 +277,7 @@ export default function StudentAttendance() {
                             xData={subjectNames}
                             yData={attendanceRates}
                             stepSize="10"
+                            maxBars="4"
                         />
                         <BarChart
                             chartTitle="Absence Count per Subject"
@@ -285,6 +286,7 @@ export default function StudentAttendance() {
                             xData={subjectNames}
                             yData={absenceCounts}
                             stepSize="1"
+                            maxBars="4"
                         />
                     </div>
                 ) : (
