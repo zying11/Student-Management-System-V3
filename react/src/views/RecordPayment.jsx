@@ -155,7 +155,7 @@ export default function RecordPayment() {
                           className="p-0"
                       >
                           <img
-                              src="http://localhost:8000/icon/more.png"
+                              src="/icon/more.png"
                               alt="More"
                               style={{ cursor: "pointer" }}
                           />

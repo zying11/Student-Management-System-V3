@@ -12,7 +12,7 @@ export default function ProfileView({
     fetchEndpoint,
     profileFields,
     title,
-    defaultImage = "http://localhost:8000/images/user-profile.png",
+    defaultImage = "/images/user-profile.png",
 }) {
     // Access the logged-in user with their role
     const { user } = useStateContext();
@@ -96,7 +96,7 @@ export default function ProfileView({
             {/* Display the user basic info */}
             <div className="mt-3">
                 <img
-                    src="http://localhost:8000/images/profile-bg.png"
+                    src="/images/profile-bg.png"
                     alt="Profile Background"
                     style={{
                         width: "100%",
@@ -159,7 +159,7 @@ export default function ProfileView({
                                     <div className="d-flex">
                                         <div className="me-3">
                                             <img
-                                                src={`http://localhost:8000/icon/${field.icon}`}
+                                                src={`/icon/${field.icon}`}
                                                 alt={field.label}
                                                 style={{
                                                     maxWidth: "24px",

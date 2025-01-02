@@ -108,7 +108,7 @@ export default function Login() {
         <div className="login-form-container box-area row p-3">
             <div className="left-box col-md-6">
                 <img
-                    src="http://localhost:8000/images/login-form-element.png"
+                    src="/images/login-form-element.png"
                     alt="Login illustration"
                     className="login-illustration"
                 />
