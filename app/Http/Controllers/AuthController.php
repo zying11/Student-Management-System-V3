@@ -6,6 +6,7 @@ use App\Http\Requests\LoginRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\Response;
 
 class AuthController extends Controller
 {
@@ -24,7 +25,7 @@ class AuthController extends Controller
             // No user found with the provided email
             return response()->json([
                 'message' => 'Email is incorrect'
-            ], 401);
+            ], Response::HTTP_UNAUTHORIZED);
         }
 
         // Attempt to authenticate the user with the provided email and password
@@ -32,7 +33,7 @@ class AuthController extends Controller
             // Password is incorrect
             return response()->json([
                 'message' => 'Password is incorrect'
-            ], 401);
+            ], Response::HTTP_UNAUTHORIZED);
         }
 
         // Check if the user's role matches the role sent from the front end
@@ -40,7 +41,7 @@ class AuthController extends Controller
             // Role does not match
             return response()->json([
                 'message' => 'Invalid role for this user.',
-            ], 403);
+            ], Response::HTTP_FORBIDDEN);
         }
 
         // Authentication successful, retrieve authenticated user and generate access token
@@ -50,8 +51,14 @@ class AuthController extends Controller
         // Return the authenticated user and token
         return response()->json([
             'user' => $authenticatedUser,
-            'token' => $token
+            'token' => $token,
+            'teacher_name' => $authenticatedUser->name  // Include teacher's name
         ]);
+    }
+
+    public function showLoginForm()
+    {
+        return view('auth.login'); // renders the login form view for web-based apps
     }
 
     /**
