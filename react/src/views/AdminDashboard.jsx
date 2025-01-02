@@ -515,7 +515,7 @@ export default function AdminDashboard() {
 
     return (
         <>
-            <div className="page-title">Admin Dashboard</div>
+            <div className="page-title">Admin Dashboard Testing</div>
             <div className="wrapper d-flex flex-column">
                 <div className="first-row d-flex gap-3 flex-wrap justify-content-between mt-3">
                     <OverviewItem
