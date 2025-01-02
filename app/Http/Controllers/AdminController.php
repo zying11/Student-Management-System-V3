@@ -10,7 +10,6 @@ use Carbon\Carbon;
 
 class AdminController extends Controller
 {
-    // testing only
     /**
      * Display a listing of the admins.
      */
