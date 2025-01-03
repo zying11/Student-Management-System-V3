@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
             InvoiceSeeder::class,
             AnnouncementSeeder::class,
             RecipientSeeder::class,
+            PaymentSeeder::class,
         ]);
     }
 }

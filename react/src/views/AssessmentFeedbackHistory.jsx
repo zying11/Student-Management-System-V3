@@ -74,16 +74,36 @@ export default function AssessmentFeedbackHistory() {
     }
 
     const tableHeader = ["Month", "Status", "Review Date", "Actions"];
+    const buttonStyle = {
+        width: "100px",
+        height: "40px",
+        padding: "0 10px",
+        textAlign: "center",
+    };
+
     const tableData = feedbackDetails.map((feedback) => [
         feedback.month || "-",
         statusTextMap[feedback.status] || "-",
         feedback.review_date || "-",
-        <Link
-            to={`/assessment-feedback/review/student/${studentId}/subject/${subjectId}/feedback/${feedback.id}?year=${yearFromUrl}`}
-            key={`review-${feedback.id}`}
-        >
-            <Button className="btn-create-yellow">Review</Button>
-        </Link>,
+        statusTextMap[feedback.status] === "Completed" ? (
+            <Link
+                to={`/assessment-feedback/review/student/${studentId}/subject/${subjectId}/feedback/${feedback.id}?year=${yearFromUrl}`}
+                key={`review-${feedback.id}`}
+            >
+                <Button className="btn-create-yellow" style={buttonStyle}>
+                    View
+                </Button>
+            </Link>
+        ) : (
+            <Link
+                to={`/assessment-feedback/review/student/${studentId}/subject/${subjectId}/feedback/${feedback.id}?year=${yearFromUrl}`}
+                key={`review-${feedback.id}`}
+            >
+                <Button className="btn-create-yellow" style={buttonStyle}>
+                    Review
+                </Button>
+            </Link>
+        ),
     ]);
 
     return (

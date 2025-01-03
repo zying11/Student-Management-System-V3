@@ -82,6 +82,30 @@ class UserSeeder extends Seeder
             'role_id' => $teacherRole->id, // Assign the teacher role ID
         ]);
 
+        // Create another specific user and assign the teacher role
+        $user4 = User::create([
+            'name' => 'Jane',
+            'email' => 'teacher2@example.com',
+            'password' => bcrypt('Test1234'), // Encrypt the password here
+            'role_id' => $teacherRole->id, // Assign the teacher role ID
+        ]);
+
+        // Create another specific user and assign the teacher role
+        $user5 = User::create([
+            'name' => 'Amirah',
+            'email' => 'teacher3@example.com',
+            'password' => bcrypt('Test1234'), // Encrypt the password here
+            'role_id' => $teacherRole->id, // Assign the teacher role ID
+        ]);
+
+        // Create another specific user and assign the teacher role
+        $user6 = User::create([
+            'name' => 'Aisyah',
+            'email' => 'teacher4@example.com',
+            'password' => bcrypt('Test1234'), // Encrypt the password here
+            'role_id' => $teacherRole->id, // Assign the teacher role ID
+        ]);
+
         // Create 2 more admin users using factory
         User::factory()->count(2)->admin()->create();
 
