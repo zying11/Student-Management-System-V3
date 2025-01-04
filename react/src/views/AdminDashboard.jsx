@@ -360,7 +360,7 @@ export default function AdminDashboard() {
 
         try {
             const res = await axiosClient.post(
-                "http://127.0.0.1:8000/api/add-subject",
+                "/add-subject",
                 subjectData
             );
             // console.log(res.data);
