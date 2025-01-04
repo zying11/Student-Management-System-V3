@@ -34,7 +34,7 @@ export default function Timetable() {
         async function fetchRooms() {
             try {
                 const res = await axiosClient.get(
-                    "http://127.0.0.1:8000/api/rooms"
+                    "/rooms"
                 );
                 const roomsData = res.data.rooms;
                 setRooms(roomsData);
@@ -71,7 +71,7 @@ export default function Timetable() {
         async function fetchUnassignedLessons() {
             try {
                 const res = await axiosClient.get(
-                    "http://127.0.0.1:8000/api/lessons"
+                    "/lessons"
                 );
                 const data = res.data;
                 // console.log(data);

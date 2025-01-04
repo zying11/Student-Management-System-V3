@@ -274,7 +274,7 @@ export default function AdminDashboard() {
         async function fetchSubjects() {
             try {
                 const res = await axiosClient.get(
-                    "http://127.0.0.1:8000/api/subjects"
+                    "/subjects"
                 );
 
                 // console.log(res.data.subjects);
@@ -298,7 +298,7 @@ export default function AdminDashboard() {
     const handleSubjectDelete = async (id) => {
         try {
             const res = await axiosClient.delete(
-                `http://127.0.0.1:8000/api/delete-subject/${id}`
+                `/delete-subject/${id}`
             );
             // console.log(res.data);
 

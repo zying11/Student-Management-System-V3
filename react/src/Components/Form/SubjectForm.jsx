@@ -42,14 +42,14 @@ export default function SubjectForm({ availableSubjects, selectedSubjects, handl
                         <Form.Group as={Col} className="mb-3 d-flex align-items-start ">
                             <img
                                 className="ms-2"
-                                src="http://localhost:8000/icon/add.png"
+                                src="/icon/add.png"
                                 alt="Add"
                                 onClick={addSubject}
                                 style={{ cursor: "pointer" }} />
 
                             <img
                                 className="ms-2"
-                                src="http://localhost:8000/icon/delete.png"
+                                src="/icon/delete.png"
                                 alt="Delete"
                                 onClick={() => removeSubject(index)}
                                 style={{ cursor: "pointer" }} />

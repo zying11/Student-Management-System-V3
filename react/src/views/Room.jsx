@@ -46,7 +46,7 @@ export default function Room() {
         async function fetchRooms() {
             try {
                 const res = await axiosClient.get(
-                    "http://127.0.0.1:8000/api/rooms"
+                    "/rooms"
                 );
                 console.log(res.data.rooms);
 
@@ -80,7 +80,7 @@ export default function Room() {
 
         try {
             const res = await axiosClient.post(
-                "http://127.0.0.1:8000/api/add-room",
+                "/add-room",
                 roomData
             );
             // console.log(res.data);
@@ -120,7 +120,7 @@ export default function Room() {
     const handleDeleteRoom = async () => {
         try {
             const res = await axiosClient.delete(
-                `http://127.0.0.1:8000/api/rooms/${selectedRoomId}`
+                `/rooms/${selectedRoomId}`
             );
             // Re-fetch room data to update the table after deletion
             setIsChange(!isChange);
@@ -229,7 +229,7 @@ export default function Room() {
         async function fetchRooms() {
             try {
                 const res = await axiosClient.get(
-                    "http://127.0.0.1:8000/api/rooms"
+                    "/rooms"
                 );
                 const roomsData = res.data.rooms;
                 setRooms(roomsData);
