@@ -9,6 +9,7 @@ export default function ForgotPassword() {
     const [email, setEmail] = useState("");
     const [message, setMessage] = useState("");
     const [errors, setErrors] = useState("");
+    const [showTimeMessage, setShowTimeMessage] = useState(false);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -16,6 +17,9 @@ export default function ForgotPassword() {
         // Clear previous messages
         setMessage("");
         setErrors("");
+
+        // Show the "time message" immediately after clicking submit
+        setShowTimeMessage(true);
 
         // Send the forgot password request to the backend
         axiosClient
@@ -34,6 +38,10 @@ export default function ForgotPassword() {
                         general: "An error occurred. Please try again.",
                     });
                 }
+            })
+            .finally(() => {
+                // Hide the time message once the process is complete
+                setShowTimeMessage(false);
             });
     };
 
@@ -63,7 +71,7 @@ export default function ForgotPassword() {
                     <h2 className="text-center mb-2">Forgot Password?</h2>
                     <small className="forgot-password-message text-center mb-4">
                         Enter your email and we will send you a link to reset
-                        your password
+                        your password.
                     </small>
 
                     {/* Success message */}
@@ -72,6 +80,13 @@ export default function ForgotPassword() {
                     {/* General error message */}
                     {errors.general && (
                         <Alert variant="danger">{errors.general}</Alert>
+                    )}
+
+                    {/* Temporary message when the user submits the form */}
+                    {showTimeMessage && (
+                        <Alert variant="info" className="text-center">
+                            It may take some time for the email to be delivered.
+                        </Alert>
                     )}
 
                     <Form onSubmit={handleSubmit}>

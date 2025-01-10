@@ -3,6 +3,7 @@ import axiosClient from "../axiosClient";
 import { Form, Alert } from "react-bootstrap";
 import { useParams, useNavigate } from "react-router-dom";
 import Button from "../components/Button/Button";
+import { Eye, EyeOff } from "lucide-react";
 import "../css/ForgotResetPassword.css";
 
 export default function ResetPassword() {
@@ -13,6 +14,9 @@ export default function ResetPassword() {
     const [message, setMessage] = useState("");
     const [errors, setErrors] = useState({});
     const navigate = useNavigate();
+    const [showPassword, setShowPassword] = useState(false);
+    const [showPasswordConfirmation, setShowPasswordConfirmation] =
+        useState(false);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -98,39 +102,108 @@ export default function ResetPassword() {
                         </Form.Group>
 
                         <Form.Group className="mb-3" controlId="formPassword">
-                            <Form.Control
-                                type="password"
-                                placeholder="Enter new password"
-                                value={password}
-                                name="password"
-                                onChange={(e) => {
-                                    setPassword(e.target.value);
-                                    clearError("password");
-                                }}
-                                isInvalid={!!errors.password}
-                                className="newpassword-placeholder"
-                            />
-                            <Form.Control.Feedback type="invalid">
-                                {errors.password}
-                            </Form.Control.Feedback>
+                            <div className="position-relative">
+                                <Form.Control
+                                    type={showPassword ? "text" : "password"}
+                                    placeholder="Enter new password"
+                                    value={password}
+                                    name="password"
+                                    onChange={(e) => {
+                                        setPassword(e.target.value);
+                                        clearError("password");
+                                    }}
+                                    isInvalid={!!errors.password}
+                                    className="newpassword-placeholder"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        setShowPassword(!showPassword)
+                                    }
+                                    style={{
+                                        position: "absolute",
+                                        right: "10px",
+                                        top: "50%",
+                                        transform: "translateY(-50%)",
+                                        border: "none",
+                                        background: "none",
+                                        cursor: "pointer",
+                                        padding: "0 5px",
+                                    }}
+                                >
+                                    {showPassword ? (
+                                        <Eye
+                                            size={22}
+                                            className="h-4 w-4 text-gray-500"
+                                        />
+                                    ) : (
+                                        <EyeOff
+                                            size={22}
+                                            className="h-4 w-4 text-gray-500"
+                                        />
+                                    )}
+                                </button>
+                                <Form.Control.Feedback type="invalid">
+                                    {errors.password}
+                                </Form.Control.Feedback>
+                            </div>
                         </Form.Group>
 
-                        <Form.Group className="mb-4" controlId="formPasswordConfirmation">
-                            <Form.Control
-                                type="password"
-                                placeholder="Confirm new password"
-                                value={passwordConfirmation}
-                                name="password_confirmation"
-                                onChange={(e) => {
-                                    setPasswordConfirmation(e.target.value);
-                                    clearError("password_confirmation");
-                                }}
-                                isInvalid={!!errors.password_confirmation}
-                                className="confirm-password-placeholder"
-                            />
-                            <Form.Control.Feedback type="invalid">
-                                {errors.password_confirmation}
-                            </Form.Control.Feedback>
+                        <Form.Group
+                            className="mb-4"
+                            controlId="formPasswordConfirmation"
+                        >
+                            <div className="position-relative">
+                                <Form.Control
+                                    type={
+                                        showPasswordConfirmation
+                                            ? "text"
+                                            : "password"
+                                    }
+                                    placeholder="Confirm new password"
+                                    value={passwordConfirmation}
+                                    name="password_confirmation"
+                                    onChange={(e) => {
+                                        setPasswordConfirmation(e.target.value);
+                                        clearError("password_confirmation");
+                                    }}
+                                    isInvalid={!!errors.password_confirmation}
+                                    className="confirm-password-placeholder"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        setShowPasswordConfirmation(
+                                            !showPasswordConfirmation
+                                        )
+                                    }
+                                    style={{
+                                        position: "absolute",
+                                        right: "10px",
+                                        top: "50%",
+                                        transform: "translateY(-50%)",
+                                        border: "none",
+                                        background: "none",
+                                        cursor: "pointer",
+                                        padding: "0 5px",
+                                    }}
+                                >
+                                    {showPasswordConfirmation ? (
+                                        <Eye
+                                            size={22}
+                                            className="h-4 w-4 text-gray-500"
+                                        />
+                                    ) : (
+                                        <EyeOff
+                                            size={22}
+                                            className="h-4 w-4 text-gray-500"
+                                        />
+                                    )}
+                                </button>
+                                <Form.Control.Feedback type="invalid">
+                                    {errors.password_confirmation}
+                                </Form.Control.Feedback>
+                            </div>
                         </Form.Group>
 
                         <div className="d-grid">
