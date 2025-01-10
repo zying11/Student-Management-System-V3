@@ -154,8 +154,13 @@ Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLinkE
 Route::post('/reset-password', [PasswordResetController::class, 'reset']);
 
 // // Add this route for the reset form if you plan to use a web route to handle the reset password form
+// Route::get('/reset-password/{token}', function ($token) {
+//     return redirect()->to(env('FRONTEND_URL') . '/reset-password-page/' . $token);
+// })->name('password.reset');
+
+// Link to the domain
 Route::get('/reset-password/{token}', function ($token) {
-    return redirect()->to(env('FRONTEND_URL') . '/reset-password-page/' . $token);
+    return redirect()->to('https://student-management-system.site/reset-password-page/' . $token);
 })->name('password.reset');
 
 // ADMIN
