@@ -256,7 +256,6 @@ export default function Announcement() {
 
     const handleSendAnnouncement = async () => {
         if (selectedLessons.length === 0) {
-            // alert("Please select at least one lesson.");
             setModal({
                 visible: true,
                 message: "Please select at least one lesson.",
@@ -269,7 +268,6 @@ export default function Announcement() {
         }
 
         if (!message.trim()) {
-            // alert("Please enter a message.");
             setModal({
                 visible: true,
                 message: "Please enter a message.",
@@ -284,35 +282,45 @@ export default function Announcement() {
         setIsSending(true);
 
         try {
-            const endpoints = [
-                {
-                    url: "/save-announcement",
-                    payload: {
-                        admin_id: user.id,
-                        lesson_ids: selectedLessons,
-                        message: message,
-                    },
-                },
-                {
-                    url: "/send-announcement",
-                    payload: {
-                        lesson_ids: selectedLessons,
-                        message: message,
-                    },
-                },
-            ];
+            // Attempt to send the announcement
+            const sendResponse = await axiosClient.post("/send-announcement", {
+                lesson_ids: selectedLessons,
+                message: message,
+            });
 
-            for (const endpoint of endpoints) {
-                const res = await axiosClient.post(
-                    endpoint.url,
-                    endpoint.payload
-                );
-                if (res.data.status !== "success") {
-                    throw new Error(
-                        `Failed at ${endpoint.url}: ${res.data.message}`
-                    );
-                }
+            if (sendResponse.data.status !== "success") {
+                throw new Error(sendResponse.data.message);
             }
+
+            // Check if there were any failed numbers
+            if (
+                sendResponse.data.failed_numbers &&
+                sendResponse.data.failed_numbers.length > 0
+            ) {
+                const failedNumbers =
+                    sendResponse.data.failed_numbers.join(", ");
+                setModal({
+                    visible: true,
+                    message: `Failed to send to the following numbers: ${failedNumbers}`,
+                    type: "error",
+                });
+                setTimeout(() => {
+                    setModal({ visible: false, message: "", type: "" });
+                }, 3000);
+                return;
+            }
+
+            // Save the announcement only if sending was successful
+            const saveResponse = await axiosClient.post("/save-announcement", {
+                admin_id: user.id,
+                lesson_ids: selectedLessons,
+                message: message,
+            });
+
+            if (saveResponse.data.status !== "success") {
+                throw new Error(saveResponse.data.message);
+            }
+
             setIsChange(!isChange);
 
             setModal({
@@ -332,7 +340,8 @@ export default function Announcement() {
             setModal({
                 visible: true,
                 message:
-                    "There's a problem sending and saving the announcement.",
+                    error.response?.data?.message ||
+                    "An unexpected error occurred.",
                 type: "error",
             });
 

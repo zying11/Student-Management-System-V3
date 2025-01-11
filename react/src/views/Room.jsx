@@ -45,9 +45,7 @@ export default function Room() {
     useEffect(() => {
         async function fetchRooms() {
             try {
-                const res = await axiosClient.get(
-                    "/rooms"
-                );
+                const res = await axiosClient.get("/rooms");
                 console.log(res.data.rooms);
 
                 setDisplayRoom({
@@ -79,10 +77,7 @@ export default function Room() {
         }
 
         try {
-            const res = await axiosClient.post(
-                "/add-room",
-                roomData
-            );
+            const res = await axiosClient.post("/add-room", roomData);
             // console.log(res.data);
             if (res.status === 200) {
                 setModal({
@@ -119,9 +114,7 @@ export default function Room() {
     // Function to handle deletion of the room
     const handleDeleteRoom = async () => {
         try {
-            const res = await axiosClient.delete(
-                `/rooms/${selectedRoomId}`
-            );
+            const res = await axiosClient.delete(`/rooms/${selectedRoomId}`);
             // Re-fetch room data to update the table after deletion
             setIsChange(!isChange);
             if (res.status === 200) {
@@ -193,6 +186,10 @@ export default function Room() {
                 type: "error",
             });
         }
+
+        setTimeout(() => {
+            setModal({ visible: false, message: "", type: "" });
+        }, 3000);
     };
 
     const [timetableRoomId, setTimetableRoomId] = useState(null);
@@ -228,9 +225,7 @@ export default function Room() {
     useEffect(() => {
         async function fetchRooms() {
             try {
-                const res = await axiosClient.get(
-                    "/rooms"
-                );
+                const res = await axiosClient.get("/rooms");
                 const roomsData = res.data.rooms;
                 setRooms(roomsData);
                 if (roomsData.length > 0) {
@@ -242,7 +237,7 @@ export default function Room() {
         }
 
         fetchRooms();
-    }, []);
+    }, [isChange]);
 
     // Variable to display timetable events
     const [timetableEvents, setTimetableEvents] = useState([]);
@@ -512,7 +507,9 @@ export default function Room() {
                             </div>
 
                             <div className="button-container d-flex justify-content-end gap-3">
-                                <Button color="yellow">Save</Button>
+                                <Button color="yellow" data-bs-dismiss="modal">
+                                    Save
+                                </Button>
                                 <Button data-bs-dismiss="modal">Cancel</Button>
                             </div>
                         </form>

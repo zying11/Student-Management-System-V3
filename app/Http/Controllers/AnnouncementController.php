@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Twilio\Rest\Client;
+use Twilio\Exceptions\TwilioException;
 use Exception;
 
 class AnnouncementController extends Controller
@@ -102,12 +103,10 @@ class AnnouncementController extends Controller
 
     public function sendAnnouncement(Request $request)
     {
-        // Retrieve Twilio credentials
         $twilioSid = env('TWILIO_SID');
         $twilioAuthToken = env('TWILIO_AUTH_TOKEN');
         $twilioWhatsappNumber = 'whatsapp:' . env('TWILIO_WHATSAPP_NUMBER');
 
-        // Get selected lesson IDs and message from the request
         $lessonIds = $request->input('lesson_ids', []);
         $message = $request->input('message');
 
@@ -116,44 +115,69 @@ class AnnouncementController extends Controller
         }
 
         try {
-            // Fetch student IDs for the selected lessons
+            // Get parent phone numbers from the database
             $studentIds = Enrollment::whereIn('lesson_id', $lessonIds)->pluck('student_id');
-
-            // Fetch parent IDs for these students
             $parentIds = StudentParent::whereIn('student_id', $studentIds)->pluck('parent_id');
-
-            // Fetch parent phone numbers
             $parentNumbers = Parents::whereIn('id', $parentIds)
                 ->pluck('phone_number')
                 ->unique();
 
-            // Format phone numbers with Malaysian country code (+60)
+            // Format the phone numbers for WhatsApp
             $formattedNumbers = $parentNumbers->map(function ($number) {
-                return 'whatsapp:+60' . ltrim($number, '0'); // Add +60 and remove leading zero
+                return 'whatsapp:+60' . ltrim($number, '0');
             });
 
-            // Initialize Twilio client
             $client = new Client($twilioSid, $twilioAuthToken);
 
-            // Send the message to all parents
+            $failedNumbers = [];
             foreach ($formattedNumbers as $to) {
-                $client->messages->create($to, [
-                    'from' => $twilioWhatsappNumber,
-                    'body' => $message,
-                ]);
+                try {
+                    // Send message via Twilio
+                    $messageResponse = $client->messages->create($to, [
+                        'from' => $twilioWhatsappNumber,
+                        'body' => $message,
+                    ]);
+
+                    // Check for failure in message response, you can also log this response for debugging
+                    if ($messageResponse->status == 'failed') {
+                        $failedNumbers[] = $to;
+                    }
+                } catch (TwilioException $e) {
+                    // Catch Twilio exceptions and log errors for each failed number
+                    Log::error('Twilio Error: Failed to send WhatsApp message', [
+                        'error' => $e->getMessage(),
+                        'number' => $to,
+                    ]);
+                    $failedNumbers[] = $to;
+                } catch (Exception $e) {
+                    // Catch any other errors and log
+                    Log::error('General Error: Failed to send WhatsApp message', [
+                        'error' => $e->getMessage(),
+                        'number' => $to,
+                    ]);
+                    $failedNumbers[] = $to;
+                }
             }
 
+            // Check if any numbers failed to receive the message
+            if (!empty($failedNumbers)) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Failed to send messages to some recipients.',
+                    'failed_numbers' => $failedNumbers,
+                ], 400);
+            }
+
+            // Return success if all messages sent successfully
             return response()->json(['status' => 'success', 'message' => 'Messages sent successfully.']);
         } catch (Exception $e) {
-            // return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
-            Log::error('Error sending WhatsApp message', [
+            // Log and handle any unexpected errors
+            Log::error('Error sending announcements', [
                 'error' => $e->getMessage(),
                 'lesson_ids' => $lessonIds,
-                'formatted_numbers' => $formattedNumbers,
             ]);
             return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
         }
-
     }
 
     public function saveAnnouncement(Request $request)

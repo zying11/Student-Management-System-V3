@@ -58,7 +58,7 @@ class EnrollmentSeeder extends Seeder
             'student_id' => 1,
             'subject_id' => 1,
             'study_level_id' => 1,
-            'lesson_id' => 1,
+            'lesson_id' => 4,
         ]);
 
         Enrollment::create([
@@ -88,7 +88,7 @@ class EnrollmentSeeder extends Seeder
             'student_id' => 3,
             'subject_id' => 4,
             'study_level_id' => 4,
-            'lesson_id' => 4,
+            'lesson_id' => 3,
         ]);
 
         // Enrollment for student 4
@@ -111,7 +111,7 @@ class EnrollmentSeeder extends Seeder
             'student_id' => 5,
             'subject_id' => 4,
             'study_level_id' => 4,
-            'lesson_id' => 4,
+            'lesson_id' => 1,
         ]);
 
         // Enrollment for student 6
@@ -134,7 +134,7 @@ class EnrollmentSeeder extends Seeder
             'student_id' => 7,
             'subject_id' => 4,
             'study_level_id' => 4,
-            'lesson_id' => 4,
+            'lesson_id' => 2,
         ]);
 
         // Enrollment for student 8
