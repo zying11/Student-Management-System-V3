@@ -36,6 +36,15 @@ use App\Http\Controllers\TeacherDashboardController;
 
 Route::post('login', [AuthController::class, 'login']);
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+// // Add this route for the reset form if you plan to use a web route to handle the reset password form
+// Route::get('/reset-password/{token}', function ($token) {
+//     return redirect()->to(env('FRONTEND_URL') . '/reset-password-page/' . $token);
+// })->name('password.reset');
+
+// Link to the domain
+Route::get('/reset-password/{token}', function ($token) {
+    return redirect()->to('https://student-management-system.site/reset-password-page/' . $token);
+})->name('password.reset');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('logout', [AuthController::class, 'logout']);
@@ -44,8 +53,6 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
     // Route::apiResource('/users', UserController::class);
-
-
 
 // Route::post('register', [AuthController::class, 'register']);
 // Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
@@ -155,16 +162,6 @@ Route::post('/send-invoice-pdf-email', [InvoiceController::class, 'sendInvoicePd
 // Route::post('password/email', [PasswordResetController::class, 'sendResetLinkEmail'])->name('password.email');
 Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLinkEmail']);
 Route::post('/reset-password', [PasswordResetController::class, 'reset']);
-
-// // Add this route for the reset form if you plan to use a web route to handle the reset password form
-// Route::get('/reset-password/{token}', function ($token) {
-//     return redirect()->to(env('FRONTEND_URL') . '/reset-password-page/' . $token);
-// })->name('password.reset');
-
-// Link to the domain
-Route::get('/reset-password/{token}', function ($token) {
-    return redirect()->to('https://student-management-system.site/reset-password-page/' . $token);
-})->name('password.reset');
 
 // ADMIN
 // Route::apiResource('/admins', AdminController::class);
