@@ -36,6 +36,13 @@ use App\Http\Controllers\TeacherDashboardController;
 
 Route::post('login', [AuthController::class, 'login']);
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+
+// // Password Reset Routes
+// Route::get('password/reset/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
+// Route::post('password/reset', [PasswordResetController::class, 'reset'])->name('password.update');
+// Route::post('password/email', [PasswordResetController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLinkEmail']);
+Route::post('/reset-password', [PasswordResetController::class, 'reset']);
 // // Add this route for the reset form if you plan to use a web route to handle the reset password form
 // Route::get('/reset-password/{token}', function ($token) {
 //     return redirect()->to(env('FRONTEND_URL') . '/reset-password-page/' . $token);
@@ -154,14 +161,6 @@ Route::delete('/invoices/{id}', [InvoiceController::class, 'destroy']);
 Route::get('/generate-invoice-number', [InvoiceController::class, 'generateInvoiceNumber']);
 // Route to send invoice via email
 Route::post('/send-invoice-pdf-email', [InvoiceController::class, 'sendInvoicePdfEmail']);
-
-
-// // Password Reset Routes
-// Route::get('password/reset/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
-// Route::post('password/reset', [PasswordResetController::class, 'reset'])->name('password.update');
-// Route::post('password/email', [PasswordResetController::class, 'sendResetLinkEmail'])->name('password.email');
-Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLinkEmail']);
-Route::post('/reset-password', [PasswordResetController::class, 'reset']);
 
 // ADMIN
 // Route::apiResource('/admins', AdminController::class);
