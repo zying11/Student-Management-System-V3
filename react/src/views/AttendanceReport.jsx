@@ -176,23 +176,46 @@ export default function AttendanceReport() {
                   </td>,
               ],
           ]
-        : displayStudents.students.map((student, index) => [
-              student.id || "-",
-              student.name || "-",
-              typeof studentAttendanceData[index] !== "undefined"
-                  ? `${studentAttendanceData[index].toFixed(2)}%`
-                  : "N/A",
-              <div>
-                  <Link to={`/student/attendance/${student.id}`}>
-                      <button
-                          type="button"
-                          className="btn-create btn-create-yellow"
-                      >
-                          View Details
-                      </button>
-                  </Link>
-              </div>,
-          ]);
+        : displayStudents.students.map((student, index) => {
+              const attendance =
+                  typeof studentAttendanceData[index] !== "undefined"
+                      ? studentAttendanceData[index].toFixed(2)
+                      : null;
+
+              let attendanceStyle = "";
+              if (attendance !== null) {
+                  const percentage = parseFloat(attendance);
+                  if (percentage <= 40) {
+                      attendanceStyle = "text-danger"; // Red color
+                  } else if (percentage >= 41 && percentage <= 79) {
+                      attendanceStyle = "text-warning"; // Yellow color
+                  } else {
+                      attendanceStyle = "text-success"; // Green color
+                  }
+              }
+
+              const studentRow = [
+                  student.id || "-",
+                  student.name || "-",
+                  attendance !== null ? (
+                      <span className={attendanceStyle}>{attendance}%</span>
+                  ) : (
+                      "N/A"
+                  ),
+                  <div>
+                      <Link to={`/student/attendance/${student.id}`}>
+                          <button
+                              type="button"
+                              className="btn-create btn-create-yellow"
+                          >
+                              View Details
+                          </button>
+                      </Link>
+                  </div>,
+              ];
+
+              return studentRow;
+          });
 
     return (
         <>

@@ -273,9 +273,7 @@ export default function AdminDashboard() {
     useEffect(() => {
         async function fetchSubjects() {
             try {
-                const res = await axiosClient.get(
-                    "/subjects"
-                );
+                const res = await axiosClient.get("/subjects");
 
                 // console.log(res.data.subjects);
 
@@ -297,9 +295,7 @@ export default function AdminDashboard() {
     // Delete subject data
     const handleSubjectDelete = async (id) => {
         try {
-            const res = await axiosClient.delete(
-                `/delete-subject/${id}`
-            );
+            const res = await axiosClient.delete(`/delete-subject/${id}`);
             // console.log(res.data);
 
             if (res.status === 200) {
@@ -359,10 +355,7 @@ export default function AdminDashboard() {
         }
 
         try {
-            const res = await axiosClient.post(
-                "/add-subject",
-                subjectData
-            );
+            const res = await axiosClient.post("/add-subject", subjectData);
             // console.log(res.data);
             if (res.status === 200) {
                 setModal({
@@ -544,7 +537,7 @@ export default function AdminDashboard() {
                     ></OverviewItem>
                 </div>
                 <div className="second-row d-flex flex-wrap gap-3 mt-3">
-                    <ContentContainer title="Students Gender">
+                    {/* <ContentContainer title="Students Gender">
                         {isLargeScreen ? (
                             <PieChart
                                 maleCount={maleCount}
@@ -556,7 +549,7 @@ export default function AdminDashboard() {
                                 bigger screen size to view the chart.
                             </p>
                         )}
-                    </ContentContainer>
+                    </ContentContainer> */}
                     <ContentContainer title="Study Level" className="flex-fill">
                         <div className="d-flex justify-content-end mb-3">
                             <Button
@@ -732,7 +725,11 @@ export default function AdminDashboard() {
                             </div>
 
                             <div className="button-container d-flex justify-content-end gap-3">
-                                <Button type="submit" color="yellow">
+                                <Button
+                                    type="submit"
+                                    data-bs-dismiss="modal"
+                                    color="yellow"
+                                >
                                     Add
                                 </Button>
                                 <Button type="button" data-bs-dismiss="modal">
