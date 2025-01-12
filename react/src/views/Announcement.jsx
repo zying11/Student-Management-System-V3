@@ -60,13 +60,6 @@ export default function Announcement() {
         fetchAnnouncements();
     }, [isChange]);
 
-    // Filtering function
-    const [lessons, setLessons] = useState([]);
-    const [filteredLessons, setFilteredLessons] = useState({
-        loading: true,
-        filteredLessons: [],
-    });
-
     const [subjects, setSubjects] = useState([]);
     const [levels, setLevels] = useState([]);
     const [days] = useState([
@@ -83,6 +76,13 @@ export default function Announcement() {
     const [selectedLevel, setSelectedLevel] = useState("");
     const [selectedDay, setSelectedDay] = useState("");
 
+    // Filtering function
+    const [lessons, setLessons] = useState([]);
+    const [filteredLessons, setFilteredLessons] = useState({
+        loading: true,
+        filteredLessons: [],
+    });
+
     // Fetch lessons on component mount
     useEffect(() => {
         async function fetchLessons() {
@@ -96,7 +96,7 @@ export default function Announcement() {
                     filteredLessons: data,
                 });
 
-                // console.log(data);
+                console.log(data);
 
                 // Extract unique subjects and levels
                 const uniqueSubjects = [
@@ -131,7 +131,7 @@ export default function Announcement() {
         const filteredData = lessons.filter((lesson) => {
             return (
                 (!selectedSubject || lesson.subject_id == selectedSubject) &&
-                (!selectedLevel || lesson.level_id == selectedLevel) &&
+                (!selectedLevel || lesson.subject.level_id == selectedLevel) &&
                 (!selectedDay || lesson.day == selectedDay)
             );
         });
