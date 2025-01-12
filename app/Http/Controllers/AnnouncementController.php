@@ -107,6 +107,12 @@ class AnnouncementController extends Controller
         $twilioAuthToken = env('TWILIO_AUTH_TOKEN');
         $twilioWhatsappNumber = 'whatsapp:' . env('TWILIO_WHATSAPP_NUMBER');
 
+        Log::info('Twilio Env Variables', [
+            'TWILIO_SID' => env('TWILIO_SID'),
+            'TWILIO_AUTH_TOKEN' => env('TWILIO_AUTH_TOKEN'),
+            'TWILIO_WHATSAPP_NUMBER' => env('TWILIO_WHATSAPP_NUMBER'),
+        ]);
+
         $lessonIds = $request->input('lesson_ids', []);
         $message = $request->input('message');
 
@@ -128,6 +134,7 @@ class AnnouncementController extends Controller
             });
 
             $client = new Client($twilioSid, $twilioAuthToken);
+
 
             $failedNumbers = [];
             foreach ($formattedNumbers as $to) {
