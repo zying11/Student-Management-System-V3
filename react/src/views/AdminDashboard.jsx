@@ -152,6 +152,15 @@ export default function AdminDashboard() {
             return;
         }
 
+        // Validate that levelName contains only alphabetic characters and spaces
+        const isValid = /^[a-zA-Z\s]*$/.test(studyLevelData.levelName);
+        if (!isValid) {
+            setError(
+                "Please enter a valid study level name (only letters and spaces allowed)"
+            );
+            return;
+        }
+
         try {
             const res = await axiosClient.post(
                 "/add-study-level",
@@ -343,6 +352,19 @@ export default function AdminDashboard() {
     // Post subjects data
     const addSubject = async (e) => {
         e.preventDefault();
+        // Reset error message before proceeding
+        setError("");
+
+        // Validate subjectName: only alphabetic characters and spaces allowed
+        const isValidSubjectName = /^[a-zA-Z\s]*$/.test(
+            subjectData.subjectName
+        );
+        if (!isValidSubjectName) {
+            setError(
+                "Please enter a valid subject name (only alphabetic characters and spaces allowed)"
+            );
+            return;
+        }
 
         // Simple validation for required fields
         if (
@@ -354,9 +376,19 @@ export default function AdminDashboard() {
             return;
         }
 
+        // Validate subjectFee: must be a valid integer
+        const isValidSubjectFee = Number.isInteger(
+            parseInt(subjectData.subjectFee)
+        );
+        if (!isValidSubjectFee || subjectData.subjectFee <= 0) {
+            setError(
+                "Please enter a valid subject fee (positive integer only)"
+            );
+            return;
+        }
+
         try {
             const res = await axiosClient.post("/add-subject", subjectData);
-            // console.log(res.data);
             if (res.status === 200) {
                 setModal({
                     visible: true,
@@ -365,7 +397,7 @@ export default function AdminDashboard() {
                 });
             }
         } catch (error) {
-            console.error("Error:", error.response.data); //use err.response.data to display more info about the err
+            console.error("Error:", error.response.data); //use err.response.data to display more info about the error
             setModal({
                 visible: true,
                 message: "There's a problem adding the subject.",
@@ -386,6 +418,10 @@ export default function AdminDashboard() {
             subjectFee: "",
         });
         setError("");
+    };
+
+    const closeModal = () => {
+        setError(""); // Reset error message
     };
 
     // Variable for updating subject data
@@ -418,8 +454,42 @@ export default function AdminDashboard() {
     // Edit subject
     const editSubject = async (e) => {
         e.preventDefault();
-        // console.log(updateSubjectData);
-        // console.log(selectedSubjectId);
+        // Reset error message before proceeding
+        setError("");
+
+        // Simple validation for required fields
+        if (
+            !updateSubjectData.subjectName ||
+            !updateSubjectData.levelId ||
+            !updateSubjectData.subjectFee
+        ) {
+            setError("Please fill in all fields");
+
+            return;
+        }
+
+        // Validate subjectName: only alphabetic characters and spaces allowed
+        const isValidSubjectName = /^[a-zA-Z\s]*$/.test(
+            updateSubjectData.subjectName
+        );
+        if (!isValidSubjectName) {
+            setError(
+                "Please enter a valid subject name (only alphabetic characters and spaces allowed)"
+            );
+            return;
+        }
+
+        // Validate subjectFee: must be a valid integer
+        const isValidSubjectFee = Number.isInteger(
+            parseInt(updateSubjectData.subjectFee)
+        );
+        if (!isValidSubjectFee || updateSubjectData.subjectFee <= 0) {
+            setError(
+                "Please enter a valid subject fee (positive integer only)"
+            );
+            return;
+        }
+
         try {
             const res = await axiosClient.put(
                 `/edit-subject/${selectedSubjectId}`,
@@ -441,12 +511,13 @@ export default function AdminDashboard() {
                 type: "error",
             });
         }
+
         setTimeout(() => {
             setModal({ visible: false, message: "", type: "" });
         }, 3000);
     };
 
-    const subjectHeader = ["Subject Name", "Study Year", "Fee", "Action"];
+    const subjectHeader = ["Subject Name", "Study Level", "Fee", "Action"];
 
     const subjectTableData = displaySubject.loading
         ? [
@@ -554,6 +625,7 @@ export default function AdminDashboard() {
                         <div className="d-flex justify-content-end mb-3">
                             <Button
                                 data-bs-toggle="modal"
+                                onClick={closeModal}
                                 data-bs-target="#addStudyLevelModal"
                                 color="yellow"
                             >
@@ -573,6 +645,7 @@ export default function AdminDashboard() {
                         <div className="d-flex justify-content-end mb-3">
                             <Button
                                 data-bs-toggle="modal"
+                                onClick={closeModal}
                                 data-bs-target="#addSubjectModal"
                                 color="yellow"
                             >
@@ -604,6 +677,7 @@ export default function AdminDashboard() {
                                 type="button"
                                 className="btn-close"
                                 data-bs-dismiss="modal"
+                                onClick={closeModal}
                                 aria-label="Close"
                             ></button>
                         </div>
@@ -631,14 +705,14 @@ export default function AdminDashboard() {
                             </div>
 
                             <div className="button-container d-flex justify-content-end gap-3">
-                                <Button
-                                    type="submit"
-                                    color="yellow"
-                                    data-bs-dismiss="modal"
-                                >
+                                <Button type="submit" color="yellow">
                                     Add
                                 </Button>
-                                <Button type="button" data-bs-dismiss="modal">
+                                <Button
+                                    type="button"
+                                    data-bs-dismiss="modal"
+                                    onClick={closeModal}
+                                >
                                     Cancel
                                 </Button>
                             </div>
@@ -725,11 +799,7 @@ export default function AdminDashboard() {
                             </div>
 
                             <div className="button-container d-flex justify-content-end gap-3">
-                                <Button
-                                    type="submit"
-                                    data-bs-dismiss="modal"
-                                    color="yellow"
-                                >
+                                <Button type="submit" color="yellow">
                                     Add
                                 </Button>
                                 <Button type="button" data-bs-dismiss="modal">
@@ -756,6 +826,7 @@ export default function AdminDashboard() {
                                 type="button"
                                 className="btn-close"
                                 data-bs-dismiss="modal"
+                                onClick={closeModal}
                                 aria-label="Close"
                             ></button>
                         </div>
@@ -817,18 +888,14 @@ export default function AdminDashboard() {
                             </div>
 
                             <div className="button-container d-flex justify-content-end gap-3">
-                                <Button
-                                    type="submit"
-                                    className="btn"
-                                    data-bs-dismiss="modal"
-                                >
+                                <Button type="submit" className="btn">
                                     Save
                                 </Button>
                                 <Button
                                     type="button"
-                                    className="btn"
                                     color="yellow"
                                     data-bs-dismiss="modal"
+                                    onClick={closeModal}
                                 >
                                     Cancel
                                 </Button>
