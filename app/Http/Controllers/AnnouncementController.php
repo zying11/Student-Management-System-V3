@@ -103,15 +103,20 @@ class AnnouncementController extends Controller
 
     public function sendAnnouncement(Request $request)
     {
-        $twilioSid = env('TWILIO_SID');
-        $twilioAuthToken = env('TWILIO_AUTH_TOKEN');
-        $twilioWhatsappNumber = 'whatsapp:' . env('TWILIO_WHATSAPP_NUMBER');
+        // $twilioSid = env('TWILIO_SID');
+        // $twilioAuthToken = env('TWILIO_AUTH_TOKEN');
+        // $twilioWhatsappNumber = 'whatsapp:' . env('TWILIO_WHATSAPP_NUMBER');
 
-        Log::info('Twilio Env Variables', [
-            'TWILIO_SID' => env('TWILIO_SID'),
-            'TWILIO_AUTH_TOKEN' => env('TWILIO_AUTH_TOKEN'),
-            'TWILIO_WHATSAPP_NUMBER' => env('TWILIO_WHATSAPP_NUMBER'),
-        ]);
+        $twilioSid = 'ACefabc9f6f231264ddcce027801ba3a10';
+        $twilioAuthToken = '2a98c77f297c94f9467d2ffeb0fb7988';
+        $twilioWhatsappNumber = '+14155238886';
+
+
+        // Log::info('Twilio Env Variables', [
+        //     'TWILIO_SID' => env('TWILIO_SID'),
+        //     'TWILIO_AUTH_TOKEN' => env('TWILIO_AUTH_TOKEN'),
+        //     'TWILIO_WHATSAPP_NUMBER' => env('TWILIO_WHATSAPP_NUMBER'),
+        // ]);
 
         $lessonIds = $request->input('lesson_ids', []);
         $message = $request->input('message');
