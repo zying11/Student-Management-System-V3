@@ -109,7 +109,7 @@ class AnnouncementController extends Controller
 
         $twilioSid = 'ACefabc9f6f231264ddcce027801ba3a10';
         $twilioAuthToken = '2a98c77f297c94f9467d2ffeb0fb7988';
-        $twilioWhatsappNumber = '+14155238886';
+        $twilioWhatsappNumber = 'whatsapp:+14155238886';
 
 
         // Log::info('Twilio Env Variables', [
