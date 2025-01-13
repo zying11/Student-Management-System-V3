@@ -268,8 +268,8 @@ export default function Attendance() {
         <>
             <div className="page-title">Attendance</div>
             <ContentContainer id="mark-attendance" title="Mark Attendance">
-                <div>Hi, {userName}</div>
-                {attendanceMarked ? (
+                <div className="mb-3">Hi, {userName}</div>
+                {/* {attendanceMarked ? (
                     <div className="indicator mb-2">
                         You have marked the attendance for today!
                     </div>
@@ -277,7 +277,7 @@ export default function Attendance() {
                     <div className="indicator mb-2">
                         You have not marked the attendance for today!
                     </div>
-                )}
+                )} */}
                 <div className="search-container d-flex flex-sm-row flex-column gap-3 mb-5">
                     <select
                         className="form-control"

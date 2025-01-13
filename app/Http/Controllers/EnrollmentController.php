@@ -198,7 +198,7 @@ class EnrollmentController extends Controller
         // Fetch enrollments with related student, subject with studyLevel, lesson, and teacher data
         $enrollments = Enrollment::with([
             'student',
-            'subject.studyLevel', // Use camel case to match the relationship method name
+            'lesson.subject.studyLevel', // Use camel case to match the relationship method name
             'lesson.teacher.user'
         ])
             ->where('student_id', $student_id)
