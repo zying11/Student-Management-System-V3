@@ -256,7 +256,28 @@ export default function EnrollmentDetailsForm({
     // Otherwise, return a message that there are no lessons available
     // To include capacity information
     const availableLessons = (subjectId, currentIndex) => {
-        return getLessonsForSubject(subjectId).map((lesson) => {
+        const lessonsForSubject = getLessonsForSubject(subjectId);
+
+        // Filter out lessons that don't have valid room, time, or other required information
+        const validLessons = lessonsForSubject.filter((lesson) => {
+            return (
+                lesson.room_id && // Ensure room is assigned
+                lesson.start_time && // Ensure start time is assigned
+                lesson.end_time && // Ensure end time is assigned
+                lesson.day !== undefined && // Ensure day is assigned
+                getRoomName(lesson.room_id) !== "Unknown Room" // Ensure room name is valid
+            );
+        });
+
+        if (validLessons.length === 0) {
+            return (
+                <option value="" disabled>
+                    No valid classes available for this subject.
+                </option>
+            );
+        }
+
+        return validLessons.map((lesson) => {
             const isClashing = checkForClashes(lesson, currentIndex);
             const currentEnrollments = getLessonEnrollmentCount(lesson.id);
             const roomCapacity = getRoomCapacity(lesson.room_id);
