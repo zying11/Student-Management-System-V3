@@ -39,7 +39,7 @@ export default function StudentAttendance() {
     useEffect(() => {
         async function fetchEnrollments() {
             try {
-                const res = await axiosClient.get(`/enrollments/${id}`);
+                const res = await axiosClient.get(`lessons/enrollments/${id}`);
                 const data = res.data;
 
                 setEnrollments({
@@ -167,8 +167,8 @@ export default function StudentAttendance() {
           ]
         : displayEnrollments.enrollments.map((enrollment) => [
               enrollment.lesson_id || "-",
-              enrollment.subject.subject_name || "-",
-              enrollment.subject.study_level.level_name || "-",
+              enrollment.lesson.subject.subject_name || "-",
+              enrollment.lesson.subject.study_level.level_name || "-",
               daysOfWeek[enrollment.lesson.day] || "-",
               enrollment.lesson.start_time && enrollment.lesson.end_time
                   ? `${formatTimeTo12Hour(
