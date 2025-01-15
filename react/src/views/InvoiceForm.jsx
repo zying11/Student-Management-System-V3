@@ -247,7 +247,10 @@ export default function InvoiceForm({ isEditing }) {
         try {
             // If editing, update the invoice details
             if (isEditing) {
-                await axiosClient.put(`/invoices/${id}`, invoiceDetails);
+                await axiosClient.put(`/invoices/${id}`, {
+                    ...invoiceDetails,
+                    items: invoiceItems,
+                });
 
                 // If creating a new invoice
             } else {

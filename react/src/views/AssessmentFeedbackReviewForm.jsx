@@ -232,86 +232,150 @@ export default function AssessmentFeedbackReviewForm() {
         }
     };
 
-    // Function to handle exporting the assessment report as a PDF
-    const handlePrintPDF = () => {
+    const generatePDF = (studentDetails, feedbackDetails, center) => {
         const doc = new jsPDF();
 
-        // Document Title
-        doc.setFontSize(18);
-        doc.text(`${center.center_name || "Tuition Center"}`, 10, 10);
-
-        // Assessment and Student Details
+        // Set default font and size
+        doc.setFont("helvetica");
         doc.setFontSize(12);
-        doc.text(`Student Name: ${studentDetails.name}`, 10, 20);
-        doc.text(`Subject: ${feedbackDetails.subject_name}`, 10, 30);
-        doc.text(`Study Level: ${feedbackDetails.study_level}`, 10, 40);
-        doc.text(`Month: ${feedbackDetails.month} ${selectedYear}`, 10, 50);
-        doc.text(`Assessment Date: ${feedbackDetails.review_date}`, 10, 60);
 
-        // Topics Table (Assessment Criteria)
-        doc.autoTable({
-            startY: 70,
-            head: [
-                [
-                    "#",
-                    "Topic Name",
-                    "Competency Level",
-                    "Class Participation",
-                    "Problem-Solving Skills",
-                    "Assignment Completion",
-                    "Communication Skills",
-                    "Behavior and Discipline",
-                    "Effort and Motivation",
-                    "Comment",
-                ],
-            ],
-            body: feedbackDetails.topics.map((topic, index) => [
-                index + 1,
-                topic.topic_name,
-                topic.competency_level,
-                topic.class_participation,
-                topic.problem_solving,
-                topic.assignment_completion,
-                topic.communication_skills,
-                topic.behavior_discipline,
-                topic.effort_motivation,
-                topic.comment,
-            ]),
+        // Add a header with a title
+        doc.setFontSize(18);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(40, 40, 40); // Dark gray color
+        doc.text(`${center.center_name || "Tuition Center"}`, 105, 20, {
+            align: "center",
         });
 
-        // Overall Feedback and Suggestions
-        const finalY = doc.previousAutoTable.finalY + 10;
+        // Add a horizontal line below the header
+        doc.setDrawColor(200, 200, 200); // Light gray color
+        doc.line(10, 25, 200, 25);
 
-        doc.text(
-            `Overall Feedback: ${feedbackDetails.overall_feedback}`,
-            10,
-            finalY + 10
-        );
-        doc.text(
-            `Suggestions: ${feedbackDetails.suggestions}`,
-            10,
-            finalY + 20
-        );
+        // Add student details section
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(40, 40, 40);
+        doc.text("Student Details", 10, 35);
 
-        // Add a Footer 
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "normal");
+        doc.text(`Student Name: ${studentDetails.name}`, 10, 45);
+        doc.text(`Subject: ${feedbackDetails.subject_name}`, 10, 55);
+        doc.text(`Study Level: ${feedbackDetails.study_level}`, 10, 65);
+        doc.text(`Month: ${feedbackDetails.month} ${selectedYear}`, 10, 75);
+        doc.text(`Assessment Date: ${feedbackDetails.review_date}`, 10, 85);
+
+        // Add a horizontal line below student details
+        doc.line(10, 90, 200, 90);
+
+        // Add topics feedback section
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "bold");
+        doc.text("Topics Feedback", 10, 100);
+
+        let startY = 110; // Starting Y position for topics feedback
+
+        feedbackDetails.topics.forEach((topic, index) => {
+            // Check if the content exceeds the page height
+            if (startY + 120 > doc.internal.pageSize.height - 20) {
+                doc.addPage(); // Add a new page
+                startY = 20; // Reset Y position for the new page
+            }
+
+            // Topic title
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "bold");
+            doc.text(`Topic ${index + 1}: ${topic.topic_name}`, 10, startY);
+
+            // Competency Level
+            doc.setFont("helvetica", "normal");
+            doc.text(
+                `Competency Level: ${topic.competency_level}`,
+                10,
+                startY + 10
+            );
+
+            // Function to display rating as text ("3/5")
+            const drawRating = (rating, x, y) => {
+                doc.text(`${rating}/5`, x, y);
+            };
+
+            // Add a light gray background for each rating row
+            doc.setFillColor(245, 245, 245); // Light gray background
+            doc.rect(10, startY + 15, 190, 60, "F"); // Background rectangle
+
+            // Draw ratings
+            doc.text(`Class Participation:`, 15, startY + 25);
+            drawRating(topic.class_participation, 70, startY + 25);
+
+            doc.text(`Problem-Solving Skills:`, 15, startY + 35);
+            drawRating(topic.problem_solving, 70, startY + 35);
+
+            doc.text(`Assignment Completion:`, 15, startY + 45);
+            drawRating(topic.assignment_completion, 70, startY + 45);
+
+            doc.text(`Communication Skills:`, 15, startY + 55);
+            drawRating(topic.communication_skills, 70, startY + 55);
+
+            doc.text(`Behavior and Discipline:`, 15, startY + 65);
+            drawRating(topic.behavior_discipline, 70, startY + 65);
+
+            doc.text(`Effort and Motivation:`, 15, startY + 75);
+            drawRating(topic.effort_motivation, 70, startY + 75);
+
+            // Comment
+            doc.setFillColor(255, 255, 255); // White background for comment
+            doc.rect(10, startY + 85, 190, 20, "F"); // Background rectangle
+            doc.text(`Comment: ${topic.comment}`, 15, startY + 95);
+
+            // Add spacing between topics
+            startY += 120; // Adjust this value based on content length
+        });
+
+        // Add a horizontal line below topics feedback
+        if (startY + 40 > doc.internal.pageSize.height - 20) {
+            doc.addPage(); // Add a new page
+            startY = 20; // Reset Y position for the new page
+        }
+        doc.line(10, startY - 10, 200, startY - 10);
+
+        // Add overall feedback and suggestions section
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "bold");
+        doc.text("Overall Feedback", 10, startY);
+
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "normal");
+        doc.text(`${feedbackDetails.overall_feedback}`, 10, startY + 10);
+
+        doc.setFont("helvetica", "bold");
+        doc.text("Suggestions", 10, startY + 30);
+        doc.setFont("helvetica", "normal");
+        doc.text(`${feedbackDetails.suggestions}`, 10, startY + 40);
+
+        // Add a footer
+        doc.setFontSize(10);
+        doc.setTextColor(100, 100, 100); // Gray color
         const footerText = `Assessment Report generated by: ${
             center.center_name || "Tuition Center"
         }`;
-        doc.setFontSize(10);
         doc.text(footerText, 10, doc.internal.pageSize.height - 10);
 
-        // Save the Assessment PDF
+        return doc;
+    };
+
+    const handlePrintPDF = () => {
+        // Generate the PDF
+        const doc = generatePDF(studentDetails, feedbackDetails, center);
+
+        // Save the PDF
         doc.save(
-            `Assessment_Report_${studentDetails.name}_${feedbackDetails.subject_name}.pdf`
+            `Assessment_Report_${feedbackDetails.month} ${selectedYear}_${studentDetails.name}_${feedbackDetails.subject_name}.pdf`
         );
     };
 
     // Function to handle sending the review form (Send PDF via email)
-    const handleSendReviewForm = async (
-        studentDetails,
-        feedbackDetails,
-        center
-    ) => {
+    const handleSendReviewForm = async () => {
         // Check if the form is saved
         if (!isSaved) {
             // Save the form first
@@ -332,65 +396,8 @@ export default function AssessmentFeedbackReviewForm() {
         }
 
         try {
-            const doc = new jsPDF();
-
-            // Document Title
-            doc.setFontSize(18);
-            doc.text(`${center.center_name || "Tuition Center"}`, 10, 10);
-
-            // Review Form and Student Details
-            doc.setFontSize(12);
-            doc.text(`Student Name: ${studentDetails.name}`, 10, 20);
-            doc.text(`Subject: ${feedbackDetails.subject_name}`, 10, 30);
-            doc.text(`Study Level: ${feedbackDetails.study_level}`, 10, 40);
-            doc.text(`Month: ${feedbackDetails.month} ${selectedYear}`, 10, 50);
-            doc.text(`Review Date: ${feedbackDetails.review_date}`, 10, 60);
-
-            // Topics Table
-            doc.autoTable({
-                startY: 70,
-                head: [
-                    [
-                        "#",
-                        "Topic Name",
-                        "Competency Level",
-                        "Class Participation",
-                        "Problem-Solving Skills",
-                        "Assignment Completion",
-                        "Communication Skills",
-                        "Behavior and Discipline",
-                        "Effort and Motivation",
-                        "Comment",
-                    ],
-                ],
-                body: feedbackDetails.topics.map((topic, index) => [
-                    index + 1,
-                    topic.topic_name,
-                    topic.competency_level,
-                    topic.class_participation,
-                    topic.problem_solving,
-                    topic.assignment_completion,
-                    topic.communication_skills,
-                    topic.behavior_discipline,
-                    topic.effort_motivation,
-                    topic.comment,
-                ]),
-            });
-
-            // Overall Feedback and Suggestions
-            // Calculate where to place after the table
-            const finalY = doc.previousAutoTable.finalY + 10;
-
-            doc.text(
-                `Overall Feedback: ${feedbackDetails.overall_feedback}`,
-                10,
-                finalY + 10
-            );
-            doc.text(
-                `Suggestions: ${feedbackDetails.suggestions}`,
-                10,
-                finalY + 20
-            );
+            // Generate the PDF
+            const doc = generatePDF(studentDetails, feedbackDetails, center);
 
             // Convert the PDF to Blob
             const pdfBlob = doc.output("blob");
