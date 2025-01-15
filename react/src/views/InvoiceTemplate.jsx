@@ -61,64 +61,221 @@ export default function InvoiceTemplate() {
         return <div>Center profile not found.</div>;
     }
 
-    const handlePrintPDF = () => {
+    // Function to generate the invoice PDF
+    const generateInvoicePDF = (invoice, center) => {
         const doc = new jsPDF();
 
-        // Document Title
+        // Constants for page dimensions
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+        const margin = 10; // Margin for content
+        let startY = margin; // Starting Y position
+
+        // Function to add a new page and reset Y position
+        const addNewPage = () => {
+            doc.addPage();
+            startY = margin; // Reset Y position for the new page
+        };
+
+        // Function to check if content exceeds page height and add a new page if needed
+        const checkPageHeight = (requiredHeight) => {
+            if (startY + requiredHeight > pageHeight - margin) {
+                addNewPage();
+            }
+        };
+
+        // Title
         doc.setFontSize(18);
-        doc.text(`${center.center_name || "Tuition Center"}`, 10, 10);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(40, 40, 40); // Dark gray color
+        doc.text(
+            `${center.center_name || "Tuition Center"}`,
+            pageWidth / 2,
+            startY,
+            {
+                align: "center",
+            }
+        );
+        startY += 15; // Move Y position down after the title
 
-        // Invoice and Student Details
+        // Add a horizontal line below the header
+        doc.setDrawColor(200, 200, 200); // Light gray color
+        doc.line(margin, startY, pageWidth - margin, startY);
+        startY += 10; // Move Y position down after the line
+
+        // Add invoice details
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(40, 40, 40);
+        doc.text("Invoice Details", margin, startY);
+        startY += 10;
+
         doc.setFontSize(12);
-        doc.text(`Invoice Number: ${invoice.invoice_number}`, 10, 20);
-        doc.text(`Issue Date: ${invoice.issue_date}`, 10, 30);
-        doc.text(`Due Date: ${invoice.due_date}`, 10, 40);
-        doc.text(`To: ${invoice.student.name}`, 10, 50);
-        doc.text(`Address: ${invoice.student.address}`, 10, 60);
-        doc.text(`Postal Code: ${invoice.student.postal_code}`, 10, 70);
-        doc.text(`Nationality: ${invoice.student.nationality}`, 10, 80);
+        doc.setFont("helvetica", "normal");
+        doc.text(
+            `Invoice Number: ${invoice.invoice_number || "N/A"}`,
+            margin,
+            startY
+        );
+        startY += 10;
+        doc.text(`Issue Date: ${invoice.issue_date || "N/A"}`, margin, startY);
+        startY += 10;
+        doc.text(`Due Date: ${invoice.due_date || "N/A"}`, margin, startY);
+        startY += 20; // Add extra spacing
 
-        // Itemized Table
-        doc.autoTable({
-            startY: 90,
-            head: [
-                [
-                    "#",
-                    "Item Name",
-                    "Quantity",
-                    "Unit Price (RM)",
-                    "Discount (%)",
-                    "Total (RM)",
-                ],
+        // Add student details section
+        doc.setFont("helvetica", "bold");
+        doc.text("Student Details", margin, startY);
+        startY += 10;
+        doc.setFont("helvetica", "normal");
+        doc.text(`To: ${invoice.student?.name || "N/A"}`, margin, startY);
+        startY += 10;
+        doc.text(
+            `Address: ${invoice.student?.address || "N/A"}`,
+            margin,
+            startY
+        );
+        startY += 10;
+        doc.text(
+            `Postal Code: ${invoice.student?.postal_code || "N/A"}`,
+            margin,
+            startY
+        );
+        startY += 10;
+        doc.text(
+            `Nationality: ${invoice.student?.nationality || "N/A"}`,
+            margin,
+            startY
+        );
+        startY += 20; // Add extra spacing
+
+        // Add items table
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "bold");
+        doc.text("Items", margin, startY);
+        startY += 10;
+
+        // Table Header
+        const tableHead = [
+            [
+                "#",
+                "Item Name",
+                "Quantity",
+                "Unit Price (RM)",
+                "Discount (%)",
+                "Total (RM)",
             ],
-            body: invoice.items.map((item, index) => [
+        ];
+        const tableBody =
+            invoice.items?.map((item, index) => [
                 index + 1,
-                item.item_name,
-                item.quantity,
-                item.price,
-                item.discount,
-                item.total,
-            ]),
+                item.item_name || "N/A",
+                item.quantity || 0,
+                item.price || 0,
+                item.discount || 0,
+                item.total || 0,
+            ]) || [];
+
+        // Render Table with Purple Styling
+        doc.autoTable({
+            startY: startY,
+            head: tableHead,
+            body: tableBody,
+            theme: "striped", // Add styling to the table
+            headStyles: {
+                fillColor: [169, 160, 225], // Purple color (#a9a0e1 in RGB)
+                textColor: [255, 255, 255], // White text for contrast
+                fontStyle: "bold", // Bold header text
+            },
+            alternateRowStyles: {
+                fillColor: [245, 245, 245], // Light gray alternate rows
+            },
+            bodyStyles: {
+                textColor: [40, 40, 40], // Dark gray text for body
+            },
+            didDrawPage: (data) => {
+                // Update startY after the table is drawn
+                startY = data.cursor.y + 10;
+            },
         });
 
-        // Total and Payment Method
-        // Calculate where to place after the table
-        const finalY = doc.previousAutoTable.finalY + 10;
+        // Check if the table exceeded the page height
+        checkPageHeight(50); // Add extra space for the summary section
 
-        doc.text(`Payment Method: ${invoice.payment_method}`, 10, finalY + 10);
-        doc.text(`Notes: ${invoice.add_notes || "N/A"}`, 10, finalY + 30);
+        // Add a horizontal line below the table
+        doc.line(margin, startY, pageWidth - margin, startY);
+        startY += 10;
 
-        // Total Summary
-        doc.text(`Subtotal: RM ${invoice.total_payable}`, 140, finalY + 10);
-        doc.text(`Tax (0%): RM ${invoice.total_payable * 0}`, 140, finalY + 20);
+        // Ensure Payment Summary starts on a new page if needed
+        const paymentSummaryHeight = 150; // Approximate height of the Payment Summary section
+        if (startY + paymentSummaryHeight > pageHeight - margin) {
+            addNewPage(); // Force a new page if there isn't enough space
+        }
+
+        // Add payment summary section
         doc.setFontSize(14);
-        doc.text(`Total: RM ${invoice.total_payable}`, 140, finalY + 30);
+        doc.setFont("helvetica", "bold");
+        doc.text("Payment Summary", margin, startY);
+        startY += 10;
 
-        // Save PDF
-        doc.save(`Invoice_${invoice.id}.pdf`);
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "normal");
+        doc.text(
+            `Payment Method: ${invoice.payment_method || "N/A"}`,
+            margin,
+            startY
+        );
+        startY += 10;
+        doc.text(
+            `Additional Notes: ${invoice.add_notes || "N/A"}`,
+            margin,
+            startY
+        );
+        startY += 10;
+
+        // Right-aligned subtotal and totals
+        const rightAlignX = pageWidth - margin; // Right margin for alignment
+        doc.text(
+            `Subtotal: RM ${invoice.total_payable || "0.00"}`,
+            rightAlignX,
+            startY,
+            { align: "right" }
+        );
+        startY += 10;
+        doc.text(
+            `Tax (0%): RM ${(invoice.total_payable * 0).toFixed(2)}`,
+            rightAlignX,
+            startY,
+            { align: "right" }
+        );
+        startY += 10;
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "bold");
+        doc.text(
+            `Total Amount: RM ${invoice.total_payable || "0.00"}`,
+            rightAlignX,
+            startY,
+            { align: "right" }
+        );
+        startY += 20; // Add extra spacing
+
+        // Add a footer
+        checkPageHeight(20); // Ensure there's enough space for the footer
+        doc.setFontSize(10);
+        doc.setTextColor(100, 100, 100); // Gray color
+        const footerText = `Invoice generated by: ${
+            center.center_name || "Tuition Center"
+        }`;
+        doc.text(footerText, margin, doc.internal.pageSize.height - 10);
+
+        return doc;
     };
 
-    // Function to handle sending the invoice (Send PDF via email)
+    const handlePrintPDF = () => {
+        const doc = generateInvoicePDF(invoice, center);
+        doc.save(`${invoice.invoice_number || "N/A"}.pdf`);
+    };
+
     const handleSendInvoice = async (invoice, center) => {
         setLoading(true);
 
@@ -131,65 +288,7 @@ export default function InvoiceTemplate() {
         }
 
         try {
-            const doc = new jsPDF();
-
-            // Document Title
-            doc.setFontSize(18);
-            doc.text(`${center.center_name || "Tuition Center"}`, 10, 10);
-
-            // Invoice and Student Details
-            doc.setFontSize(12);
-            doc.text(`Invoice Number: ${invoice.invoice_number}`, 10, 20);
-            doc.text(`Issue Date: ${invoice.issue_date}`, 10, 30);
-            doc.text(`Due Date: ${invoice.due_date}`, 10, 40);
-            doc.text(`To: ${invoice.student.name}`, 10, 50);
-            doc.text(`Address: ${invoice.student.address}`, 10, 60);
-            doc.text(`Postal Code: ${invoice.student.postal_code}`, 10, 70);
-            doc.text(`Nationality: ${invoice.student.nationality}`, 10, 80);
-
-            // Itemized Table
-            doc.autoTable({
-                startY: 90,
-                head: [
-                    [
-                        "#",
-                        "Item Name",
-                        "Quantity",
-                        "Unit Price (RM)",
-                        "Discount (%)",
-                        "Total (RM)",
-                    ],
-                ],
-                body: invoice.items.map((item, index) => [
-                    index + 1,
-                    item.item_name,
-                    item.quantity,
-                    item.price,
-                    item.discount,
-                    item.total,
-                ]),
-            });
-
-            // Total and Payment Method
-            // Calculate where to place after the table
-            const finalY = doc.previousAutoTable.finalY + 10;
-
-            doc.text(
-                `Payment Method: ${invoice.payment_method}`,
-                10,
-                finalY + 10
-            );
-            doc.text(`Notes: ${invoice.add_notes || "N/A"}`, 10, finalY + 30);
-
-            // Total Summary
-            doc.text(`Subtotal: RM ${invoice.total_payable}`, 140, finalY + 10);
-            doc.text(
-                `Tax (0%): RM ${invoice.total_payable * 0}`,
-                140,
-                finalY + 20
-            );
-            doc.setFontSize(14);
-            doc.text(`Total: RM ${invoice.total_payable}`, 140, finalY + 30);
+            const doc = generateInvoicePDF(invoice, center);
 
             // Convert the PDF to Blob
             const pdfBlob = doc.output("blob");
@@ -197,7 +296,7 @@ export default function InvoiceTemplate() {
             // Create FormData to send the PDF
             const formData = new FormData();
             parentEmails.forEach((email) => formData.append("emails[]", email)); // Append each email
-            formData.append("pdf", pdfBlob, "receipt.pdf"); // Attach the PDF
+            formData.append("pdf", pdfBlob, "invoice.pdf"); // Attach the PDF
 
             const response = await axiosClient.post(
                 "/send-invoice-pdf-email",

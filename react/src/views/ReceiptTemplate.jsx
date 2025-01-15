@@ -60,41 +60,112 @@ export default function ReceiptTemplate() {
         return <div>Center profile not found.</div>;
     }
 
-    const handlePrintPDF = () => {
+    // Function to generate the PDF receipt
+    const generateReceiptPDF = (payment, center) => {
         const doc = new jsPDF();
+
+        // Constants for page dimensions
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+        const margin = 10; // Margin for content
+        let startY = margin; // Starting Y position
+
+        // Function to add a new page and reset Y position
+        const addNewPage = () => {
+            doc.addPage();
+            startY = margin; // Reset Y position for the new page
+        };
+
+        // Function to check if content exceeds page height and add a new page if needed
+        const checkPageHeight = (requiredHeight) => {
+            if (startY + requiredHeight > pageHeight - margin) {
+                addNewPage();
+            }
+        };
 
         // Title
         doc.setFontSize(18);
-        doc.text(`${center.center_name || "Tuition Center"}`, 10, 10);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(40, 40, 40); // Dark gray color
+        doc.text("SAM Singapore Maths", pageWidth / 2, startY, {
+            align: "center",
+        });
+        startY += 15; // Move Y position down after the title
 
-        // Receipt and Invoice Information
+        // Add a horizontal line below the header
+        doc.setDrawColor(200, 200, 200); // Light gray color
+        doc.line(margin, startY, pageWidth - margin, startY);
+        startY += 10; // Move Y position down after the line
+
+        // Add receipt and invoice information
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(40, 40, 40);
+        doc.text("Receipt Details", margin, startY);
+        startY += 10;
+
         doc.setFontSize(12);
-        doc.text(`Receipt Number: ${payment.receipt_number || "N/A"}`, 10, 20);
+        doc.setFont("helvetica", "normal");
+        doc.text(
+            `Receipt Number: ${payment.receipt_number || "N/A"}`,
+            margin,
+            startY
+        );
+        startY += 10;
         doc.text(
             `Invoice Number: ${payment?.invoice?.invoice_number || "N/A"}`,
-            10,
-            30
+            margin,
+            startY
         );
-        doc.text(`Payment Date: ${payment.payment_date || "N/A"}`, 10, 40);
-        doc.text(`Due Date: ${payment?.invoice?.due_date || "N/A"}`, 10, 50);
+        startY += 10;
+        doc.text(
+            `Payment Date: ${payment.payment_date || "N/A"}`,
+            margin,
+            startY
+        );
+        startY += 10;
+        doc.text(
+            `Due Date: ${payment?.invoice?.due_date || "N/A"}`,
+            margin,
+            startY
+        );
+        startY += 20; // Add extra spacing
 
-        // Student Details
-        doc.text(`To: ${payment?.invoice?.student?.name || "N/A"}`, 10, 70);
+        // Add student details section
+        doc.setFont("helvetica", "bold");
+        doc.text("Student Details", margin, startY);
+        startY += 10;
+        doc.setFont("helvetica", "normal");
+        doc.text(
+            `To: ${payment?.invoice?.student?.name || "N/A"}`,
+            margin,
+            startY
+        );
+        startY += 10;
         doc.text(
             `Address: ${payment?.invoice?.student?.address || "N/A"}`,
-            10,
-            80
+            margin,
+            startY
         );
+        startY += 10;
         doc.text(
             `Postal Code: ${payment?.invoice?.student?.postal_code || "N/A"}`,
-            10,
-            90
+            margin,
+            startY
         );
+        startY += 10;
         doc.text(
             `Nationality: ${payment?.invoice?.student?.nationality || "N/A"}`,
-            10,
-            100
+            margin,
+            startY
         );
+        startY += 20; // Add extra spacing
+
+        // Add items table
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "bold");
+        doc.text("Items", margin, startY);
+        startY += 10;
 
         // Table Header
         const tableHead = [
@@ -117,47 +188,96 @@ export default function ReceiptTemplate() {
                 item.total || 0,
             ]) || [];
 
-        // Render Table
+        // Render Table with Purple Styling
         doc.autoTable({
-            startY: 110,
+            startY: startY,
             head: tableHead,
             body: tableBody,
+            theme: "striped", // Add styling to the table
+            headStyles: {
+                fillColor: [169, 160, 225], // Purple color (#a9a0e1 in RGB)
+                textColor: [255, 255, 255], // White text for contrast
+                fontStyle: "bold", // Bold header text
+            },
+            alternateRowStyles: {
+                fillColor: [245, 245, 245], // Light gray alternate rows
+            },
+            bodyStyles: {
+                textColor: [40, 40, 40], // Dark gray text for body
+            },
+            margin: { top: startY }, // Ensure the table starts at the correct Y position
+            didDrawPage: (data) => {
+                // Update startY after the table is drawn
+                startY = data.cursor.y + 10;
+            },
         });
 
-        // Total Summary
-        const finalY = doc.lastAutoTable.finalY + 10;
+        // Check if the table exceeded the page height
+        checkPageHeight(50); // Add extra space for the summary section
+
+        // Add a horizontal line below the table
+        doc.line(margin, startY, pageWidth - margin, startY);
+        startY += 10;
+
+        // Ensure Payment Summary starts on a new page if needed
+        const paymentSummaryHeight = 150; // Approximate height of the Payment Summary section
+        if (startY + paymentSummaryHeight > pageHeight - margin) {
+            addNewPage(); // Force a new page if there isn't enough space
+        }
+
+        // Add payment summary section
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "bold");
+        doc.text("Payment Summary", margin, startY);
+        startY += 10;
+
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "normal");
         doc.text(
             `Payment Method: ${payment.payment_method || "N/A"}`,
-            10,
-            finalY + 10
+            margin,
+            startY
         );
+        startY += 10;
         doc.text(
             `Additional Notes: ${payment.add_notes || "N/A"}`,
-            10,
-            finalY + 20
+            margin,
+            startY
         );
+        startY += 10;
+
+        // Right-aligned subtotal and totals
+        const rightAlignX = pageWidth - margin; // Right margin for alignment
         doc.text(
             `Subtotal: RM ${payment?.invoice?.total_payable || "0.00"}`,
-            140,
-            finalY + 10
+            rightAlignX,
+            startY,
+            { align: "right" }
         );
+        startY += 10;
         doc.text(
             `Tax (0%): RM ${(payment?.invoice?.total_payable * 0).toFixed(2)}`,
-            140,
-            finalY + 20
+            rightAlignX,
+            startY,
+            { align: "right" }
         );
+        startY += 10;
         doc.text(
             `Total Amount: RM ${payment?.invoice?.total_payable || "0.00"}`,
-            140,
-            finalY + 30
+            rightAlignX,
+            startY,
+            { align: "right" }
         );
+        startY += 10;
         doc.setFontSize(14);
         doc.setFont("helvetica", "bold");
         doc.text(
             `Total Paid: RM ${payment?.amount || "0.00"}`,
-            140,
-            finalY + 40
+            rightAlignX,
+            startY,
+            { align: "right" }
         );
+        startY += 10;
         doc.text(
             `Balance: RM ${
                 payment?.invoice?.total_payable && payment?.amount
@@ -166,20 +286,29 @@ export default function ReceiptTemplate() {
                       )
                     : "0.00"
             }`,
-            140,
-            finalY + 50
+            rightAlignX,
+            startY,
+            { align: "right" }
         );
+        startY += 20; // Add extra spacing
 
-        // Footer
-        doc.setFontSize(12);
-        doc.setFont("helvetica", "normal");
-        doc.text("Thank you!", 10, finalY + 70);
+        // Add a footer
+        checkPageHeight(20); // Ensure there's enough space for the footer
+        doc.setFontSize(10);
+        doc.setTextColor(100, 100, 100); // Gray color
+        const footerText = `Receipt generated by: ${
+            center.center_name || "Tuition Center"
+        }`;
+        doc.text(footerText, margin, doc.internal.pageSize.height - 10);
 
-        // Save PDF
-        doc.save(`Receipt_${payment.receipt_number || "N/A"}.pdf`);
+        return doc;
+    };
+ 
+    const handlePrintPDF = () => {
+        const doc = generateReceiptPDF(payment, center);
+        doc.save(`${payment.receipt_number || "N/A"}.pdf`);
     };
 
-    // Function to handle sending the receipt (Send PDF via email)
     const handleSendReceipt = async (payment, center) => {
         setLoading(true);
 
@@ -193,134 +322,7 @@ export default function ReceiptTemplate() {
         }
 
         try {
-            const doc = new jsPDF();
-
-            // Title
-            doc.setFontSize(18);
-            doc.text(`${center.center_name || "Tuition Center"}`, 10, 10);
-            // doc.text(`${center.center_name || "Tuition Center"}`, 10, 10);
-
-            // Receipt and Invoice Information
-            doc.setFontSize(12);
-            doc.text(
-                `Receipt Number: ${payment.receipt_number || "N/A"}`,
-                10,
-                20
-            );
-            doc.text(
-                `Invoice Number: ${payment?.invoice?.invoice_number || "N/A"}`,
-                10,
-                30
-            );
-            doc.text(`Payment Date: ${payment.payment_date || "N/A"}`, 10, 40);
-            doc.text(
-                `Due Date: ${payment?.invoice?.due_date || "N/A"}`,
-                10,
-                50
-            );
-
-            // Student Details
-            doc.text(`To: ${payment?.invoice?.student?.name || "N/A"}`, 10, 70);
-            doc.text(
-                `Address: ${payment?.invoice?.student?.address || "N/A"}`,
-                10,
-                80
-            );
-            doc.text(
-                `Postal Code: ${
-                    payment?.invoice?.student?.postal_code || "N/A"
-                }`,
-                10,
-                90
-            );
-            doc.text(
-                `Nationality: ${
-                    payment?.invoice?.student?.nationality || "N/A"
-                }`,
-                10,
-                100
-            );
-
-            // Table Header
-            const tableHead = [
-                [
-                    "#",
-                    "Item Name",
-                    "Quantity",
-                    "Unit Price (RM)",
-                    "Discount (%)",
-                    "Total (RM)",
-                ],
-            ];
-            const tableBody =
-                payment?.invoice?.items?.map((item, index) => [
-                    index + 1,
-                    item.item_name || "N/A",
-                    item.quantity || 0,
-                    item.price || 0,
-                    item.discount || 0,
-                    item.total || 0,
-                ]) || [];
-
-            // Render Table
-            doc.autoTable({
-                startY: 110,
-                head: tableHead,
-                body: tableBody,
-            });
-
-            // Total Summary
-            const finalY = doc.lastAutoTable.finalY + 10;
-            doc.text(
-                `Payment Method: ${payment.payment_method || "N/A"}`,
-                10,
-                finalY + 10
-            );
-            doc.text(
-                `Additional Notes: ${payment.add_notes || "N/A"}`,
-                10,
-                finalY + 20
-            );
-            doc.text(
-                `Subtotal: RM ${payment?.invoice?.total_payable || "0.00"}`,
-                140,
-                finalY + 10
-            );
-            doc.text(
-                `Tax (0%): RM ${(payment?.invoice?.total_payable * 0).toFixed(
-                    2
-                )}`,
-                140,
-                finalY + 20
-            );
-            doc.text(
-                `Total Amount: RM ${payment?.invoice?.total_payable || "0.00"}`,
-                140,
-                finalY + 30
-            );
-            doc.setFontSize(14);
-            doc.setFont("helvetica", "bold");
-            doc.text(
-                `Total Paid: RM ${payment?.amount || "0.00"}`,
-                140,
-                finalY + 40
-            );
-            doc.text(
-                `Balance: RM ${
-                    payment?.invoice?.total_payable && payment?.amount
-                        ? (
-                              payment.invoice.total_payable - payment.amount
-                          ).toFixed(2)
-                        : "0.00"
-                }`,
-                140,
-                finalY + 50
-            );
-
-            // Footer
-            doc.setFontSize(12);
-            doc.setFont("helvetica", "normal");
-            doc.text("Thank you!", 10, finalY + 70);
+            const doc = generateReceiptPDF(payment, center);
 
             // Convert the PDF to Blob
             const pdfBlob = doc.output("blob");
