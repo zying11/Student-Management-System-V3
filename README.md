@@ -1,66 +1,137 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Tuition Center Student Management System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+📚 **Help Us Improve Tuition Centers!**  
+We are final year students from the Faculty of Computer Science and Information Technology, Universiti Malaya, working on a web-based **Student Management System** for tuition centers. This project aims to streamline the management of students, classes, and schedules for tuition centers.
 
-## About Laravel
+**Students In-charge:**
+- Ham Zhi Ying
+- Regina Tang Hue Yan
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Table of Contents
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+1. [Overview](#overview)
+2. [Prerequisites](#prerequisites)
+3. [Setup Instructions](#setup-instructions)
+   - [Cloning the Repository](#1-clone-the-repository)
+   - [Install Composer Dependencies](#2-install-composer-dependencies)
+   - [Set Up the Frontend (React)](#3-set-up-the-frontend-react)
+   - [Database Setup](#4-database-setup)
+4. [Usage](#usage)
+5. [Additional Resources](#additional-resources)
+   
+---
 
-## Learning Laravel
+## Overview
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Our project aims to address the limitations of existing systems by designing and developing a **web-based Student Management System (SMS)** specifically tailored for tuition centers. The system offers a variety of modules to enhance the efficiency of administrative and academic processes. These modules include:
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- **Student-Teacher Profile Management**  
+- **Fee Management**  
+- **Student Assessment Feedback**  
+- **Attendance Records**  
+- **Alerts and Notifications**  
+- **Timetable Management**
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+The SMS streamlines processes, improves communication, and enhances data security. This leads to more time for core educational activities, better-informed decision-making, and ultimately, a more supportive learning environment for students.
 
-## Laravel Sponsors
+---
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Prerequisites
 
-### Premium Partners
+Before you begin, ensure you have the following tools installed:
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+- **Composer**: A tool for dependency management in PHP.
+  - [Download Composer](https://getcomposer.org/)
+  
+- **Node.js and NPM**: Node.js is required for the frontend, and NPM is needed to manage dependencies.
+  - [Download Node.js](https://nodejs.org/)
 
-## Contributing
+- **XAMPP** (or any PHP/MySQL stack): For local development with a database.
+  - [Download XAMPP](https://www.apachefriends.org/)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+## Setup Instructions
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Follow these steps to set up the project on your local machine:
 
-## Security Vulnerabilities
+### 1. Clone the Repository
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Since this is a private project, please refer to the video tutorial on how to clone it using SSH:
 
-## License
+- [How to Clone a Private Repository](https://www.youtube.com/watch?v=NvvIuqj4YTY)
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 2. Install Composer Dependencies
+
+- First, check if Composer is installed by running:
+  ```bash
+  composer
+  ```
+  If Composer is not installed, follow the [installation guide](https://getcomposer.org/doc/).
+
+- In your terminal, navigate to the project directory and Laravel folder, then run:
+  ```bash
+  composer global require laravel/installer
+  composer install
+  php artisan serve
+  ```
+
+  **Note**: If you encounter any issues with Composer not being found, run the following:
+  ```bash
+  composer global require laravel/installer
+  composer install
+  ```
+
+For more information on setting up Laravel, visit the [Laravel Installation Documentation](https://laravel.com/docs/11.x/installation).
+
+### 3. Set Up the Frontend (React)
+
+- Install Node.js and NPM if you haven't already.
+- Navigate to the `react` folder inside the project directory and run:
+  ```bash
+  npm install
+  npm run dev
+  ```
+
+  For React setup instructions, refer to this [video tutorial](https://www.youtube.com/watch?v=uiD2aoL7zHs&t=486s).
+
+### 4. Database Setup
+
+- Duplicate `.env.example` and rename it to `.env`.
+- Run the following command to generate the application key:
+  ```bash
+  php artisan key:generate
+  ```
+
+- Create an empty database in your local database management tool (e.g., phpMyAdmin).
+
+- Update the `.env` file with the database settings:
+  ```env
+  DB_CONNECTION=sqlite
+  DB_DATABASE=C:\xampp\htdocs\student-management-system\database\database.sqlite
+  ```
+
+- Run the database migrations to set up the tables:
+  ```bash
+  php artisan migrate
+  ```
+  
+---
+
+## Usage
+
+Once the project is set up and running:
+
+1. **Access the application**:
+   - Navigate to `http://localhost:3000` in your browser to access the Student Management System.
+
+---
+
+## Additional Resources
+
+- [Laravel Documentation](https://laravel.com/docs/11.x/installation)
+- [Composer Documentation](https://getcomposer.org/doc/)
+- [React Documentation](https://reactjs.org/docs/getting-started.html)
+
