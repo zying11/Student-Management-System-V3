@@ -59,9 +59,11 @@ Follow these steps to set up the project on your local machine:
 
 ### 1. Clone the Repository
 
-Since this is a private project, please refer to the video tutorial on how to clone it using SSH:
+To clone the repository, use the following command:
 
-- [How to Clone a Private Repository](https://www.youtube.com/watch?v=NvvIuqj4YTY)
+```bash
+git clone https://github.com/your-username/your-repository-name.git
+  ```
 
 ### 2. Install Composer Dependencies
 
