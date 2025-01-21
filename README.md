@@ -5,7 +5,7 @@ We are final year students from the Faculty of Computer Science and Information 
 
 **Students In-charge:**
 - Ham Zhi Ying
-- Regina Tang Hue Yan
+- Regina Tang Heu Yan
 
 ---
 
